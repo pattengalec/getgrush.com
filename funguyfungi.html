@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fun Guy Fungi — Specialty Mushroom Farm & MycoSoil Pellets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #050a18;
+  --green: #7dff6b;
+  --green-dim: rgba(125,255,107,0.07);
+  --green-glow: rgba(125,255,107,0.25);
+  --green-dark: #3a9a62;
+  --soil: #c8a060;
+  --soil-dim: rgba(200,160,96,0.08);
+  --white: #f0f4ff;
+  --muted: #5a7090;
+  --amber: #ffb830;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(125,255,107,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125,255,107,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* NAV */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px; height:64px;
+  background:rgba(5,10,24,0.9); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(125,255,107,0.07);
+}
+.nav-logo { font-family:'Courier Prime',monospace; font-weight:700; font-size:15px; color:var(--green); letter-spacing:0.12em; text-decoration:none; text-transform:uppercase; }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+.nav-links a:hover { color:var(--green); }
+.nav-links a.active { color:var(--green); }
+.nav-back { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+.nav-back:hover { color:var(--green); }
+
+/* HERO */
+.hero {
+  position:relative; z-index:1;
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding:100px 80px 60px;
+  gap:80px; overflow:hidden;
+}
+
+/* Mycelium network SVG */
+.mycelium-vis {
+  position:relative; flex-shrink:0;
+  width:300px; height:300px;
+  opacity:0; animation:fadeUp 1s 0.5s forwards;
+}
+.mycelium-vis svg {
+  width:100%; height:100%;
+  overflow:visible;
+}
+
+/* HERO TEXT */
+.hero-content { position:relative; max-width:520px; }
+.hero-eyebrow {
+  font-size:11px; letter-spacing:0.3em; text-transform:uppercase;
+  color:var(--green); margin-bottom:20px;
+  opacity:0; animation:fadeUp 0.7s 0.2s forwards;
+}
+.hero-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(52px,7vw,96px);
+  font-weight:900; line-height:0.9; letter-spacing:-0.03em;
+  opacity:0; animation:fadeUp 0.8s 0.35s forwards;
+}
+.hero-title .accent { color:var(--green); }
+.hero-sub {
+  font-family:'Courier Prime',monospace;
+  font-size:14.5px; line-height:1.75; color:var(--muted);
+  margin-top:24px; max-width:460px;
+  opacity:0; animation:fadeUp 0.8s 0.5s forwards;
+}
+.hero-tags {
+  margin-top:20px; display:flex; flex-wrap:wrap; gap:8px;
+  opacity:0; animation:fadeUp 0.8s 0.62s forwards;
+}
+.hero-tag {
+  font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+  border:1px solid rgba(125,255,107,0.2); color:var(--green);
+  padding:4px 12px; border-radius:2px; opacity:0.7;
+}
+.hero-cta {
+  margin-top:32px; display:flex; gap:16px; flex-wrap:wrap;
+  opacity:0; animation:fadeUp 0.8s 0.75s forwards;
+}
+.btn-primary {
+  display:inline-block; padding:14px 32px;
+  background:var(--green); color:var(--navy);
+  font-family:'Space Mono',monospace; font-size:11px;
+  letter-spacing:0.15em; text-transform:uppercase; font-weight:700;
+  text-decoration:none; border-radius:2px; transition:all 0.2s;
+}
+.btn-primary:hover { background:#96ff84; box-shadow:0 0 24px var(--green-glow); }
+.btn-outline {
+  display:inline-block; padding:14px 32px;
+  border:1px solid var(--green); color:var(--green);
+  font-family:'Space Mono',monospace; font-size:11px;
+  letter-spacing:0.15em; text-transform:uppercase;
+  text-decoration:none; border-radius:2px; transition:all 0.2s;
+}
+.btn-outline:hover { background:var(--green-dim); }
+
+/* STATS */
+.stats-bar {
+  position:relative; z-index:1;
+  border-top:1px solid rgba(125,255,107,0.07);
+  border-bottom:1px solid rgba(125,255,107,0.07);
+  display:grid; grid-template-columns:repeat(4,1fr);
+  background:rgba(10,20,40,0.5);
+}
+.stat {
+  padding:32px 40px; border-right:1px solid rgba(125,255,107,0.05);
+  opacity:0; animation:fadeUp 0.5s forwards;
+}
+.stat:nth-child(1){animation-delay:0.1s}
+.stat:nth-child(2){animation-delay:0.2s}
+.stat:nth-child(3){animation-delay:0.3s}
+.stat:nth-child(4){animation-delay:0.4s;border-right:none}
+.stat-num { font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:var(--green); line-height:1; }
+.stat-label { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-top:6px; }
+
+/* SECTIONS */
+section { position:relative; z-index:1; padding:96px 80px; max-width:1200px; margin:0 auto; }
+.section-label { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--green); margin-bottom:16px; }
+.section-title { font-family:'Playfair Display',serif; font-size:clamp(32px,4vw,48px); font-weight:700; letter-spacing:-0.02em; line-height:1.1; margin-bottom:20px; }
+.section-body { font-family:'Courier Prime',monospace; font-size:14px; line-height:1.8; color:var(--muted); max-width:560px; }
+
+/* TWO PRODUCT CARDS */
+.product-pair {
+  margin-top:56px;
+  display:grid; grid-template-columns:1fr 1fr; gap:20px;
+}
+.product-card {
+  border:1px solid;
+  background:rgba(10,20,40,0.5);
+  padding:40px 32px 32px;
+  position:relative; overflow:hidden;
+  transition:all 0.25s;
+}
+.product-card:hover {
+  background:rgba(10,20,40,0.85);
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(0,0,0,0.4);
+}
+.card-fresh { border-color:rgba(125,255,107,0.2); }
+.card-fresh:hover { border-color:rgba(125,255,107,0.4); }
+.card-soil { border-color:rgba(200,160,96,0.2); }
+.card-soil:hover { border-color:rgba(200,160,96,0.4); }
+.card-eyebrow { font-size:9px; letter-spacing:0.25em; text-transform:uppercase; margin-bottom:12px; }
+.card-fresh .card-eyebrow { color:var(--green); opacity:0.7; }
+.card-soil .card-eyebrow { color:var(--soil); opacity:0.7; }
+.card-name { font-family:'Playfair Display',serif; font-size:26px; font-weight:900; color:var(--white); margin-bottom:6px; line-height:1.05; }
+.card-sub { font-family:'Courier Prime',monospace; font-size:12px; color:var(--muted); margin-bottom:20px; }
+.card-divider { width:32px; height:1px; margin-bottom:20px; }
+.card-fresh .card-divider { background:rgba(125,255,107,0.3); }
+.card-soil .card-divider { background:rgba(200,160,96,0.3); }
+.card-pitch { font-family:'Courier Prime',monospace; font-size:13.5px; line-height:1.75; color:var(--muted); margin-bottom:24px; }
+.card-species {
+  display:flex; flex-wrap:wrap; gap:8px;
+  border-top:1px solid rgba(125,255,107,0.07);
+  padding-top:20px;
+}
+.card-soil .card-species { border-color:rgba(200,160,96,0.07); }
+.species-chip {
+  font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+  padding:4px 12px; border-radius:2px; border:1px solid;
+}
+.card-fresh .species-chip { border-color:rgba(125,255,107,0.2); color:var(--green); }
+.card-soil .species-chip { border-color:rgba(200,160,96,0.2); color:var(--soil); }
+
+/* PELLET ANATOMY */
+.pellet-grid {
+  margin-top:48px;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:2px;
+}
+.pellet-component {
+  padding:32px 28px;
+  border:1px solid rgba(125,255,107,0.08);
+  background:rgba(10,20,40,0.4);
+  transition:all 0.2s;
+}
+.pellet-component:hover {
+  border-color:rgba(125,255,107,0.2);
+  background:rgba(10,20,40,0.75);
+}
+.pellet-icon { font-size:28px; margin-bottom:12px; }
+.pellet-name {
+  font-family:'Playfair Display',serif;
+  font-size:17px; font-weight:700; color:var(--white); margin-bottom:6px;
+}
+.pellet-role {
+  font-size:9px; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--green); opacity:0.6; margin-bottom:10px;
+}
+.pellet-desc {
+  font-family:'Courier Prime',monospace;
+  font-size:13px; line-height:1.65; color:var(--muted);
+}
+
+/* RESTORATION SECTION */
+.restoration-layout {
+  margin-top:48px;
+  display:grid; grid-template-columns:1fr 1fr; gap:40px;
+  align-items:start;
+}
+.restoration-text { }
+.restoration-text p {
+  font-family:'Courier Prime',monospace;
+  font-size:14px; line-height:1.8; color:var(--muted); margin-bottom:16px;
+}
+.market-list {
+  display:flex; flex-direction:column; gap:2px;
+}
+.market-item {
+  display:flex; align-items:flex-start; gap:16px;
+  padding:20px 24px;
+  border:1px solid rgba(125,255,107,0.08);
+  background:rgba(10,20,40,0.3);
+  transition:all 0.2s;
+}
+.market-item:hover {
+  border-color:rgba(125,255,107,0.2);
+  background:rgba(10,20,40,0.65);
+}
+.market-icon { font-size:18px; flex-shrink:0; padding-top:2px; }
+.market-content h4 {
+  font-family:'Playfair Display',serif; font-size:15px; font-weight:700;
+  color:var(--white); margin-bottom:4px;
+}
+.market-content p {
+  font-family:'Courier Prime',monospace; font-size:12.5px; line-height:1.6; color:var(--muted);
+}
+
+/* TIMELINE */
+.timeline {
+  margin-top:48px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.timeline-item {
+  display:flex; gap:24px; align-items:flex-start;
+  padding:24px 32px;
+  border:1px solid rgba(125,255,107,0.08);
+  background:rgba(10,20,40,0.3);
+  transition:all 0.2s;
+}
+.timeline-item:hover { border-color:rgba(125,255,107,0.2); background:rgba(10,20,40,0.65); }
+.timeline-year {
+  font-family:'Playfair Display',serif;
+  font-size:22px; font-weight:900; color:var(--green);
+  flex-shrink:0; width:60px; line-height:1.1;
+}
+.timeline-content h4 {
+  font-family:'Playfair Display',serif; font-size:16px; font-weight:700;
+  color:var(--white); margin-bottom:6px;
+}
+.timeline-content p {
+  font-family:'Courier Prime',monospace; font-size:13px; line-height:1.65; color:var(--muted);
+}
+
+/* DIVIDER */
+.divider { position:relative; z-index:1; border-top:1px solid rgba(125,255,107,0.04); max-width:1200px; margin:0 auto; }
+
+/* FOOTER */
+footer {
+  position:relative; z-index:1;
+  border-top:1px solid rgba(125,255,107,0.06);
+  padding:32px 80px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+footer p { font-size:10px; letter-spacing:0.12em; color:var(--muted); opacity:0.5; }
+footer a { font-size:10px; letter-spacing:0.12em; color:var(--green); text-decoration:none; opacity:0.6; transition:opacity 0.2s; }
+footer a:hover { opacity:1; }
+
+/* KEYFRAMES */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes myceliumGrow {
+  from { stroke-dashoffset: 400; opacity:0; }
+  to   { stroke-dashoffset: 0; opacity:1; }
+}
+
+@media(max-width:960px){
+  .hero { flex-direction:column; padding:100px 32px 60px; gap:40px; }
+  .mycelium-vis { width:200px; height:200px; }
+  .product-pair { grid-template-columns:1fr; }
+  .pellet-grid { grid-template-columns:1fr; }
+  .restoration-layout { grid-template-columns:1fr; }
+  .stats-bar { grid-template-columns:repeat(2,1fr); }
+  .stat:nth-child(2){ border-right:none; }
+  section { padding:64px 32px; }
+  footer { flex-direction:column; gap:12px; padding:32px; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Getgrush.com</a>
+  <ul class="nav-links">
+    <li><a href="taskmask.html">TaskMask</a></li>
+    <li><a href="pocketquiz.html">PocketQuiz</a></li>
+    <li><a href="grush.html">Grush</a></li>
+    <li><a href="cottages.html">Cottages</a></li>
+    <li><a href="funguyfungi.html" class="active">Fun Guy Fungi</a></li>
+  </ul>
+  <a href="/" class="nav-back">&larr; Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+
+  <!-- Mycelium SVG -->
+  <div class="mycelium-vis">
+    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+      <!-- Mycelium network lines -->
+      <g stroke="#7dff6b" stroke-width="1" fill="none" opacity="0.35">
+        <line x1="150" y1="150" x2="80" y2="80"/>
+        <line x1="150" y1="150" x2="220" y2="90"/>
+        <line x1="150" y1="150" x2="240" y2="180"/>
+        <line x1="150" y1="150" x2="160" y2="250"/>
+        <line x1="150" y1="150" x2="70" y2="200"/>
+        <line x1="150" y1="150" x2="100" y2="260"/>
+        <line x1="80" y1="80" x2="40" y2="50"/>
+        <line x1="80" y1="80" x2="120" y2="40"/>
+        <line x1="220" y1="90" x2="270" y2="60"/>
+        <line x1="220" y1="90" x2="260" y2="130"/>
+        <line x1="240" y1="180" x2="280" y2="200"/>
+        <line x1="240" y1="180" x2="260" y2="240"/>
+        <line x1="160" y1="250" x2="200" y2="280"/>
+        <line x1="160" y1="250" x2="130" y2="280"/>
+        <line x1="70" y1="200" x2="30" y2="220"/>
+        <line x1="70" y1="200" x2="50" y2="260"/>
+        <line x1="100" y1="260" x2="80" y2="290"/>
+      </g>
+      <!-- Thicker primary branches -->
+      <g stroke="#7dff6b" stroke-width="1.5" fill="none" opacity="0.55">
+        <line x1="150" y1="150" x2="80" y2="80"/>
+        <line x1="150" y1="150" x2="220" y2="90"/>
+        <line x1="150" y1="150" x2="240" y2="180"/>
+        <line x1="150" y1="150" x2="70" y2="200"/>
+      </g>
+      <!-- Node dots -->
+      <g fill="#7dff6b">
+        <circle cx="150" cy="150" r="5" opacity="0.9"/>
+        <circle cx="80" cy="80" r="3.5" opacity="0.7"/>
+        <circle cx="220" cy="90" r="3" opacity="0.6"/>
+        <circle cx="240" cy="180" r="3" opacity="0.6"/>
+        <circle cx="160" cy="250" r="2.5" opacity="0.5"/>
+        <circle cx="70" cy="200" r="3" opacity="0.6"/>
+        <circle cx="100" cy="260" r="2" opacity="0.4"/>
+        <circle cx="40" cy="50" r="2" opacity="0.3"/>
+        <circle cx="120" cy="40" r="1.5" opacity="0.3"/>
+        <circle cx="270" cy="60" r="2" opacity="0.3"/>
+        <circle cx="260" cy="130" r="1.5" opacity="0.3"/>
+        <circle cx="280" cy="200" r="2" opacity="0.3"/>
+        <circle cx="30" cy="220" r="1.5" opacity="0.3"/>
+      </g>
+      <!-- Mushroom caps at tips -->
+      <g fill="none" stroke="#7dff6b" stroke-width="1" opacity="0.5">
+        <path d="M 75 76 Q 80 65 85 76 Z"/>
+        <path d="M 215 86 Q 220 75 225 86 Z"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Text -->
+  <div class="hero-content">
+    <p class="hero-eyebrow">Venture 05 &mdash; Mycology &mdash; funguyfungi.org</p>
+    <h1 class="hero-title">
+      Fun Guy<br>
+      <span class="accent">Fungi.</span>
+    </h1>
+    <p class="hero-sub">
+      Specialty mushroom farm and MycoSoil Pellet manufacturer in East Riverside, CA.
+      Fresh mushrooms to restaurants and farmers markets. Cold-pressed biochar pellets
+      for post-fire ecological restoration — the only regional producer in Southern California.
+    </p>
+    <div class="hero-tags">
+      <span class="hero-tag">Oyster</span>
+      <span class="hero-tag">Turkey Tail</span>
+      <span class="hero-tag">Lion's Mane</span>
+      <span class="hero-tag">MycoSoil Pellets</span>
+      <span class="hero-tag">Post-Fire Restoration</span>
+    </div>
+    <div class="hero-cta">
+      <a href="mailto:chad@getgrush.com" class="btn-primary">Wholesale Inquiry</a>
+      <a href="/" class="btn-outline">See All Ventures</a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num">2</div>
+    <div class="stat-label">Revenue streams</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">SoCal</div>
+    <div class="stat-label">Only regional pellet producer</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">3</div>
+    <div class="stat-label">Primary species</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">IE</div>
+    <div class="stat-label">Inland Empire distribution</div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section>
+  <p class="section-label">Two Revenue Streams</p>
+  <h2 class="section-title">Fresh Farm.<br>Soil Science.</h2>
+  <p class="section-body">
+    Fun Guy Fungi operates two distinct product lines from a single
+    containerized facility — fresh specialty mushrooms for the food market,
+    and MycoSoil Pellets for ecological restoration contractors.
+  </p>
+
+  <div class="product-pair">
+
+    <!-- Fresh Mushrooms -->
+    <div class="product-card card-fresh">
+      <div class="card-eyebrow">Revenue Stream 1</div>
+      <div class="card-name">Fresh Specialty Mushrooms</div>
+      <div class="card-sub">Direct to restaurants &amp; farmers markets &mdash; Inland Empire, CA</div>
+      <div class="card-divider"></div>
+      <p class="card-pitch">
+        Gourmet mushrooms grown in a climate-controlled MYCOttage unit.
+        Harvested fresh and delivered directly to restaurant buyers and
+        farmers market customers across the Inland Empire.
+        No middleman. No cold chain compromise. Farm to kitchen in 24 hours.
+      </p>
+      <div class="card-species">
+        <span class="species-chip">Oyster</span>
+        <span class="species-chip">Lion's Mane</span>
+        <span class="species-chip">Shiitake</span>
+        <span class="species-chip">King Oyster</span>
+        <span class="species-chip">Maitake</span>
+      </div>
+    </div>
+
+    <!-- MycoSoil Pellets -->
+    <div class="product-card card-soil">
+      <div class="card-eyebrow">Revenue Stream 2</div>
+      <div class="card-name">MycoSoil Pellets</div>
+      <div class="card-sub">B2B — sold to post-fire restoration contractors &amp; agencies</div>
+      <div class="card-divider"></div>
+      <p class="card-pitch">
+        Cold-pressed biochar pellets inoculated with saprotrophic fungal mycelium
+        (oyster and turkey tail strains) combined with bentonite clay as a binder.
+        Broadcast-ready for post-fire soil remediation — accelerating organic matter
+        decomposition, mycelial network establishment, and water retention restoration.
+      </p>
+      <div class="card-species">
+        <span class="species-chip">Oyster mycelium</span>
+        <span class="species-chip">Turkey tail</span>
+        <span class="species-chip">Biochar</span>
+        <span class="species-chip">Bentonite clay</span>
+        <span class="species-chip">Cold-pressed</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PELLET ANATOMY -->
+<section>
+  <p class="section-label">Product Science</p>
+  <h2 class="section-title">What's Inside<br>a MycoSoil Pellet</h2>
+  <p class="section-body">
+    Three components, cold-pressed into a broadcast-ready pellet.
+    No heat sterilization of the final product — mycelium stays viable.
+    Dissolves on contact with soil moisture, releasing spores and
+    organic carbon into the substrate.
+  </p>
+  <div class="pellet-grid">
+    <div class="pellet-component">
+      <div class="pellet-icon">🌑</div>
+      <div class="pellet-name">Biochar</div>
+      <div class="pellet-role">Carbon scaffold</div>
+      <p class="pellet-desc">
+        Activated biochar provides high-surface-area carbon structure for mycelial colonization,
+        long-term soil carbon sequestration, and improved water retention in fire-damaged soils.
+      </p>
+    </div>
+    <div class="pellet-component">
+      <div class="pellet-icon">🍄</div>
+      <div class="pellet-name">Saprotrophic Mycelium</div>
+      <div class="pellet-role">Active biology</div>
+      <p class="pellet-desc">
+        Oyster (Pleurotus ostreatus) and turkey tail (Trametes versicolor) mycelium —
+        both saprotrophic species suited for decomposing fire-damaged organic matter
+        and re-establishing fungal networks in burned soils.
+      </p>
+    </div>
+    <div class="pellet-component">
+      <div class="pellet-icon">🪨</div>
+      <div class="pellet-name">Bentonite Clay</div>
+      <div class="pellet-role">Binder &amp; slow-release</div>
+      <p class="pellet-desc">
+        Bentonite clay binds the pellet for broadcast application without heat,
+        preserves mycelial viability during storage, and provides a slow-release
+        mineral matrix that improves soil structure as the pellet breaks down.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RESTORATION MARKET -->
+<section>
+  <p class="section-label">Market Opportunity</p>
+  <h2 class="section-title">Post-Fire<br>Restoration</h2>
+  <div class="restoration-layout">
+    <div class="restoration-text">
+      <p>
+        Southern California burns hundreds of thousands of acres annually.
+        State and federal post-fire restoration contracts require broadcast-ready
+        soil amendment products that can be applied by air or hand across steep,
+        fire-damaged terrain where conventional revegetation fails.
+      </p>
+      <p>
+        MycoSoil Pellets are designed to be dropped from helicopters,
+        spread by broadcast seeders, or hand-applied at restoration sites.
+        The pellet format survives handling and UV exposure better than
+        loose inoculant, and delivers viable mycelium directly into the
+        soil profile on first significant rainfall.
+      </p>
+      <p>
+        Fun Guy Fungi is currently the only producer of broadcast-ready
+        saprotrophic fungal pellets in Southern California — positioning
+        the venture as the primary regional supplier for a growing
+        state-funded restoration contractor market.
+      </p>
+    </div>
+    <div class="market-list">
+      <div class="market-item">
+        <div class="market-icon">🔥</div>
+        <div class="market-content">
+          <h4>CAL FIRE Restoration Contracts</h4>
+          <p>State-administered post-fire reforestation and soil stabilization contracts — primary contractor procurement channel for MycoSoil Pellets.</p>
+        </div>
+      </div>
+      <div class="market-item">
+        <div class="market-icon">🌲</div>
+        <div class="market-content">
+          <h4>USFS &amp; BLM Site Restoration</h4>
+          <p>Federal land management agencies contract restoration work on burned National Forest and BLM land across the San Bernardino and Angeles National Forests.</p>
+        </div>
+      </div>
+      <div class="market-item">
+        <div class="market-icon">🏛️</div>
+        <div class="market-content">
+          <h4>Riverside &amp; San Bernardino Counties</h4>
+          <p>County-level erosion control and watershed restoration programs in fire-prone foothills and mountain communities.</p>
+        </div>
+      </div>
+      <div class="market-item">
+        <div class="market-icon">🔬</div>
+        <div class="market-content">
+          <h4>University Research Partnerships</h4>
+          <p>CBU Environmental Science and UCR mycology programs as pilot research customers — establishing efficacy data for contractor and agency procurement.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- LAUNCH TIMELINE -->
+<section>
+  <p class="section-label">Launch Sequence</p>
+  <h2 class="section-title">Third in Line.<br>Staged for Impact.</h2>
+  <p class="section-body">
+    Fun Guy Fungi is the third venture to launch — after TaskMask and PocketQuiz
+    generate seed revenue, and after CBU graduation enables full-time deployment.
+    The two-container facility layout is designed and ready to build.
+  </p>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-year">Now</div>
+      <div class="timeline-content">
+        <h4>Species Selection &amp; R&amp;D</h4>
+        <p>Strain selection, substrate testing, and pellet formulation development underway alongside CBU Environmental Science coursework. MycoSoil Pellet composition finalized.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Y1</div>
+      <div class="timeline-content">
+        <h4>MYCOttage Deployment — In-Law Property Site</h4>
+        <p>First MYCOttage unit deployed at the in-law property site (~$50K VR&amp;E budget). Two-container layout: clean room side + production side. Fresh mushroom production begins. First pellet batches produced for sampling.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Y1–2</div>
+      <div class="timeline-content">
+        <h4>Farmers Market &amp; Restaurant Sales</h4>
+        <p>Fresh mushroom revenue via Riverside and Inland Empire farmers markets. Direct restaurant accounts in the IE hospitality market. Gross target: $88K Year 2.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">Y2+</div>
+      <div class="timeline-content">
+        <h4>MycoSoil Pellet Contractor Sales</h4>
+        <p>B2B pellet sales to restoration contractors as CAL FIRE and USFS contract cycles align. CBU research partnership data used for contractor procurement conversations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Chad Eric Pattengale &mdash; Fun Guy Fungi &mdash; funguyfungi.org</p>
+  <a href="mailto:chad@getgrush.com">chad@getgrush.com</a>
+</footer>
+
+</body>
+</html>

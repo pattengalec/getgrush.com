@@ -3,1072 +3,715 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grush</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Chad Eric Pattengale — Founder | getgrush.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #050a18;
+  --navy-mid: #0a1428;
+  --cyan: #00c8ff;
+  --cyan-dim: rgba(0,200,255,0.12);
+  --cyan-glow: rgba(0,200,255,0.4);
+  --chartreuse: #c8ff00;
+  --chartreuse-dim: rgba(200,255,0,0.12);
+  --white: #f0f4ff;
+  --muted: #5a7090;
+  --card-border: rgba(0,200,255,0.18);
+}
 
-  body {
-    width: 100vw; height: 100vh;
-    overflow: hidden;
-    font-family: 'Courier Prime', monospace;
-    background: #050a18;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ── SURFACE ── */
-  .surface {
-    position: fixed; inset: 0;
-  }
-  .surface-canvas {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-  }
+html { scroll-behavior: smooth; }
 
-  /* ── BANNER ── */
-  .banner {
-    position: fixed; top: 0; left: 0; right: 0;
-    z-index: 100;
-    transform: translateY(-110%);
-    display: flex; align-items: stretch;
-    height: clamp(80px, 13vh, 118px);
-  }
-  .banner.drop {
-    animation: bannerDrop 0.75s cubic-bezier(0.34,1.5,0.64,1) forwards;
-  }
-  @keyframes bannerDrop { to { transform: translateY(0); } }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
 
-  .banner-pole {
-    width: 5px;
-    background: linear-gradient(180deg, #c8ff00, rgba(200,255,0,0.25));
-    flex-shrink: 0;
-  }
-  .banner-body {
-    flex: 1; background: #08080f;
-    border-bottom: 2px solid rgba(200,255,0,0.2);
-    display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
-  }
-  .banner-body::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: repeating-linear-gradient(90deg,
-      transparent, transparent 55px,
-      rgba(200,255,0,0.012) 55px, rgba(200,255,0,0.012) 56px);
-  }
-  .banner-text {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.7rem, 4.4vw, 2.7rem);
-    font-style: italic; color: #e8e0d0;
-    letter-spacing: 0.05em; white-space: nowrap;
-    position: relative; z-index: 1;
-  }
-  .banner-text strong {
-    font-style: normal; font-weight: 900; color: #c8ff00;
-    font-family: 'Courier Prime', monospace;
-    letter-spacing: 0.22em; font-size: 0.88em;
-    text-shadow: 0 0 24px rgba(200,255,0,0.6);
-  }
+/* ── BACKGROUND GRID ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  /* ── STAGE ── */
-  .stage {
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 10;
-    padding-top: clamp(80px,13vh,118px);
-  }
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  background: rgba(5,10,24,0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,200,255,0.1);
+}
 
-  .coins-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    position: relative;
-  }
+.nav-logo {
+  font-family: 'Courier Prime', monospace;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--cyan);
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
 
-  /* ── COIN SLOT ── */
-  .coin-slot {
-    position: relative;
-    display: flex; flex-direction: column; align-items: center;
-    cursor: pointer;
-  }
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
 
-  .coin-slot:hover .coin-canvas-wrap { filter: brightness(1.1); }
-  .coin-slot:hover .coin-canvas-wrap { transform: translateY(-8px) scale(1.04); }
+.nav-links a {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--cyan); }
 
-  .coin-canvas-wrap {
-    position: relative;
-    transition: transform 0.3s cubic-bezier(0.34,1.3,0.64,1), filter 0.25s ease;
-    transform-style: preserve-3d;
-  }
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px 48px;
+}
 
-  .coin-main-canvas { display: block; border-radius: 50%; }
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.2s forwards;
+}
 
-  .coin-qr-wrap {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 5; pointer-events: none;
-  }
-  .coin-qr-wrap canvas, .coin-qr-wrap img {
-    display: block; border-radius: 2px;
-  }
+.hero-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(56px, 8vw, 108px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  opacity: 0;
+  animation: fadeUp 0.8s 0.35s forwards;
+}
 
-  /* Coin label below coin */
-  .coin-label {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: clamp(1.1rem, 2vw, 1.5rem);
-    color: #ffffff;
-    margin-top: 14px;
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-    opacity: 0;
-    transform: scale(3.5) translateY(-18px);
-    transform-origin: center bottom;
-    text-shadow:
-      0 2px 12px rgba(0,0,0,0.6),
-      0 0 0px rgba(255,255,255,0);
-  }
-  .coin-label.stamp {
-    animation: labelStamp 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
-  }
-  @keyframes labelStamp {
-    0%   { opacity:0; transform: scale(3.5) translateY(-18px); text-shadow: 0 0 40px rgba(255,255,255,0.8); }
-    35%  { opacity:1; transform: scale(0.88) translateY(4px);  text-shadow: 0 0 20px rgba(255,255,255,0.4); }
-    55%  { opacity:1; transform: scale(1.06) translateY(-2px); text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
-    75%  { opacity:1; transform: scale(0.97) translateY(1px);  text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
-    100% { opacity:1; transform: scale(1)    translateY(0);     text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
-  }
+.hero-name span {
+  color: var(--cyan);
+  display: block;
+}
 
-  /* Screen wobble — applied to body */
-  @keyframes screenWobble {
-    0%   { transform: translate(0,0) rotate(0deg); }
-    8%   { transform: translate(-6px, 4px) rotate(-0.4deg); }
-    18%  { transform: translate(5px, -5px) rotate(0.35deg); }
-    28%  { transform: translate(-4px, 3px) rotate(-0.25deg); }
-    40%  { transform: translate(3px, -2px) rotate(0.18deg); }
-    55%  { transform: translate(-2px, 1px) rotate(-0.1deg); }
-    70%  { transform: translate(1px, -1px) rotate(0.06deg); }
-    85%  { transform: translate(-1px, 0) rotate(-0.03deg); }
-    100% { transform: translate(0,0) rotate(0deg); }
-  }
-  body.wobble {
-    animation: screenWobble 0.65s cubic-bezier(0.36,0.07,0.19,0.97) forwards;
-  }
+.hero-tagline {
+  font-family: 'Courier Prime', monospace;
+  font-size: clamp(13px, 2vw, 17px);
+  color: var(--muted);
+  margin-top: 28px;
+  max-width: 560px;
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
 
-  /* ── DEAL ANIMATIONS ── */
-  /* Coins start off-screen top, flip in, then deal to position */
-  .coin-slot { opacity: 0; }
-  .coin-slot.deal-in {
-    animation: dealIn var(--deal-dur, 0.6s) cubic-bezier(0.22,1,0.36,1) var(--deal-delay, 0s) forwards;
-  }
+/* ── EASY BUTTON ── */
+.easy-button-wrap {
+  margin-top: 56px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.65s forwards;
+}
 
-  @keyframes dealIn {
-    0%   { opacity: 0; transform: translateY(-120px) rotateY(90deg) scale(0.7); }
-    40%  { opacity: 1; transform: translateY(-20px) rotateY(-15deg) scale(1.05); }
-    65%  { transform: translateY(6px) rotateY(6deg) scale(0.98); }
-    82%  { transform: translateY(-3px) rotateY(-2deg) scale(1.01); }
-    100% { opacity: 1; transform: translateY(0) rotateY(0deg) scale(1); }
-  }
+.easy-button {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  user-select: none;
+}
 
-  /* ── SHUFFLE ANIMATION ── applied to coin-canvas-wrap inside each slot ── */
-  @keyframes shuffleLeft {
-    0%   { transform: translate(0,0) rotate(0deg); z-index:5; }
-    20%  { transform: translate(var(--sw),calc(var(--sw)*0.15)) rotate(12deg); z-index:8; }
-    40%  { transform: translate(calc(var(--sw)*-0.7),calc(var(--sw)*0.25)) rotate(-8deg); z-index:6; }
-    60%  { transform: translate(calc(var(--sw)*0.5),calc(var(--sw)*-0.12)) rotate(10deg); z-index:9; }
-    78%  { transform: translate(calc(var(--sw)*-0.2),calc(var(--sw)*0.05)) rotate(-4deg); z-index:7; }
-    100% { transform: translate(0,0) rotate(0deg); z-index:5; }
-  }
-  @keyframes shuffleCenter {
-    0%   { transform: translate(0,0) rotate(0deg); z-index:5; }
-    20%  { transform: translate(calc(var(--sw)*-0.85),calc(var(--sw)*-0.1)) rotate(-11deg); z-index:9; }
-    40%  { transform: translate(calc(var(--sw)*0.9),calc(var(--sw)*0.2)) rotate(9deg); z-index:7; }
-    60%  { transform: translate(calc(var(--sw)*-0.45),calc(var(--sw)*0.1)) rotate(-7deg); z-index:6; }
-    78%  { transform: translate(calc(var(--sw)*0.12),calc(var(--sw)*-0.04)) rotate(3deg); z-index:8; }
-    100% { transform: translate(0,0) rotate(0deg); z-index:5; }
-  }
-  @keyframes shuffleRight {
-    0%   { transform: translate(0,0) rotate(0deg); z-index:5; }
-    20%  { transform: translate(calc(var(--sw)*-0.6),calc(var(--sw)*0.2)) rotate(-9deg); z-index:7; }
-    40%  { transform: translate(calc(var(--sw)*0.8),calc(var(--sw)*-0.15)) rotate(13deg); z-index:9; }
-    60%  { transform: translate(calc(var(--sw)*-0.35),calc(var(--sw)*0.08)) rotate(-6deg); z-index:6; }
-    78%  { transform: translate(calc(var(--sw)*0.08),calc(var(--sw)*0.03)) rotate(2deg); z-index:8; }
-    100% { transform: translate(0,0) rotate(0deg); z-index:5; }
-  }
+/* Shadow / depth base */
+.easy-button .btn-shadow {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  height: 20px;
+  background: rgba(200,255,0,0.25);
+  border-radius: 50%;
+  filter: blur(12px);
+  transition: all 0.15s ease;
+}
 
-  .shuffling-left   { animation: shuffleLeft   2.2s cubic-bezier(0.4,0,0.2,1) forwards; }
-  .shuffling-center { animation: shuffleCenter 2.2s cubic-bezier(0.4,0,0.2,1) 0.06s forwards; }
-  .shuffling-right  { animation: shuffleRight  2.2s cubic-bezier(0.4,0,0.2,1) 0.03s forwards; }
+/* The dome */
+.easy-button .btn-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 38% 32%,
+    #e8ff60 0%,
+    #c8ff00 28%,
+    #9acc00 58%,
+    #6e9200 80%,
+    #4a6400 100%
+  );
+  box-shadow:
+    inset 0 6px 18px rgba(255,255,200,0.55),
+    inset 0 -8px 24px rgba(0,0,0,0.35),
+    0 12px 40px rgba(200,255,0,0.3),
+    0 4px 0 #3a5200,
+    0 6px 0 #2a3c00,
+    0 8px 2px rgba(0,0,0,0.5);
+  transition: all 0.12s ease;
+}
 
-  /* ── BRAND PAGES ── */
-  .brand-page {
-    position: fixed; inset: 0; z-index: 200;
-    display: none; flex-direction: column;
-    opacity: 0; transform: scale(0.96);
-    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.3,0.64,1);
-  }
-  .brand-page.animating { display: flex; }
-  .brand-page.open { opacity: 1; transform: scale(1); }
+/* Specular highlight */
+.easy-button .btn-body::before {
+  content: '';
+  position: absolute;
+  top: 22%;
+  left: 22%;
+  width: 38%;
+  height: 26%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.65) 0%, transparent 100%);
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
 
-  .bnav {
-    padding: 0.85rem 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
-  }
-  .back-btn {
-    font-family: 'Courier Prime', monospace; font-size: 0.7rem;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: rgba(255,255,255,0.35); background: none; border: none;
-    cursor: pointer; transition: color 0.2s; padding: 0;
-  }
-  .back-btn:hover { color: white; }
-  .sibs { display: flex; gap: 0.75rem; }
-  .sib {
-    font-family: 'Courier Prime', monospace; font-size: 0.58rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 0.28rem 0.65rem; border-radius: 3px;
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.3); background: none; cursor: pointer; transition: all 0.2s;
-  }
-  .sib:hover { color: white; border-color: rgba(255,255,255,0.35); }
+/* Text */
+.easy-button .btn-label {
+  position: relative;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: #1a2800;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  line-height: 1.2;
+  z-index: 1;
+  pointer-events: none;
+}
 
-  .bhero {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 3rem 2rem; text-align: center;
-    position: relative; overflow: hidden;
-  }
-  .bhero-glow {
-    position: absolute; top:50%; left:50%;
-    transform: translate(-50%,-50%);
-    width: 600px; height: 500px; border-radius: 50%;
-    pointer-events: none; z-index: 0;
-  }
-  .blogo { position: relative; z-index: 2; margin-bottom: 1.75rem; }
-  .beyebrow {
-    font-family: 'Courier Prime', monospace; font-size: 0.6rem;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    margin-bottom: 0.65rem; position: relative; z-index: 2;
-  }
-  .btitle {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.8rem,4vw,3rem); font-weight: 700; line-height: 1.05;
-    margin-bottom: 1rem; position: relative; z-index: 2;
-  }
-  .bdomain {
-    font-family: 'Courier Prime', monospace; font-size: 0.66rem;
-    letter-spacing: 0.1em; padding: 0.3rem 0.85rem; border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.45);
-    display: inline-block; margin-bottom: 1.6rem;
-    cursor: pointer; text-decoration: none; transition: all 0.2s;
-    position: relative; z-index: 2;
-  }
-  .bdomain:hover { color: white; border-color: rgba(255,255,255,0.35); }
-  .bmission { max-width: 540px; position: relative; z-index: 2; }
-  .bm-label {
-    font-family: 'Courier Prime', monospace; font-size: 0.56rem;
-    letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.35; margin-bottom: 0.8rem;
-  }
-  .bmission p { font-size: 0.88rem; line-height: 1.8; color: rgba(255,255,255,0.48); }
-  .bmission p + p { margin-top: 0.75rem; }
-  .bpillars {
-    display: flex; gap: 0.5rem; flex-wrap: wrap;
-    justify-content: center; margin-top: 1.4rem; position: relative; z-index: 2;
-  }
-  .bpillar {
-    font-family: 'Courier Prime', monospace; font-size: 0.54rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 0.28rem 0.65rem; border-radius: 3px;
-    border: 1px solid rgba(255,255,255,0.07); color: rgba(255,255,255,0.32);
-    background: rgba(255,255,255,0.02);
-  }
-  .bfoot {
-    padding: 0.85rem 2rem; border-top: 1px solid rgba(255,255,255,0.05);
-    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
-  }
-  .bfoot-brand { font-family: 'Courier Prime', monospace; font-size: 0.58rem; letter-spacing: 0.2em; }
-  .bfoot-note { font-family: 'Courier Prime', monospace; font-size: 0.48rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.14); }
+/* Press animation */
+.easy-button:active .btn-body {
+  transform: translateY(5px);
+  box-shadow:
+    inset 0 6px 18px rgba(255,255,200,0.55),
+    inset 0 -4px 12px rgba(0,0,0,0.35),
+    0 4px 16px rgba(200,255,0,0.2),
+    0 2px 0 #3a5200,
+    0 3px 0 #2a3c00,
+    0 4px 2px rgba(0,0,0,0.4);
+}
+.easy-button:active .btn-shadow {
+  width: 80%;
+  opacity: 0.6;
+  filter: blur(8px);
+}
 
-  /* Page themes */
-  #gp { background:#060610; }
-  #gp .bnav,#gp .bfoot { background:#060610; } #gp .bhero { background:#060610; }
-  #gp .bhero-glow { background:radial-gradient(ellipse,rgba(200,255,0,0.08) 0%,transparent 65%); }
-  #gp .beyebrow { color:#c8ff00; } #gp .btitle { color:#f5f5f0; }
-  #gp .btitle em { color:#c8ff00; font-style:italic; }
-  #gp .bm-label { color:#c8ff00; } #gp .bfoot-brand { color:rgba(200,255,0,0.5); }
+.easy-button:hover .btn-body {
+  box-shadow:
+    inset 0 6px 18px rgba(255,255,200,0.55),
+    inset 0 -8px 24px rgba(0,0,0,0.35),
+    0 16px 56px rgba(200,255,0,0.5),
+    0 4px 0 #3a5200,
+    0 6px 0 #2a3c00,
+    0 8px 2px rgba(0,0,0,0.5);
+}
 
-  #fp { background:#0a0508; }
-  #fp .bnav,#fp .bfoot { background:#0a0508; } #fp .bhero { background:#0a0508; }
-  #fp .bhero-glow { background:radial-gradient(ellipse,rgba(140,30,60,0.1) 0%,transparent 65%); }
-  #fp .beyebrow { color:#e8a0b8; } #fp .btitle { color:#f5e8ee; }
-  #fp .btitle em { color:#e8a0b8; font-style:italic; }
-  #fp .bm-label { color:#e8a0b8; }
-  #fp .bdomain { border-color:rgba(140,30,60,0.3); color:rgba(232,160,184,0.5); }
-  #fp .bdomain:hover { color:#e8a0b8; }
-  #fp .bfoot-brand { color:rgba(232,160,184,0.45); }
-  #fp .bpillar { border-color:rgba(140,30,60,0.15); }
+/* ── SCROLL HINT ── */
+.scroll-hint {
+  margin-top: 48px;
+  opacity: 0;
+  animation: fadeIn 1s 1.4s forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.scroll-hint .line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--cyan));
+  animation: scrollPulse 2s 1.4s infinite;
+}
 
-  #mp { background:#040c0a; }
-  #mp .bnav,#mp .bfoot { background:#040c0a; } #mp .bhero { background:#040c0a; }
-  #mp .bhero-glow { background:radial-gradient(ellipse,rgba(40,120,80,0.1) 0%,transparent 65%); }
-  #mp .beyebrow { color:#70d8a0; } #mp .btitle { color:#e0f5ea; }
-  #mp .btitle em { color:#70d8a0; font-style:italic; }
-  #mp .bm-label { color:#70d8a0; }
-  #mp .bdomain { border-color:rgba(40,120,80,0.3); color:rgba(112,216,160,0.5); }
-  #mp .bdomain:hover { color:#70d8a0; }
-  #mp .bfoot-brand { color:rgba(112,216,160,0.45); }
-  #mp .bpillar { border-color:rgba(40,120,80,0.15); }
+/* ── VENTURES SECTION ── */
+#ventures {
+  position: relative;
+  z-index: 1;
+  padding: 96px 48px 120px;
+}
+
+.ventures-heading {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.ventures-heading h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+.ventures-heading p {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+/* Single row of 5 cards */
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.venture-card {
+  position: relative;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 32px 24px 28px;
+  background: rgba(10,20,40,0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  transition: all 0.22s ease;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.venture-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent, var(--cyan));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.venture-card:hover::before { transform: scaleX(1); }
+
+.venture-card:hover {
+  border-color: var(--accent, var(--cyan));
+  background: rgba(10,20,40,0.9);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 24px var(--glow, rgba(0,200,255,0.1));
+}
+
+/* Corner number */
+.card-num {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.card-icon {
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.card-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent, var(--cyan));
+  border: 1px solid var(--accent, var(--cyan));
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 2px;
+  width: fit-content;
+  opacity: 0.75;
+}
+
+.card-pitch {
+  font-family: 'Courier Prime', monospace;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  flex: 1;
+}
+
+.card-link {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent, var(--cyan));
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  margin-top: 8px;
+}
+.venture-card:hover .card-link { opacity: 1; }
+
+/* ── CARD COLOR THEMES ── */
+.card-taskmask { --accent: #00c8ff; --glow: rgba(0,200,255,0.12); }
+.card-pocketquiz { --accent: #c8ff00; --glow: rgba(200,255,0,0.08); }
+.card-grush { --accent: #00c8ff; --glow: rgba(0,200,255,0.12); }
+.card-cottages { --accent: #ffb830; --glow: rgba(255,184,48,0.08); }
+.card-fungi { --accent: #7dff6b; --glow: rgba(125,255,107,0.08); }
+
+/* ── FOUNDER STRIP ── */
+.founder-strip {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(0,200,255,0.08);
+  padding: 64px 48px;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.founder-badge {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+.founder-bio {
+  flex: 1;
+}
+.founder-bio h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.founder-bio p {
+  font-family: 'Courier Prime', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.founder-bio .tags {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.founder-bio .tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid rgba(90,112,144,0.4);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(0,200,255,0.06);
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+footer p {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  opacity: 0.5;
+}
+.footer-contact a {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--cyan);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.footer-contact a:hover { opacity: 1; }
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Card entrance animation */
+.venture-card {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.venture-card.visible {
+  animation: fadeUp 0.5s forwards;
+}
+.venture-card:nth-child(1).visible { animation-delay: 0.05s; }
+.venture-card:nth-child(2).visible { animation-delay: 0.12s; }
+.venture-card:nth-child(3).visible { animation-delay: 0.19s; }
+.venture-card:nth-child(4).visible { animation-delay: 0.26s; }
+.venture-card:nth-child(5).visible { animation-delay: 0.33s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .card-row { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 720px) {
+  .card-row { grid-template-columns: 1fr 1fr; }
+  nav { padding: 0 24px; }
+  .nav-links { gap: 16px; }
+  #ventures { padding: 64px 24px 80px; }
+  .founder-strip { flex-direction: column; padding: 48px 24px; }
+  footer { flex-direction: column; gap: 12px; text-align: center; }
+}
+@media (max-width: 480px) {
+  .card-row { grid-template-columns: 1fr; }
+  .easy-button .btn-body { width: 220px; height: 220px; }
+  .easy-button .btn-label { font-size: 18px; }
+}
 </style>
 </head>
 <body>
 
-<div class="surface">
-  <canvas class="surface-canvas" id="surface-canvas"></canvas>
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">Getgrush.com</a>
+  <ul class="nav-links">
+    <li><a href="taskmask.html">TaskMask</a></li>
+    <li><a href="pocketquiz.html">PocketQuiz</a></li>
+    <li><a href="grush.html">Grush</a></li>
+    <li><a href="cottages.html">Cottages</a></li>
+    <li><a href="funguyfungi.html">Fun Guy Fungi</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Founder Portfolio &mdash; Chad Eric Pattengale</p>
+  <h1 class="hero-name">
+    Building<br>
+    <span>What's Next</span>
+  </h1>
+  <p class="hero-tagline">
+    Five ventures. Software, infrastructure, mycology, and modular construction —
+    engineered from Riverside, CA by a USMC veteran and Environmental Science founder.
+  </p>
+
+  <div class="easy-button-wrap">
+    <a href="#ventures" class="easy-button" aria-label="View my work">
+      <div class="btn-shadow"></div>
+      <div class="btn-body">
+        <span class="btn-label">VIEW<br>MY WORK</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- VENTURES -->
+<section id="ventures">
+  <div class="ventures-heading">
+    <h2>Five Ventures</h2>
+    <p>In pitch priority order &mdash; seed revenue first, then infrastructure</p>
+  </div>
+
+  <div class="card-row">
+
+    <!-- 1. TaskMask -->
+    <a href="taskmask.html" class="venture-card card-taskmask">
+      <span class="card-num">01</span>
+      <div class="card-icon">⬛</div>
+      <div class="card-name">TaskMask</div>
+      <div class="card-tag">App Software</div>
+      <p class="card-pitch">
+        Window overlay theming system. Drag tasks onto open apps — AI generates a distinctive visual theme for each context. Auto-dissolves when the session ends.
+      </p>
+      <div class="card-link">Explore &rarr;</div>
+    </a>
+
+    <!-- 2. PocketQuiz -->
+    <a href="pocketquiz.html" class="venture-card card-pocketquiz">
+      <span class="card-num">02</span>
+      <div class="card-icon">🎓</div>
+      <div class="card-name">PocketQuiz</div>
+      <div class="card-tag">EdTech PWA</div>
+      <p class="card-pitch">
+        Progressive web app for students. 1,400+ subject-specific questions, animated characters Lily &amp; Quinn, and offline-first architecture built for any device.
+      </p>
+      <div class="card-link">Explore &rarr;</div>
+    </a>
+
+    <!-- 3. Grush -->
+    <a href="grush.html" class="venture-card card-grush">
+      <span class="card-num">03</span>
+      <div class="card-icon">📡</div>
+      <div class="card-name">Grush</div>
+      <div class="card-tag">QR Platform</div>
+      <p class="card-pitch">
+        QR-based zone activity tracking for campuses, farms, and facilities. Live at CBU's Lancer Farms. Parent company and permanent home for the portfolio.
+      </p>
+      <div class="card-link">Explore &rarr;</div>
+    </a>
+
+    <!-- 4. Cottages -->
+    <a href="cottages.html" class="venture-card card-cottages">
+      <span class="card-num">04</span>
+      <div class="card-icon">🏗️</div>
+      <div class="card-name">Cottages</div>
+      <div class="card-tag">Modular Build</div>
+      <p class="card-pitch">
+        Containerized modular units: MYCOttage, GROWcottage, SHOPcottage. Turnkey builds for cultivation, commerce, and workspace — configured and delivered.
+      </p>
+      <div class="card-link">Explore &rarr;</div>
+    </a>
+
+    <!-- 5. Fun Guy Fungi -->
+    <a href="funguyfungi.html" class="venture-card card-fungi">
+      <span class="card-num">05</span>
+      <div class="card-icon">🍄</div>
+      <div class="card-name">Fun Guy Fungi</div>
+      <div class="card-tag">Mycology</div>
+      <p class="card-pitch">
+        Specialty mushroom farm and MycoSoil Pellet manufacturer. Oyster and turkey tail mycelium in cold-pressed biochar pellets for post-fire ecological restoration.
+      </p>
+      <div class="card-link">Explore &rarr;</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- FOUNDER STRIP -->
+<div class="founder-strip">
+  <div class="founder-badge">CP</div>
+  <div class="founder-bio">
+    <h3>Chad Eric Pattengale</h3>
+    <p>
+      USMC veteran, former ER &amp; trauma nurse, and Environmental Science candidate at
+      California Baptist University. Building a five-venture portfolio through the VA's
+      VR&amp;E Chapter 31 self-employment track. Pro se inventor, micro entity, Riverside CA.
+    </p>
+    <div class="tags">
+      <span class="tag">USMC Veteran</span>
+      <span class="tag">100% VA Disability</span>
+      <span class="tag">VR&amp;E Ch.31</span>
+      <span class="tag">CBU Env. Science</span>
+      <span class="tag">Pro Se Inventor</span>
+      <span class="tag">Riverside, CA</span>
+    </div>
+  </div>
 </div>
 
-<div class="banner" id="banner">
-  <div class="banner-pole"></div>
-  <div class="banner-body">
-    <div class="banner-text">Don't forget to <strong>Grush!!!</strong></div>
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 Chad Eric Pattengale &mdash; getgrush.com &mdash; All ventures reserved.</p>
+  <div class="footer-contact">
+    <a href="mailto:chad@getgrush.com">chad@getgrush.com</a>
   </div>
-</div>
-
-<div class="stage">
-  <div class="coins-row" id="coins-row">
-
-    <!-- FUN GUY FUNGI — left -->
-    <div class="coin-slot" id="slot-f" style="--deal-delay:0s; --deal-dur:0.65s; --sw:120px;" onclick="openPage('fp')">
-      <div class="coin-canvas-wrap" id="wrap-f">
-        <canvas class="coin-main-canvas" id="canvas-f"></canvas>
-        <div class="coin-qr-wrap" id="qr-f"></div>
-      </div>
-      <div class="coin-label" id="label-f">Fun Guy Fungi</div>
-    </div>
-
-    <!-- GRUSH — center -->
-    <div class="coin-slot" id="slot-g" style="--deal-delay:0.18s; --deal-dur:0.65s; --sw:120px;" onclick="openPage('gp')">
-      <div class="coin-canvas-wrap" id="wrap-g">
-        <canvas class="coin-main-canvas" id="canvas-g"></canvas>
-        <div class="coin-qr-wrap" id="qr-g"></div>
-      </div>
-      <div class="coin-label" id="label-g">Grush</div>
-    </div>
-
-    <!-- MYCO — right -->
-    <div class="coin-slot" id="slot-m" style="--deal-delay:0.36s; --deal-dur:0.65s; --sw:120px;" onclick="openPage('mp')">
-      <div class="coin-canvas-wrap" id="wrap-m">
-        <canvas class="coin-main-canvas" id="canvas-m"></canvas>
-        <div class="coin-qr-wrap" id="qr-m"></div>
-      </div>
-      <div class="coin-label" id="label-m">MYCOttage</div>
-    </div>
-
-  </div>
-</div>
-
-<!-- GRUSH PAGE -->
-<div id="gp" class="brand-page">
-  <div class="bnav">
-    <button class="back-btn" onclick="closePage('gp')">← Back</button>
-    <div class="sibs">
-      <button class="sib" onclick="switchPage('gp','fp')">Fun Guy Fungi</button>
-      <button class="sib" onclick="switchPage('gp','mp')">MYCOttage</button>
-    </div>
-  </div>
-  <div class="bhero">
-    <div class="bhero-glow"></div>
-    <div class="blogo">
-      <div style="width:88px;height:88px;background:#c8ff00;border-radius:9px;display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 0 40px rgba(200,255,0,0.22);">
-        <span style="font-family:'Courier Prime',monospace;font-size:1.25rem;font-weight:700;letter-spacing:0.12em;color:#080808;">GR</span>
-      </div>
-    </div>
-    <div class="beyebrow">Parent Company</div>
-    <h1 class="btitle">Make your presence <em>known.</em></h1>
-    <a class="bdomain" href="https://getgrush.com" target="_blank">getgrush.com ↗</a>
-    <div class="bmission">
-      <div class="bm-label">Our Mission</div>
-      <p>Grush builds zone-based QR tracking systems for any operation — hobby, farm, or business. Put a code where the work happens. Scan when you arrive. The system handles the rest.</p>
-      <p>No app to download. No password to forget. Just a scan, a log, and the quiet confidence of knowing exactly what happened, where, and by whom.</p>
-    </div>
-    <div class="bpillars">
-      <div class="bpillar" style="color:rgba(200,255,0,0.6);border-color:rgba(200,255,0,0.12);">Scan · Log · Know</div>
-      <div class="bpillar">Any Zone</div><div class="bpillar">Any Hobby</div>
-      <div class="bpillar">Any Business</div><div class="bpillar">Zero App</div>
-    </div>
-  </div>
-  <div class="bfoot">
-    <div class="bfoot-brand">GRUSH</div>
-    <div class="bfoot-note">© 2026 Grush · getgrush.com</div>
-  </div>
-</div>
-
-<!-- FUNGI PAGE -->
-<div id="fp" class="brand-page">
-  <div class="bnav">
-    <button class="back-btn" onclick="closePage('fp')">← Back</button>
-    <div class="sibs">
-      <button class="sib" onclick="switchPage('fp','gp')">Grush</button>
-      <button class="sib" onclick="switchPage('fp','mp')">MYCOttage</button>
-    </div>
-  </div>
-  <div class="bhero">
-    <div class="bhero-glow"></div>
-    <div class="blogo">
-      <div style="width:96px;height:96px;border-radius:50%;background:radial-gradient(ellipse at 40% 35%,#3a0818,#180408);border:2px solid rgba(200,80,100,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 0 40px rgba(140,30,60,0.18);">
-        <svg width="60" height="60" viewBox="0 0 130 130" fill="none">
-          <rect x="48" y="72" width="34" height="44" rx="8" fill="#7a2838" opacity="0.95"/>
-          <ellipse cx="65" cy="73" rx="36" ry="8" fill="#5a1828" opacity="0.8"/>
-          <ellipse cx="65" cy="65" rx="44" ry="14" fill="#8b3040" opacity="0.95"/>
-          <path d="M21 65 Q65 18 109 65" fill="#c84060" opacity="0.9"/>
-          <circle cx="46" cy="50" r="6" fill="rgba(255,255,255,0.12)"/>
-          <circle cx="72" cy="42" r="4" fill="rgba(255,255,255,0.09)"/>
-          <circle cx="88" cy="52" r="5" fill="rgba(255,255,255,0.1)"/>
-        </svg>
-      </div>
-    </div>
-    <div class="beyebrow">Farm · Soil · Restoration</div>
-    <h1 class="btitle">Fun Guy <em>Fungi</em></h1>
-    <a class="bdomain" href="https://funguyfungi.org" target="_blank">funguyfungi.org ↗</a>
-    <div class="bmission">
-      <div class="bm-label">Our Mission</div>
-      <p>A small-scale indoor mushroom farm and soil biology product manufacturer in East Riverside, California. Fresh specialty mushrooms direct to restaurants and farmers markets across the Inland Empire.</p>
-      <p>We also produce MycoSoil Pellets — broadcast-ready saprotrophic fungal amendments for post-fire soil restoration. The only regional producer in Southern California.</p>
-    </div>
-    <div class="bpillars">
-      <div class="bpillar" style="color:rgba(232,160,184,0.6);border-color:rgba(140,30,60,0.2);">Fresh Mushrooms</div>
-      <div class="bpillar" style="color:rgba(232,160,184,0.6);border-color:rgba(140,30,60,0.2);">MycoSoil Pellets</div>
-      <div class="bpillar" style="color:rgba(232,160,184,0.6);border-color:rgba(140,30,60,0.2);">Fire Restoration</div>
-      <div class="bpillar" style="color:rgba(232,160,184,0.6);border-color:rgba(140,30,60,0.2);">CBU Research</div>
-    </div>
-  </div>
-  <div class="bfoot">
-    <div class="bfoot-brand" style="color:rgba(232,160,184,0.45);">FUN GUY FUNGI</div>
-    <div class="bfoot-note">A Grush Company · funguyfungi.org · East Riverside, CA</div>
-  </div>
-</div>
-
-<!-- MYCO PAGE -->
-<div id="mp" class="brand-page">
-  <div class="bnav">
-    <button class="back-btn" onclick="closePage('mp')">← Back</button>
-    <div class="sibs">
-      <button class="sib" onclick="switchPage('mp','gp')">Grush</button>
-      <button class="sib" onclick="switchPage('mp','fp')">Fun Guy Fungi</button>
-    </div>
-  </div>
-  <div class="bhero">
-    <div class="bhero-glow"></div>
-    <div class="blogo">
-      <div style="width:96px;height:96px;border-radius:50%;background:radial-gradient(ellipse at 40% 35%,#082818,#020c08);border:2px solid rgba(40,120,80,0.35);display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 0 40px rgba(40,120,80,0.18);">
-        <svg width="60" height="60" viewBox="0 0 130 130" fill="none">
-          <rect x="50" y="12" width="30" height="12" rx="4" fill="#2d7a52" opacity="0.95"/>
-          <rect x="46" y="8" width="38" height="8" rx="4" fill="#3a9a65" opacity="0.85"/>
-          <path d="M50 24 L50 50 L18 90 Q12 110 28 116 L102 116 Q118 110 112 90 L80 50 L80 24 Z" fill="#1d5a3e" opacity="0.95"/>
-          <path d="M22 92 Q40 82 65 86 Q90 90 108 92 L102 116 L28 116 Z" fill="#3a9a62" opacity="0.55"/>
-          <circle cx="50" cy="102" r="5" fill="rgba(112,216,160,0.4)"/>
-          <circle cx="70" cy="97" r="3.5" fill="rgba(112,216,160,0.28)"/>
-          <path d="M55 75 Q65 68 78 72" stroke="rgba(112,216,160,0.3)" stroke-width="1.5" fill="none"/>
-        </svg>
-      </div>
-    </div>
-    <div class="beyebrow">Operations · Tracking · Systems</div>
-    <h1 class="btitle">MYCO<em>ttage</em></h1>
-    <a class="bdomain" href="https://mycottage.org" target="_blank">mycottage.org ↗</a>
-    <div class="bmission">
-      <div class="bm-label">Our Mission</div>
-      <p>A complete operations management system for mushroom farms — built by an active mushroom farmer to manage a real farm. Zone tracking, batch management, harvest logs, and automated transfer alerts.</p>
-      <p>Also available as hardware: shipping container grow units pre-configured with the zone management system. One container is a farm. Two is a business.</p>
-    </div>
-    <div class="bpillars">
-      <div class="bpillar" style="color:rgba(112,216,160,0.6);border-color:rgba(40,120,80,0.2);">Batch Tracking</div>
-      <div class="bpillar" style="color:rgba(112,216,160,0.6);border-color:rgba(40,120,80,0.2);">QR Zones</div>
-      <div class="bpillar" style="color:rgba(112,216,160,0.6);border-color:rgba(40,120,80,0.2);">Container Units</div>
-      <div class="bpillar" style="color:rgba(112,216,160,0.6);border-color:rgba(40,120,80,0.2);">Transfer Alerts</div>
-    </div>
-  </div>
-  <div class="bfoot">
-    <div class="bfoot-brand" style="color:rgba(112,216,160,0.45);">MYCOttage</div>
-    <div class="bfoot-note">A Grush Company · mycottage.org</div>
-  </div>
-</div>
+</footer>
 
 <script>
-/* ══════════════════════════════════════════════════════════════════════
-   SURFACE — deep navy-to-midnight gradient with subtle texture
-══════════════════════════════════════════════════════════════════════ */
-function drawSurface() {
-  const canvas = document.getElementById('surface-canvas');
-  const W = canvas.width  = window.innerWidth;
-  const H = canvas.height = window.innerHeight;
-  const ctx = canvas.getContext('2d');
-
-  // Deep navy base gradient
-  const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0,   '#0a0f22');
-  bg.addColorStop(0.3, '#080e1e');
-  bg.addColorStop(0.6, '#060c18');
-  bg.addColorStop(1,   '#040810');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  // Subtle felt-like noise texture
-  for (let i = 0; i < 6000; i++) {
-    const x = Math.random() * W;
-    const y = Math.random() * H;
-    const op = Math.random() * 0.04;
-    ctx.fillStyle = `rgba(100,120,180,${op})`;
-    ctx.fillRect(x, y, Math.random() * 1.5, Math.random() * 1.5);
-  }
-
-  // Warm center glow — like a lamp above the table
-  const lamp = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W * 0.6);
-  lamp.addColorStop(0,   'rgba(180,200,255,0.06)');
-  lamp.addColorStop(0.4, 'rgba(120,150,220,0.03)');
-  lamp.addColorStop(1,   'rgba(40,60,120,0)');
-  ctx.fillStyle = lamp;
-  ctx.fillRect(0, 0, W, H);
-
-  // Edge vignette
-  const vig = ctx.createRadialGradient(W/2, H/2, W*0.25, W/2, H/2, W*0.85);
-  vig.addColorStop(0, 'rgba(0,0,0,0)');
-  vig.addColorStop(1, 'rgba(0,0,0,0.55)');
-  ctx.fillStyle = vig;
-  ctx.fillRect(0, 0, W, H);
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   COIN DRAWING — realistic challenge coin on canvas
-══════════════════════════════════════════════════════════════════════ */
-function drawCoin(canvasId, cfg) {
-  const canvas = document.getElementById(canvasId);
-  const S = cfg.size;
-  canvas.width  = S;
-  canvas.height = S;
-  canvas.style.width  = S + 'px';
-  canvas.style.height = S + 'px';
-  const ctx = canvas.getContext('2d');
-  const cx = S/2, cy = S/2, R = S/2 - 2;
-
-  // ── DROP SHADOW ──
-  ctx.save();
-  ctx.shadowColor   = 'rgba(0,0,0,0.7)';
-  ctx.shadowBlur    = S * 0.14;
-  ctx.shadowOffsetX = S * 0.03;
-  ctx.shadowOffsetY = S * 0.09;
-  ctx.beginPath();
-  ctx.arc(cx, cy, R, 0, Math.PI*2);
-  ctx.fillStyle = '#000';
-  ctx.fill();
-  ctx.restore();
-
-  // ── RIM — outermost gold/metal band ──
-  const rimR = R;
-  const rimGrad = ctx.createRadialGradient(
-    cx - R*0.3, cy - R*0.32, R*0.05,
-    cx, cy, rimR
-  );
-  rimGrad.addColorStop(0,    cfg.rimHi);
-  rimGrad.addColorStop(0.35, cfg.rimMid);
-  rimGrad.addColorStop(0.7,  cfg.rimDark);
-  rimGrad.addColorStop(1,    cfg.rimMid);
-  ctx.beginPath();
-  ctx.arc(cx, cy, rimR, 0, Math.PI*2);
-  ctx.fillStyle = rimGrad;
-  ctx.fill();
-
-  // Knurling on rim edge
-  const knurlCount = 90;
-  const knurlOuter = rimR;
-  const knurlInner = rimR * 0.91;
-  for (let i = 0; i < knurlCount; i++) {
-    const a1 = (i / knurlCount) * Math.PI * 2;
-    const a2 = ((i + 0.5) / knurlCount) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.moveTo(cx + Math.cos(a1) * knurlInner, cy + Math.sin(a1) * knurlInner);
-    ctx.lineTo(cx + Math.cos(a1) * knurlOuter, cy + Math.sin(a1) * knurlOuter);
-    ctx.strokeStyle = i % 2 === 0 ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.22)';
-    ctx.lineWidth   = (Math.PI * 2 * knurlOuter / knurlCount) * 0.52;
-    ctx.stroke();
-  }
-
-  // ── STEP DOWN — inner ledge ──
-  const step1R = rimR * 0.89;
-  const step1Grad = ctx.createRadialGradient(cx, cy, 0, cx + R*0.1, cy + R*0.15, step1R*1.1);
-  step1Grad.addColorStop(0, cfg.rimDark);
-  step1Grad.addColorStop(1, cfg.rimDark);
-  ctx.beginPath();
-  ctx.arc(cx, cy, step1R, 0, Math.PI*2);
-  ctx.fillStyle = step1Grad;
-  ctx.fill();
-
-  // Step shadow line
-  ctx.beginPath();
-  ctx.arc(cx, cy, step1R * 0.975, 0, Math.PI*2);
-  ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-
-  // ── COIN FACE — main field ──
-  const faceR = step1R * 0.958;
-  const faceGrad = ctx.createRadialGradient(
-    cx - faceR*0.28, cy - faceR*0.32, faceR*0.04,
-    cx + faceR*0.08, cy + faceR*0.1,  faceR*1.08
-  );
-  faceGrad.addColorStop(0,    cfg.faceLt);
-  faceGrad.addColorStop(0.35, cfg.faceMid);
-  faceGrad.addColorStop(0.72, cfg.faceDk);
-  faceGrad.addColorStop(1,    cfg.faceEdge);
-  ctx.beginPath();
-  ctx.arc(cx, cy, faceR, 0, Math.PI*2);
-  ctx.fillStyle = faceGrad;
-  ctx.fill();
-
-  // ── TEXT RING BAND — light-colored band for brand name ──
-  const bandOuter = faceR * 0.98;
-  const bandInner = faceR * 0.70;
-  ctx.beginPath();
-  ctx.arc(cx, cy, bandOuter, 0, Math.PI*2);
-  ctx.arc(cx, cy, bandInner, 0, Math.PI*2, true);
-  ctx.fillStyle = cfg.bandColor;
-  ctx.fill();
-
-  // Band inner shadow
-  ctx.beginPath();
-  ctx.arc(cx, cy, bandInner, 0, Math.PI*2);
-  ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Band outer subtle highlight
-  ctx.beginPath();
-  ctx.arc(cx, cy, bandOuter * 0.99, 0, Math.PI*2);
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  // Band sheen — top highlight on the band
-  const bandSheenGrad = ctx.createLinearGradient(cx - faceR, cy - faceR, cx + faceR*0.3, cy + faceR*0.3);
-  bandSheenGrad.addColorStop(0, 'rgba(255,255,255,0.12)');
-  bandSheenGrad.addColorStop(0.5, 'rgba(255,255,255,0.04)');
-  bandSheenGrad.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.beginPath();
-  ctx.arc(cx, cy, bandOuter, 0, Math.PI*2);
-  ctx.arc(cx, cy, bandInner, 0, Math.PI*2, true);
-  ctx.fillStyle = bandSheenGrad;
-  ctx.fill();
-
-  // ── CURVED TEXT — brand name ──
-  const textR    = (bandOuter + bandInner) / 2;
-  const label    = cfg.label.toUpperCase();
-  const fontSize = Math.max(9, Math.round(faceR * 0.115));
-  ctx.save();
-  ctx.font         = `bold ${fontSize}px 'Courier Prime', monospace`;
-  ctx.fillStyle    = cfg.textColor;
-  ctx.textAlign    = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.shadowColor  = 'rgba(0,0,0,0.5)';
-  ctx.shadowBlur   = 2;
-
-  const totalArc  = Math.PI * 1.15;
-  const startArc  = -Math.PI/2 - totalArc/2;
-  for (let i = 0; i < label.length; i++) {
-    const angle = startArc + (i + 0.5) * (totalArc / label.length);
-    ctx.save();
-    ctx.translate(cx + textR * Math.cos(angle), cy + textR * Math.sin(angle));
-    ctx.rotate(angle + Math.PI/2);
-    ctx.fillText(label[i], 0, 0);
-    ctx.restore();
-  }
-
-  // Decorative dots flanking text
-  [-0.1, totalArc + 0.1].forEach(offset => {
-    const a = startArc + offset;
-    ctx.beginPath();
-    ctx.arc(cx + textR * Math.cos(a), cy + textR * Math.sin(a), fontSize * 0.2, 0, Math.PI*2);
-    ctx.fillStyle = cfg.textColor;
-    ctx.fill();
-  });
-
-  // Bottom domain text
-  const subR    = textR;
-  const sub     = cfg.domain;
-  const subSize = Math.max(7, Math.round(faceR * 0.082));
-  ctx.font      = `${subSize}px 'Courier Prime', monospace`;
-  ctx.fillStyle = cfg.textColorDim;
-  ctx.shadowBlur = 1;
-  const subArc   = Math.PI * 0.95;
-  const subStart = Math.PI/2 - subArc/2;
-  for (let i = 0; i < sub.length; i++) {
-    const angle = subStart + (i + 0.5) * (subArc / sub.length);
-    ctx.save();
-    ctx.translate(cx + subR * Math.cos(angle), cy + subR * Math.sin(angle));
-    ctx.rotate(angle - Math.PI/2);
-    ctx.fillText(sub[i], 0, 0);
-    ctx.restore();
-  }
-  ctx.restore();
-
-  // ── INNER FIELD — center area inside band ──
-  const innerR = bandInner - 1;
-  const innerGrad = ctx.createRadialGradient(
-    cx - innerR*0.25, cy - innerR*0.28, innerR*0.02,
-    cx, cy, innerR
-  );
-  innerGrad.addColorStop(0,   cfg.innerLt);
-  innerGrad.addColorStop(0.5, cfg.innerMid);
-  innerGrad.addColorStop(1,   cfg.innerDk);
-  ctx.beginPath();
-  ctx.arc(cx, cy, innerR, 0, Math.PI*2);
-  ctx.fillStyle = innerGrad;
-  ctx.fill();
-
-  // Inner ring decorative line
-  ctx.beginPath();
-  ctx.arc(cx, cy, innerR * 0.97, 0, Math.PI*2);
-  ctx.strokeStyle = cfg.textColorDim;
-  ctx.lineWidth = 0.75;
-  ctx.stroke();
-
-  // ── QR SQUARE APERTURE FRAME ──
-  const qrHalf = innerR * 0.48;
-  const qx = cx - qrHalf, qy = cy - qrHalf;
-  const qSize = qrHalf * 2;
-
-  // Recessed square
-  ctx.beginPath();
-  ctx.roundRect(qx - 3, qy - 3, qSize + 6, qSize + 6, 4);
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.roundRect(qx, qy, qSize, qSize, 3);
-  ctx.fillStyle = cfg.qrBg;
-  ctx.fill();
-
-  // Corner L-marks
-  const cLen = Math.round(qSize * 0.18);
-  const cW   = 2;
-  ctx.strokeStyle = cfg.textColorDim;
-  ctx.lineWidth   = cW;
-  [
-    [qx, qy, 1, 1],
-    [qx + qSize, qy, -1, 1],
-    [qx, qy + qSize, 1, -1],
-    [qx + qSize, qy + qSize, -1, -1]
-  ].forEach(([ox, oy, dx, dy]) => {
-    ctx.beginPath();
-    ctx.moveTo(ox + dx*cLen, oy);
-    ctx.lineTo(ox, oy);
-    ctx.lineTo(ox, oy + dy*cLen);
-    ctx.stroke();
-  });
-
-  // ── SPECULAR HIGHLIGHTS ──
-  // Top-left glare on face
-  const spec = ctx.createRadialGradient(
-    cx - faceR*0.35, cy - faceR*0.38, 0,
-    cx - faceR*0.1,  cy - faceR*0.18, faceR*0.52
-  );
-  spec.addColorStop(0, 'rgba(255,255,255,0.2)');
-  spec.addColorStop(0.5, 'rgba(255,255,255,0.05)');
-  spec.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.beginPath();
-  ctx.arc(cx, cy, faceR, 0, Math.PI*2);
-  ctx.fillStyle = spec;
-  ctx.fill();
-
-  // Bottom-right depth shadow
-  const depth = ctx.createRadialGradient(cx + faceR*0.18, cy + faceR*0.38, 0, cx, cy, faceR);
-  depth.addColorStop(0,   'rgba(0,0,0,0)');
-  depth.addColorStop(0.55,'rgba(0,0,0,0)');
-  depth.addColorStop(1,   'rgba(0,0,0,0.38)');
-  ctx.beginPath();
-  ctx.arc(cx, cy, faceR, 0, Math.PI*2);
-  ctx.fillStyle = depth;
-  ctx.fill();
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   AUDIO — synthetic coin slide sound using Web Audio API
-══════════════════════════════════════════════════════════════════════ */
-let audioCtx = null;
-
-function initAudio() {
-  if (audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-}
-
-function playCoinSlide(delay = 0) {
-  if (!audioCtx) return;
-  const t = audioCtx.currentTime + delay;
-
-  // White noise burst — sliding friction
-  const bufLen = audioCtx.sampleRate * 0.35;
-  const buf    = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
-  const data   = buf.getChannelData(0);
-  for (let i = 0; i < bufLen; i++) {
-    data[i] = (Math.random() * 2 - 1) * (1 - i/bufLen);
-  }
-  const noise = audioCtx.createBufferSource();
-  noise.buffer = buf;
-
-  // Filter — low-pass for woody/surface feel
-  const filter = audioCtx.createBiquadFilter();
-  filter.type            = 'lowpass';
-  filter.frequency.value = 1800;
-  filter.Q.value         = 0.8;
-
-  // Bandpass accent
-  const band = audioCtx.createBiquadFilter();
-  band.type            = 'bandpass';
-  band.frequency.value = 600;
-  band.Q.value         = 1.5;
-
-  // Gain envelope — quick attack, medium decay
-  const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(0.28, t + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
-
-  // Subtle pitch click at start — coin tap
-  const osc = audioCtx.createOscillator();
-  osc.type            = 'sine';
-  osc.frequency.value = 420;
-  const oscGain = audioCtx.createGain();
-  oscGain.gain.setValueAtTime(0.15, t);
-  oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-
-  noise.connect(filter);
-  filter.connect(band);
-  band.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.connect(oscGain);
-  oscGain.connect(audioCtx.destination);
-
-  noise.start(t);
-  noise.stop(t + 0.35);
-  osc.start(t);
-  osc.stop(t + 0.07);
-}
-
-function playFullShuffle() {
-  // Play 6 slide sounds across the 2.2s shuffle
-  [0, 0.22, 0.48, 0.78, 1.1, 1.55].forEach(d => playCoinSlide(d));
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   COIN CONFIGS
-══════════════════════════════════════════════════════════════════════ */
-function getCoinConfigs(size) {
-  return {
-    f: {
-      id: 'canvas-f', qrId: 'qr-f',
-      size,
-      label: 'FUN GUY FUNGI',
-      domain: 'FUNGUYFUNGI.ORG',
-      // Copper rim
-      rimHi: '#f0b870', rimMid: '#c07828', rimDark: '#784018',
-      // Deep burgundy/wine face
-      faceLt: '#5a1030', faceMid: '#3a0820', faceDk: '#200510', faceEdge: '#100208',
-      // Warm cream band
-      bandColor: '#f5e8d0',
-      textColor: '#3a0820', textColorDim: 'rgba(58,8,32,0.55)',
-      // Inner face
-      innerLt: '#4a0c28', innerMid: '#300618', innerDk: '#180308',
-      qrBg: 'rgba(20,4,12,0.85)',
-      qrDark: '#f5d0a0', qrLight: 'rgba(20,4,12,0)',
-    },
-    g: {
-      id: 'canvas-g', qrId: 'qr-g',
-      size,
-      label: 'GRUSH',
-      domain: 'GETGRUSH.COM',
-      // Gold rim
-      rimHi: '#f8e888', rimMid: '#c8a030', rimDark: '#806010',
-      // Near-black face
-      faceLt: '#282838', faceMid: '#181828', faceDk: '#0c0c1c', faceEdge: '#06060e',
-      // Acid green band
-      bandColor: '#c8ff00',
-      textColor: '#080810', textColorDim: 'rgba(8,8,16,0.55)',
-      // Inner face
-      innerLt: '#202030', innerMid: '#141420', innerDk: '#080810',
-      qrBg: 'rgba(10,10,20,0.9)',
-      qrDark: '#c8ff00', qrLight: 'rgba(10,10,20,0)',
-    },
-    m: {
-      id: 'canvas-m', qrId: 'qr-m',
-      size,
-      label: 'MYCOTTAGE',
-      domain: 'MYCOTTAGE.ORG',
-      // Silver/brushed rim
-      rimHi: '#e8f0e0', rimMid: '#90b068', rimDark: '#486030',
-      // Deep forest green face
-      faceLt: '#1c4830', faceMid: '#102c1c', faceDk: '#08180c', faceEdge: '#040c06',
-      // Soft mint band
-      bandColor: '#c8f0d8',
-      textColor: '#082018', textColorDim: 'rgba(8,32,24,0.55)',
-      // Inner face
-      innerLt: '#183828', innerMid: '#0e2418', innerDk: '#06100a',
-      qrBg: 'rgba(6,16,10,0.9)',
-      qrDark: '#70d8a0', qrLight: 'rgba(6,16,10,0)',
+// Intersection observer for card entrance animations
+const cards = document.querySelectorAll('.venture-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
     }
-  };
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   QR CODES
-══════════════════════════════════════════════════════════════════════ */
-const HUB_URL = window.location.href.split('?')[0];
-
-function buildQR(qrId, cfg, coinSize) {
-  const el    = document.getElementById(qrId);
-  const qrSz  = Math.round(coinSize * 0.41);
-  el.style.width  = qrSz + 'px';
-  el.style.height = qrSz + 'px';
-
-  new QRCode(el, {
-    text: HUB_URL,
-    width: qrSz, height: qrSz,
-    colorDark:  cfg.qrDark,
-    colorLight: 'rgba(0,0,0,0)',
-    correctLevel: QRCode.CorrectLevel.H
   });
+}, { threshold: 0.1 });
 
-  setTimeout(() => {
-    el.querySelectorAll('canvas,img').forEach(c => {
-      c.style.width        = qrSz + 'px';
-      c.style.height       = qrSz + 'px';
-      c.style.borderRadius = '2px';
-    });
-  }, 200);
-}
+cards.forEach(card => observer.observe(card));
 
-/* ══════════════════════════════════════════════════════════════════════
-   LAYOUT — horizontal row with gap based on coin size
-══════════════════════════════════════════════════════════════════════ */
-function setRowGap(coinSize) {
-  const row = document.getElementById('coins-row');
-  row.style.gap = Math.round(coinSize * 0.18) + 'px';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   SHUFFLE
-══════════════════════════════════════════════════════════════════════ */
-function runShuffle() {
-  const wf = document.getElementById('wrap-f');
-  const wg = document.getElementById('wrap-g');
-  const wm = document.getElementById('wrap-m');
-
-  wf.classList.add('shuffling-left');
-  wg.classList.add('shuffling-center');
-  wm.classList.add('shuffling-right');
-
-  playFullShuffle();
-
-  setTimeout(() => {
-    wf.classList.remove('shuffling-left');
-    wg.classList.remove('shuffling-center');
-    wm.classList.remove('shuffling-right');
-    // Settle bounce
-    [wf, wg, wm].forEach(w => {
-      w.style.transition = 'transform 0.45s cubic-bezier(0.34,1.4,0.64,1)';
-      w.style.transform  = 'scale(1)';
-      setTimeout(() => { w.style.transition = ''; }, 450);
-    });
-    // Stamp labels in sequence with screen wobble
-    const labelIds = ['label-f', 'label-g', 'label-m'];
-    labelIds.forEach((id, i) => {
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        el.classList.add('stamp');
-        // Screen wobble on each impact
-        document.body.classList.remove('wobble');
-        void document.body.offsetWidth; // force reflow to restart animation
-        document.body.classList.add('wobble');
-        // Play impact sound
-        playCoinSlide(0);
-        setTimeout(() => document.body.classList.remove('wobble'), 700);
-      }, i * 220);
-    });
-  }, 2300);
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   PAGE NAV
-══════════════════════════════════════════════════════════════════════ */
-function openPage(id) {
-  initAudio();
-  playCoinSlide(0);
-  const p = document.getElementById(id);
-  p.classList.add('animating');
-  requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('open')));
-}
-function closePage(id) {
-  const p = document.getElementById(id);
-  p.classList.remove('open');
-  setTimeout(() => p.classList.remove('animating'), 380);
-}
-function switchPage(from, to) {
-  closePage(from);
-  setTimeout(() => openPage(to), 200);
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   INIT
-══════════════════════════════════════════════════════════════════════ */
-window.addEventListener('load', () => {
-  drawSurface();
-
-  // Calculate coin size
-  const vw = window.innerWidth;
-  const vh = window.innerHeight - 60; // minus banner
-  const coinSize = Math.round(Math.min(vw * 0.25, vh * 0.68, 260));
-
-  const cfgs = getCoinConfigs(coinSize);
-
-  // Draw all three coins
-  drawCoin(cfgs.f.id, cfgs.f);
-  drawCoin(cfgs.g.id, cfgs.g);
-  drawCoin(cfgs.m.id, cfgs.m);
-
-  setRowGap(coinSize);
-
-  // Deal animation
-  ['slot-f','slot-g','slot-m'].forEach(id => {
-    document.getElementById(id).classList.add('deal-in');
-  });
-
-  // Build QR codes
-  setTimeout(() => {
-    buildQR(cfgs.f.qrId, cfgs.f, coinSize);
-    buildQR(cfgs.g.qrId, cfgs.g, coinSize);
-    buildQR(cfgs.m.qrId, cfgs.m, coinSize);
-  }, 100);
-
-  // Banner drops, then shuffle starts
-  setTimeout(() => {
-    document.getElementById('banner').classList.add('drop');
-    initAudio();
-    playCoinSlide(0.1);
-    playCoinSlide(0.28);
-    playCoinSlide(0.46);
-  }, 400);
-
-  setTimeout(runShuffle, 1800);
-});
-
-window.addEventListener('resize', () => {
-  drawSurface();
-  const vw = window.innerWidth;
-  const vh = window.innerHeight - 60;
-  const coinSize = Math.round(Math.min(vw * 0.25, vh * 0.68, 260));
-  const cfgs = getCoinConfigs(coinSize);
-  drawCoin(cfgs.f.id, cfgs.f);
-  drawCoin(cfgs.g.id, cfgs.g);
-  drawCoin(cfgs.m.id, cfgs.m);
-  setRowGap(coinSize);
+// Easy button click — scroll to ventures with a little bounce feedback
+document.querySelector('.easy-button').addEventListener('click', function(e) {
+  // Let the href handle navigation, just add a press class
+  this.querySelector('.btn-body').style.transition = 'all 0.08s ease';
 });
 </script>
 </body>

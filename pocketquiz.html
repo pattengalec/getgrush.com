@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PocketQuiz — PWA Study Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #050a18;
+  --chartreuse: #c8ff00;
+  --chartreuse-dim: rgba(200,255,0,0.08);
+  --chartreuse-glow: rgba(200,255,0,0.3);
+  --cyan: #00c8ff;
+  --white: #f0f4ff;
+  --muted: #5a7090;
+  --lily: #ff85c8;
+  --quinn: #85c8ff;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(200,255,0,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,255,0,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* NAV */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px; height:64px;
+  background:rgba(5,10,24,0.9); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(200,255,0,0.08);
+}
+.nav-logo { font-family:'Courier Prime',monospace; font-weight:700; font-size:15px; color:var(--chartreuse); letter-spacing:0.12em; text-decoration:none; text-transform:uppercase; }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+.nav-links a:hover { color:var(--chartreuse); }
+.nav-links a.active { color:var(--chartreuse); }
+.nav-back { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+.nav-back:hover { color:var(--chartreuse); }
+
+/* HERO */
+.hero {
+  position:relative; z-index:1;
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding:100px 48px 60px;
+  gap:80px;
+  overflow:hidden;
+}
+
+/* CHARACTER ILLUSTRATIONS */
+.characters {
+  position:relative;
+  flex-shrink:0;
+  width:300px; height:340px;
+  opacity:0; animation:fadeUp 1s 0.6s forwards;
+}
+
+/* Lily — left character */
+.char {
+  position:absolute;
+  display:flex; flex-direction:column; align-items:center;
+}
+.char-lily { bottom:0; left:0; }
+.char-quinn { bottom:0; right:0; }
+
+.char-body {
+  width:110px;
+  display:flex; flex-direction:column; align-items:center;
+  gap:0;
+}
+
+/* Head */
+.char-head {
+  width:64px; height:64px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; position:relative;
+  animation:charBob 3s ease-in-out infinite;
+}
+.char-lily .char-head {
+  background:radial-gradient(circle at 40% 35%, #ffb3dd, #ff5fab);
+  animation-delay:0s;
+}
+.char-quinn .char-head {
+  background:radial-gradient(circle at 40% 35%, #b3d8ff, #4da6ff);
+  animation-delay:0.4s;
+}
+
+/* Eyes */
+.char-eyes {
+  position:absolute; top:52%; left:50%;
+  transform:translate(-50%,-50%);
+  display:flex; gap:10px;
+}
+.eye {
+  width:8px; height:10px; background:#1a1a2e;
+  border-radius:50%;
+  animation:eyeBlink 4s ease-in-out infinite;
+}
+.char-quinn .eye { animation-delay:0.3s; }
+
+/* Smile */
+.char-smile {
+  position:absolute; bottom:22%; left:50%;
+  transform:translateX(-50%);
+  width:20px; height:8px;
+  border-bottom:2px solid #1a1a2e;
+  border-radius:0 0 20px 20px;
+}
+
+/* Body/torso */
+.char-torso {
+  width:80px; height:72px; border-radius:20px 20px 12px 12px;
+  margin-top:-4px;
+  position:relative;
+}
+.char-lily .char-torso { background:linear-gradient(160deg, #ff85c8, #d94fa0); }
+.char-quinn .char-torso { background:linear-gradient(160deg, #85c8ff, #4a90d9); }
+
+/* Book */
+.char-book {
+  width:56px; height:40px; border-radius:4px;
+  margin-top:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; border:2px solid rgba(255,255,255,0.2);
+}
+.char-lily .char-book { background:rgba(255,133,200,0.3); }
+.char-quinn .char-book { background:rgba(133,200,255,0.3); }
+
+/* Name tags */
+.char-name {
+  margin-top:8px; font-size:10px; letter-spacing:0.2em;
+  text-transform:uppercase; font-weight:700;
+}
+.char-lily .char-name { color:var(--lily); }
+.char-quinn .char-name { color:var(--quinn); }
+
+/* Speech bubble */
+.bubble {
+  position:absolute;
+  top:10px; left:50%;
+  transform:translateX(-50%);
+  background:rgba(200,255,0,0.12);
+  border:1px solid var(--chartreuse);
+  border-radius:12px 12px 12px 2px;
+  padding:8px 14px;
+  font-family:'Courier Prime',monospace;
+  font-size:11px; color:var(--chartreuse);
+  white-space:nowrap;
+  animation:bubblePop 0.5s 1.4s both;
+}
+.bubble::after {
+  content:'';
+  position:absolute; bottom:-8px; left:12px;
+  border:4px solid transparent;
+  border-top-color:var(--chartreuse);
+}
+
+/* HERO TEXT */
+.hero-content {
+  position:relative;
+  max-width:540px;
+}
+.hero-eyebrow {
+  font-size:11px; letter-spacing:0.3em; text-transform:uppercase;
+  color:var(--chartreuse); margin-bottom:20px;
+  opacity:0; animation:fadeUp 0.7s 0.2s forwards;
+}
+.hero-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(56px,8vw,100px);
+  font-weight:900; line-height:0.9;
+  letter-spacing:-0.03em;
+  opacity:0; animation:fadeUp 0.8s 0.35s forwards;
+}
+.hero-title .accent { color:var(--chartreuse); }
+.hero-sub {
+  font-family:'Courier Prime',monospace;
+  font-size:14.5px; line-height:1.75;
+  color:var(--muted); margin-top:24px; max-width:460px;
+  opacity:0; animation:fadeUp 0.8s 0.5s forwards;
+}
+.hero-cta {
+  margin-top:36px; display:flex; gap:16px; flex-wrap:wrap;
+  opacity:0; animation:fadeUp 0.8s 0.7s forwards;
+}
+.btn-primary {
+  display:inline-block; padding:14px 32px;
+  background:var(--chartreuse); color:var(--navy);
+  font-family:'Space Mono',monospace; font-size:11px;
+  letter-spacing:0.15em; text-transform:uppercase; font-weight:700;
+  text-decoration:none; border-radius:2px; transition:all 0.2s;
+}
+.btn-primary:hover { background:#d8ff20; box-shadow:0 0 24px var(--chartreuse-glow); }
+.btn-outline {
+  display:inline-block; padding:14px 32px;
+  border:1px solid var(--chartreuse); color:var(--chartreuse);
+  font-family:'Space Mono',monospace; font-size:11px;
+  letter-spacing:0.15em; text-transform:uppercase;
+  text-decoration:none; border-radius:2px; transition:all 0.2s;
+}
+.btn-outline:hover { background:var(--chartreuse-dim); }
+
+/* STATS BAR */
+.stats-bar {
+  position:relative; z-index:1;
+  border-top:1px solid rgba(200,255,0,0.08);
+  border-bottom:1px solid rgba(200,255,0,0.08);
+  display:grid; grid-template-columns:repeat(4,1fr);
+  background:rgba(10,20,40,0.5);
+}
+.stat {
+  padding:32px 40px;
+  border-right:1px solid rgba(200,255,0,0.06);
+  opacity:0; animation:fadeUp 0.5s forwards;
+}
+.stat:nth-child(1){animation-delay:0.1s}
+.stat:nth-child(2){animation-delay:0.2s}
+.stat:nth-child(3){animation-delay:0.3s}
+.stat:nth-child(4){animation-delay:0.4s;border-right:none}
+.stat-num {
+  font-family:'Playfair Display',serif;
+  font-size:40px; font-weight:900; color:var(--chartreuse); line-height:1;
+}
+.stat-label { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-top:6px; }
+
+/* SECTIONS */
+section {
+  position:relative; z-index:1;
+  padding:96px 80px; max-width:1200px; margin:0 auto;
+}
+.section-label { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--chartreuse); margin-bottom:16px; }
+.section-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,4vw,48px); font-weight:700;
+  letter-spacing:-0.02em; line-height:1.1; margin-bottom:20px;
+}
+.section-body {
+  font-family:'Courier Prime',monospace;
+  font-size:14px; line-height:1.8; color:var(--muted); max-width:560px;
+}
+
+/* SUBJECT GRID */
+.subject-grid {
+  margin-top:48px;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+}
+.subject-card {
+  padding:20px 18px;
+  border:1px solid rgba(200,255,0,0.12);
+  background:rgba(10,20,40,0.5);
+  border-radius:2px; transition:all 0.2s;
+  cursor:default;
+}
+.subject-card:hover {
+  border-color:rgba(200,255,0,0.4);
+  background:rgba(10,20,40,0.8);
+  transform:translateY(-3px);
+}
+.subj-icon { font-size:22px; margin-bottom:10px; }
+.subj-name {
+  font-family:'Playfair Display',serif;
+  font-size:15px; font-weight:700; color:var(--white); margin-bottom:4px;
+}
+.subj-count {
+  font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted);
+}
+.subj-bar {
+  margin-top:10px; height:2px; background:rgba(200,255,0,0.1); border-radius:1px;
+}
+.subj-fill {
+  height:100%; background:var(--chartreuse); border-radius:1px;
+  transition:width 1s ease;
+}
+.subject-card.complete .subj-name { color:var(--chartreuse); }
+.subject-card.complete .subj-count { color:var(--chartreuse); opacity:0.6; }
+.done-badge {
+  display:inline-block; font-size:9px; letter-spacing:0.15em;
+  text-transform:uppercase; color:var(--navy); background:var(--chartreuse);
+  padding:2px 6px; border-radius:2px; margin-left:6px;
+  vertical-align:middle;
+}
+
+/* FEATURES */
+.feature-list {
+  margin-top:48px; display:flex; flex-direction:column; gap:2px;
+}
+.feature-item {
+  display:flex; align-items:flex-start; gap:24px;
+  padding:28px 32px;
+  border:1px solid rgba(200,255,0,0.08);
+  background:rgba(10,20,40,0.3); transition:all 0.2s;
+}
+.feature-item:hover {
+  border-color:rgba(200,255,0,0.25);
+  background:rgba(10,20,40,0.7);
+  transform:translateX(6px);
+}
+.feat-icon { font-size:22px; flex-shrink:0; padding-top:2px; }
+.feat-content h4 {
+  font-family:'Playfair Display',serif; font-size:17px; font-weight:700;
+  color:var(--white); margin-bottom:6px;
+}
+.feat-content p {
+  font-family:'Courier Prime',monospace; font-size:13px; line-height:1.65; color:var(--muted);
+}
+
+/* CHARACTERS DEEP DIVE */
+.char-section {
+  margin-top:56px; display:grid; grid-template-columns:1fr 1fr; gap:24px;
+}
+.char-card {
+  padding:36px 32px;
+  border:1px solid;
+  border-radius:2px; background:rgba(10,20,40,0.4);
+}
+.char-card.lily { border-color:rgba(255,133,200,0.25); }
+.char-card.quinn { border-color:rgba(133,200,255,0.25); }
+.char-card h3 {
+  font-family:'Playfair Display',serif; font-size:22px; font-weight:700; margin-bottom:8px;
+}
+.char-card.lily h3 { color:var(--lily); }
+.char-card.quinn h3 { color:var(--quinn); }
+.char-card p {
+  font-family:'Courier Prime',monospace; font-size:13px; line-height:1.7; color:var(--muted);
+}
+.char-role {
+  font-size:9px; letter-spacing:0.2em; text-transform:uppercase;
+  margin-bottom:12px; opacity:0.6;
+}
+.char-card.lily .char-role { color:var(--lily); }
+.char-card.quinn .char-role { color:var(--quinn); }
+
+/* DIVIDER */
+.divider { position:relative; z-index:1; border-top:1px solid rgba(200,255,0,0.04); max-width:1200px; margin:0 auto; }
+
+/* FOOTER */
+footer {
+  position:relative; z-index:1;
+  border-top:1px solid rgba(200,255,0,0.06);
+  padding:32px 80px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+footer p { font-size:10px; letter-spacing:0.12em; color:var(--muted); opacity:0.5; }
+footer a { font-size:10px; letter-spacing:0.12em; color:var(--chartreuse); text-decoration:none; opacity:0.6; transition:opacity 0.2s; }
+footer a:hover { opacity:1; }
+
+/* KEYFRAMES */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes charBob {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-8px); }
+}
+@keyframes eyeBlink {
+  0%,90%,100% { transform:scaleY(1); }
+  95% { transform:scaleY(0.1); }
+}
+@keyframes bubblePop {
+  from { opacity:0; transform:translateX(-50%) scale(0.8); }
+  to   { opacity:1; transform:translateX(-50%) scale(1); }
+}
+
+@media(max-width:900px){
+  .hero { flex-direction:column; padding:100px 32px 60px; gap:40px; }
+  .characters { width:240px; height:260px; }
+  .char-body { transform:scale(0.85); }
+  .stats-bar { grid-template-columns:repeat(2,1fr); }
+  .stat:nth-child(2){ border-right:none; }
+  .subject-grid { grid-template-columns:repeat(2,1fr); }
+  .char-section { grid-template-columns:1fr; }
+  section { padding:64px 32px; }
+  footer { flex-direction:column; gap:12px; padding:32px; text-align:center; }
+}
+@media(max-width:480px){
+  .subject-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Getgrush.com</a>
+  <ul class="nav-links">
+    <li><a href="taskmask.html">TaskMask</a></li>
+    <li><a href="pocketquiz.html" class="active">PocketQuiz</a></li>
+    <li><a href="grush.html">Grush</a></li>
+    <li><a href="cottages.html">Cottages</a></li>
+    <li><a href="funguyfungi.html">Fun Guy Fungi</a></li>
+  </ul>
+  <a href="/" class="nav-back">&larr; Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+
+  <!-- Characters -->
+  <div class="characters">
+    <div class="bubble">What's the answer? 🤔</div>
+
+    <!-- Lily -->
+    <div class="char char-lily">
+      <div class="char-body">
+        <div class="char-head">
+          <div class="char-eyes">
+            <div class="eye"></div>
+            <div class="eye"></div>
+          </div>
+          <div class="char-smile"></div>
+        </div>
+        <div class="char-torso"></div>
+        <div class="char-book">📖</div>
+      </div>
+      <div class="char-name">Lily</div>
+    </div>
+
+    <!-- Quinn -->
+    <div class="char char-quinn">
+      <div class="char-body">
+        <div class="char-head">
+          <div class="char-eyes">
+            <div class="eye"></div>
+            <div class="eye"></div>
+          </div>
+          <div class="char-smile"></div>
+        </div>
+        <div class="char-torso"></div>
+        <div class="char-book">🔬</div>
+      </div>
+      <div class="char-name">Quinn</div>
+    </div>
+  </div>
+
+  <!-- Text -->
+  <div class="hero-content">
+    <p class="hero-eyebrow">Venture 02 &mdash; EdTech PWA &mdash; Seed Revenue</p>
+    <h1 class="hero-title">
+      Pocket<span class="accent">Quiz</span>
+    </h1>
+    <p class="hero-sub">
+      A progressive web app that puts 1,400+ subject-specific study questions
+      in every student's pocket. No download required. Guided by Lily &amp; Quinn —
+      two Hanna-Barbera-inspired characters who make grinding feel like play.
+    </p>
+    <div class="hero-cta">
+      <a href="mailto:chad@getgrush.com" class="btn-primary">Partner Inquiry</a>
+      <a href="/" class="btn-outline">See All Ventures</a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num">1,400+</div>
+    <div class="stat-label">Questions in bank</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">7</div>
+    <div class="stat-label">Subject categories</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">PWA</div>
+    <div class="stat-label">No app store needed</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">✦</div>
+    <div class="stat-label">Offline-first architecture</div>
+  </div>
+</div>
+
+<!-- QUESTION BANK -->
+<section>
+  <p class="section-label">Question Bank</p>
+  <h2 class="section-title">1,400 Questions.<br>Seven Subjects.</h2>
+  <p class="section-body">
+    Each subject contains 200 carefully written questions across multiple
+    difficulty tiers. Chemistry is complete. Six subjects are in active
+    development — all targeted for full launch at initial release.
+  </p>
+  <div class="subject-grid">
+    <div class="subject-card complete">
+      <div class="subj-icon">⚗️</div>
+      <div class="subj-name">Chemistry <span class="done-badge">Done</span></div>
+      <div class="subj-count">200 questions</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:100%"></div></div>
+    </div>
+    <div class="subject-card">
+      <div class="subj-icon">🧬</div>
+      <div class="subj-name">Biology</div>
+      <div class="subj-count">200 questions</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:15%"></div></div>
+    </div>
+    <div class="subject-card">
+      <div class="subj-icon">📐</div>
+      <div class="subj-name">Mathematics</div>
+      <div class="subj-count">200 questions</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:10%"></div></div>
+    </div>
+    <div class="subject-card">
+      <div class="subj-icon">⚡</div>
+      <div class="subj-name">Physics</div>
+      <div class="subj-count">200 questions</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:8%"></div></div>
+    </div>
+    <div class="subject-card">
+      <div class="subj-icon">🌍</div>
+      <div class="subj-name">Earth Science</div>
+      <div class="subj-count">200 questions</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:8%"></div></div>
+    </div>
+    <div class="subject-card">
+      <div class="subj-icon">💻</div>
+      <div class="subj-name">Computer Science</div>
+      <div class="subj-count">200 questions</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:5%"></div></div>
+    </div>
+    <div class="subject-card">
+      <div class="subj-icon">📜</div>
+      <div class="subj-name">History</div>
+      <div class="subj-count">200 questions</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:5%"></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section>
+  <p class="section-label">Platform Features</p>
+  <h2 class="section-title">Built Right.<br>From the Start.</h2>
+  <div class="feature-list">
+    <div class="feature-item">
+      <div class="feat-icon">📱</div>
+      <div class="feat-content">
+        <h4>Progressive Web App — No Download Required</h4>
+        <p>Students access PocketQuiz directly from any browser. Install-to-homescreen support on iOS and Android. No App Store approval cycle, no platform gatekeeping.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon">🔌</div>
+      <div class="feat-content">
+        <h4>Offline-First Architecture</h4>
+        <p>Question banks cache locally on first load. Students in low-connectivity environments — study halls, transit, rural areas — get the full experience regardless of signal.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon">🎯</div>
+      <div class="feat-content">
+        <h4>Adaptive Difficulty Tiers</h4>
+        <p>Each subject's 200 questions are distributed across introductory, intermediate, and advanced tiers. The app surfaces questions matched to the student's demonstrated performance level.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-content">
+        <h4>Lily &amp; Quinn Character System</h4>
+        <p>Two SVG-illustrated characters in a Hanna-Barbera-inspired style guide students through sessions. Animated reactions to correct and incorrect answers reinforce positive feedback loops.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon">📊</div>
+      <div class="feat-content">
+        <h4>Session Tracking &amp; Progress</h4>
+        <p>Per-subject scores, streak counters, and session history stored locally. No account required for core functionality — privacy-first design with optional cloud sync planned for v2.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon">🏫</div>
+      <div class="feat-content">
+        <h4>Institutional Licensing Path</h4>
+        <p>Designed for campus-wide deployment. Administrators can white-label the platform, add institution-specific question banks, and track cohort-level performance via a dashboard add-on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CHARACTERS -->
+<section>
+  <p class="section-label">Meet the Characters</p>
+  <h2 class="section-title">Lily &amp; Quinn</h2>
+  <p class="section-body">
+    Two characters designed in SVG for infinite scalability and smooth animation —
+    styled after the golden era of Saturday morning cartoons. Every question answered
+    gets a reaction. Every streak gets celebrated.
+  </p>
+  <div class="char-section">
+    <div class="char-card lily">
+      <div class="char-role">The Encourager</div>
+      <h3>Lily</h3>
+      <p>
+        Warm, enthusiastic, and relentlessly positive. Lily celebrates every correct answer
+        and gently redirects wrong ones. She specializes in life sciences and humanities,
+        appearing as the primary guide for Biology, Earth Science, and History sessions.
+        Her design features rounded forms, expressive eyes, and a signature rose-pink palette.
+      </p>
+    </div>
+    <div class="char-card quinn">
+      <div class="char-role">The Analyst</div>
+      <h3>Quinn</h3>
+      <p>
+        Sharp, curious, and methodical. Quinn breaks down complex problems step by step
+        and rewards careful thinking. He leads STEM subjects — Chemistry, Physics,
+        Mathematics, and Computer Science. His angular design and cool blue palette
+        signal precision without intimidation.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Chad Eric Pattengale &mdash; PocketQuiz &mdash; getgrush.com</p>
+  <a href="mailto:chad@getgrush.com">chad@getgrush.com</a>
+</footer>
+
+</body>
+</html>
