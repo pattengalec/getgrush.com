@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cottage Configurator — Build Your Cottage</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0c0a;color:#e8e8e0;font-family:'IBM Plex Sans',sans-serif;min-height:100vh;position:relative;overflow-x:hidden}
+.scanlines{position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 24px 80px}
+/* header */
+.header{padding:32px 0 0;border-bottom:1px solid #1e2a1e;margin-bottom:40px}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;color:#4a5c4a;margin-bottom:8px}
+.main-title{font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:1;letter-spacing:.05em;color:#e8e8e0;margin-bottom:16px}
+.main-title span{color:#39FF14}
+/* progress */
+.progress-wrap{display:flex;align-items:center;gap:6px;padding-bottom:24px;flex-wrap:wrap}
+.progress-step{height:3px;flex:1;min-width:20px;background:#1e2a1e;border-radius:2px;transition:all .3s}
+.progress-step.done{background:#39FF14;opacity:.6}
+.progress-step.active{background:#39FF14;opacity:1}
+.progress-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;color:#4a6a4a;margin-left:8px;white-space:nowrap}
+/* summary bar */
+.summary-bar{background:#0f140f;border:1px solid #1e2a1e;border-radius:4px;padding:12px 16px;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.sum-item{display:flex;flex-direction:column;gap:2px}
+.sum-key{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;color:#3a5a3a;text-transform:uppercase}
+.sum-val{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b8d4b8}
+.color-swatch{width:24px;height:24px;border-radius:3px;margin-left:auto}
+/* step header */
+.step-hdr{margin-bottom:32px}
+.step-num{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;color:#39FF14;margin-bottom:6px;opacity:.8}
+.step-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.05em;line-height:1;margin-bottom:4px}
+.step-sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5a7a5a;letter-spacing:.1em}
+/* grids */
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.grid6c{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:24px}
+/* card */
+.card{background:#0f140f;border:1px solid #1e2a1e;border-radius:4px;padding:20px;cursor:pointer;transition:all .2s;position:relative}
+.card:hover{border-color:#39FF1444;background:#0f140fdd}
+.card.selected{background:rgba(57,255,20,.08);border-color:#39FF14}
+.card.easter{background:#1a0a0a;border-color:#FF444422}
+.card.easter.selected{background:rgba(255,68,68,.08);border-color:#FF4444}
+.card-dot{position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:#39FF14;box-shadow:0 0 8px #39FF14;display:none}
+.card.selected .card-dot{display:block}
+.card.easter.selected .card-dot{background:#FF4444;box-shadow:0 0 8px #FF4444}
+.card-icon{font-size:24px;margin-bottom:10px;display:block}
+.card-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;padding:2px 6px;border-radius:2px;display:inline-block;margin-bottom:10px;border:1px solid}
+.card-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em;line-height:1.1;margin-bottom:4px}
+.card-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;color:#5a7a5a;margin-bottom:8px;text-transform:uppercase}
+.card-desc{font-size:12px;line-height:1.6;color:#8a9a8a}
+.card-price{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:13px}
+/* color swatch picker */
+.color-item .swatch{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:all .2s}
+.color-item .swatch.selected{box-shadow:0 0 0 2px #0a0c0a, 0 0 0 4px #39FF14}
+.color-name{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#5a7a5a;text-align:center;margin-top:4px;letter-spacing:.08em}
+/* container diagram */
+.container-diag{background:#0a0f0a;border:1px solid #1e2a1e;border-radius:4px;padding:20px;margin-bottom:24px}
+.diag-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.25em;color:#3a5a3a;margin-bottom:12px;text-transform:uppercase}
+.diag-bar{display:flex;height:64px;border-radius:3px;overflow:hidden}
+.diag-wall{width:14px;flex-shrink:0}
+.diag-zone{display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;position:relative;border-right:1px solid #000}
+.diag-zone-name{font-family:'IBM Plex Mono',monospace;font-size:7px;font-weight:600;text-align:center;padding:0 3px;line-height:1.3}
+.diag-zone-len{font-family:'IBM Plex Mono',monospace;font-size:6px;color:#3a5a3a;position:absolute;bottom:3px}
+.diag-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px}
+.diag-leg-item{display:flex;align-items:center;gap:5px}
+.diag-leg-dot{width:6px;height:6px;border-radius:1px}
+.diag-leg-txt{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4a6a4a;letter-spacing:.1em}
+/* spec box */
+.spec-box{background:#0f140f;border:1px solid #1e2a1e;border-radius:4px;padding:24px;margin-top:24px}
+.spec-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;color:#39FF14;text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1e2a1e}
+.spec-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #111a11;align-items:baseline;gap:16px}
+.spec-key{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4a6a4a;letter-spacing:.1em;flex-shrink:0}
+.spec-val{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b8d4b8;text-align:right}
+/* nav row */
+.nav-row{display:flex;gap:12px;margin-top:32px;align-items:center}
+.btn-primary{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;padding:12px 28px;background:#39FF14;color:#0a0c0a;border:none;border-radius:3px;cursor:pointer;font-weight:600;transition:all .2s}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed}
+.btn-primary:not(:disabled):hover{background:#55ff35}
+.btn-secondary{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;padding:12px 20px;background:transparent;color:#4a6a4a;border:1px solid #2a3a2a;border-radius:3px;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{background:#0f140f}
+.btn-skip{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;color:#3a5a3a;background:transparent;border:none;cursor:pointer;text-decoration:underline;margin-left:auto}
+/* force field box */
+.ff-box{background:#0a0810;border:1px solid #2a1a4a;border-radius:4px;padding:20px;margin-top:0}
+.ff-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.25em;color:#9B6DFF;margin-bottom:6px;text-transform:uppercase}
+.ff-sub{font-size:11px;color:#6a5a8a;margin-bottom:16px;line-height:1.5}
+.ff-price{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6a4a9a;letter-spacing:.1em}
+.ff-swatch.selected{box-shadow:0 0 0 2px #0a0c0a, 0 0 0 3px #9B6DFF, 0 0 16px #9B6DFF88}
+/* astro */
+.astro-accent{color:#9B6DFF}
+/* crown */
+.crown-box{background:#100809;border:1px solid #3a1a2a;border-radius:4px;padding:24px;margin-bottom:24px}
+.crown-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.1em;color:#C8920A;margin-bottom:8px}
+.crown-desc{font-size:13px;color:#8a6a5a;line-height:1.6;margin-bottom:20px}
+.crown-choices{display:flex;gap:12px;margin-bottom:0}
+.crown-choice{flex:1;padding:16px;border-radius:4px;cursor:pointer;border:1px solid;transition:all .2s}
+.crown-choice-name{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.15em;margin-bottom:4px}
+.crown-choice-desc{font-size:11px;font-style:italic}
+.crown-amenity{display:flex;align-items:flex-start;gap:16px;padding:16px;border-radius:4px;cursor:pointer;border:1px solid #1e1a2a;background:#0a0810;transition:all .2s;margin-bottom:10px}
+.crown-amenity.selected{border-color:#C8920A;background:rgba(200,146,10,.06)}
+.crown-amenity-icon{font-size:24px;flex-shrink:0;margin-top:2px}
+.crown-amenity-name{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b8b8c8;letter-spacing:.1em;margin-bottom:4px}
+.crown-amenity-price{font-family:'IBM Plex Mono',monospace;font-size:12px;flex-shrink:0;margin-top:2px}
+.crown-amenity-desc{font-size:12px;color:#6a6a7a;line-height:1.5}
+.crown-check{width:18px;height:18px;border-radius:3px;flex-shrink:0;margin-top:2px;border:1px solid;display:flex;align-items:center;justify-content:center;font-size:10px}
+/* lead form */
+.form-group{margin-bottom:20px}
+.form-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;color:#5a7a5a;text-transform:uppercase;display:block;margin-bottom:6px}
+.form-input{width:100%;background:#0f140f;border:1px solid #2a3a2a;border-radius:3px;padding:10px 14px;color:#e8e8e0;font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none;box-sizing:border-box}
+.form-input:focus{border-color:#39FF1466}
+.form-textarea{width:100%;background:#0f140f;border:1px solid #2a3a2a;border-radius:3px;padding:10px 14px;color:#e8e8e0;font-family:'IBM Plex Sans',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:80px;box-sizing:border-box}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* gen x flash */
+.genx-flash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.genx-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,12vw,120px);line-height:1;letter-spacing:.05em;color:#FFF;text-shadow:0 0 40px rgba(255,255,255,.5);margin-bottom:20px}
+.genx-discount{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,8vw,80px);letter-spacing:.1em;color:#FFD700;text-shadow:0 0 30px rgba(255,215,0,.6)}
+.genx-sub{font-family:'IBM Plex Mono',monospace;font-size:14px;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-top:16px}
+/* submitted */
+.submitted-wrap{text-align:center;padding:40px 0}
+.submitted-title{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.05em;margin-bottom:12px}
+.submitted-sub{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.15em;margin-bottom:32px}
+/* genx discount bar */
+.discount-bar{background:#1a0808;border:1px solid #FF4444;border-radius:4px;padding:16px;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<!-- GEN X FLASH (hidden) -->
+<div class="genx-flash" id="genx-flash" style="display:none">
+  <div class="genx-title">GEN X<br>DETECTED!!!!</div>
+  <div class="genx-discount">10% OFF APPLIED</div>
+  <div class="genx-sub">😤 &nbsp; WE SEE YOU &nbsp; 😤</div>
+</div>
+
+<div class="wrap">
+  <div style="height:0" id="top-anchor"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">GRUSH · COTTAGE SERIES · CONFIGURATOR</div>
+    <div class="main-title">BUILD YOUR <span id="title-accent">COTTAGE</span></div>
+    <div class="progress-wrap" id="progress-wrap"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content"></div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const BASES = [
+  { id:'myco', name:'MYCOttage', tagline:'Containerized Mycology Production', icon:'🍄', accent:'#7CFC6E', service:'100A', output:'50–200 lbs/wk', container:'40FT HIGH CUBE', desc:'Full-cycle mushroom production. Substrate to harvest in a single integrated container.',
+    zones:[
+      {name:'Utility',fn:'AC · Panel · RO Water · CO₂',len:'7-0"',color:'#1a2a1a'},
+      {name:'Prep & Steril',fn:'Autoclave · Substrate · Sink',len:'9-8"',color:'#1e321e'},
+      {name:'Clean Room',fn:'LAF Hood · SAB · UV-C',len:'7-6"',color:'#1a2a1a'},
+      {name:'Incubation',fn:'Dark Racks · 75–80°F · High CO₂',len:'7-9"',color:'#0d1f0d'},
+      {name:'Fruiting',fn:'FAE · Misting · 3-Rack Array',len:'9-8"',color:'#1e3d1e'},
+      {name:'Harvest',fn:'Trim · Scale · Cold Storage',len:'7-9"',color:'#1e321e'},
+    ],
+    pricing:{essential:'$11K–$13K',production:'$14K–$18K',pro:'$20K–$28K'}
+  },
+  { id:'grow', name:'GROWcottage', tagline:'Containerized Plant Production', icon:'🌿', accent:'#39FF14', service:'100A', output:'20–100 lbs/wk', container:'40FT HIGH CUBE', desc:'Seed-to-harvest plant production. Clone to flower in a fully controlled environment.',
+    zones:[
+      {name:'Utility',fn:'AC · Panel · RO · Nutrients',len:'7-0"',color:'#0d1f0d'},
+      {name:'Prep',fn:'Potting · Propagation · Sink',len:'9-8"',color:'#1a2a1a'},
+      {name:'Propagation',fn:'T5 Rigs · Heat Mats · Cloner',len:'6-6"',color:'#0d1f0d'},
+      {name:'Vegetative',fn:'CMH/LED · 18hr · Drip',len:'7-9"',color:'#1a2a0d'},
+      {name:'Flowering',fn:'HPS/LED · 12/12 · Irrigation',len:'9-8"',color:'#1e3d14'},
+      {name:'Harvest',fn:'Trim · Dry Rack · Cold Storage',len:'7-9"',color:'#1a2a1a'},
+    ],
+    pricing:{essential:'$11K–$13K',production:'$14K–$18K',pro:'$20K–$28K'}
+  },
+  { id:'shop', name:'SHOPcottage', tagline:'Containerized Hobbbyist Workshop', icon:'🔧', accent:'#FF6B35', service:'200A', output:'1–2 operators', container:'40FT HIGH CUBE', desc:'All-purpose fabrication workshop. Wood, metal, finishing, and electronics in one box.',
+    zones:[
+      {name:'Utility & Storage',fn:'200A Panel · Compressor · Sink',len:'5-0"',color:'#1a1a2a'},
+      {name:'Wood & Fab',fn:'Table Saw · Drill Press · Dust Coll.',len:'8-0"',color:'#1e2535'},
+      {name:'Metal & Welding',fn:'MIG Welder · Grinder · Fire Safe',len:'8-0"',color:'#1a1a2a'},
+      {name:'Finishing Room',fn:'Spray Booth · XP Exhaust · Drying',len:'8-0"',color:'#252015'},
+      {name:'Bench & Electronics',fn:'ESD Bench · Solder · Oscilloscope',len:'6-0"',color:'#1a1a2a'},
+      {name:'Clean Assembly',fn:'Light Table · Computer · Grush',len:'7-5"',color:'#1e2535'},
+    ],
+    pricing:{essential:'$13K–$16K',production:'$17K–$22K',pro:'$24K–$32K'}
+  },
+  { id:'astro', name:'AstroCottage', tagline:'Lunar Operations Platform', icon:'🚀', accent:'#9B6DFF', service:'NUCLEAR / SOLAR', output:'Crew of 1–6', container:'40FT HIGH CUBE · PRESSURE RATED', desc:'Full-cycle lunar operations platform. Farming, fabrication, or research — rated for 1/6 gravity, hard vacuum, and 14-day thermal cycles.', zones:[], pricing:{essential:'Contact for Quote',production:'Contact for Quote',pro:'Contact for Quote'}, isAstro:true }
+];
+
+const COLORS = [
+  {id:'khaki',label:'Field Khaki',hex:'#C8B89A',shadow:'#9A8B6E'},
+  {id:'green',label:'Army Green',hex:'#4A5C3A',shadow:'#2E3C22'},
+  {id:'orange',label:'Blaze Orange',hex:'#E85D04',shadow:'#B84300'},
+  {id:'black',label:'Matte Black',hex:'#1A1A1A',shadow:'#0A0A0A'},
+  {id:'white',label:'Arctic White',hex:'#F0EDE8',shadow:'#C8C4BC'},
+  {id:'brown',label:'Dark Walnut',hex:'#3D2B1F',shadow:'#231610'},
+];
+
+const ASTRO_COLORS = [
+  {id:'void',label:'Void Black',hex:'#0A0A12',shadow:'#000010'},
+  {id:'regolith',label:'Regolith Grey',hex:'#9A9590',shadow:'#6A6560'},
+  {id:'nebula',label:'Nebula Crimson',hex:'#8B1A2A',shadow:'#5A0A18'},
+  {id:'artemis',label:'Artemis White',hex:'#E8EDF5',shadow:'#B0B8C8'},
+  {id:'deep',label:'Deep Space Blue',hex:'#0D1B3E',shadow:'#050D20'},
+  {id:'solar',label:'Solar Gold',hex:'#C8920A',shadow:'#8A6200'},
+];
+
+const FF_COLORS = [
+  {id:'none',label:'No Force Field',hex:null},
+  {id:'blue',label:'Particle Blue',hex:'#4488FF'},
+  {id:'green',label:'Biosafe Green',hex:'#44FF88'},
+  {id:'red',label:'Combat Red',hex:'#FF4444'},
+  {id:'gold',label:'Prestige Gold',hex:'#FFD700'},
+  {id:'purple',label:'Quantum Violet',hex:'#BB44FF'},
+];
+
+const POWER_OPTS = [
+  {id:'shore',label:'Shore Power',desc:'Standard grid tie-in. Most cost-effective.',icon:'⚡'},
+  {id:'solar',label:'Solar + Battery',desc:'Solar array with battery bank. Grid optional.',icon:'☀️'},
+  {id:'hybrid',label:'Generator Backup',desc:'Grid primary, generator for outages.',icon:'🔋'},
+];
+const WATER_OPTS = [
+  {id:'municipal',label:'Municipal',desc:'Standard city/site water connection.',icon:'🚰'},
+  {id:'well',label:'Well + Tank',desc:'Private well with storage tank.',icon:'💧'},
+  {id:'harvest',label:'Rainwater Harvest',desc:'Collection + filtration system.',icon:'🌧️'},
+];
+const TIER_OPTS = [
+  {id:'essential',label:'Essential',desc:'Functional build. Get running fast.',icon:'☑',tag:'ENTRY',tagColor:'#888'},
+  {id:'production',label:'Production',desc:'Mid-range spec. Balanced performance.',icon:'☑☑',tag:'MID',tagColor:'#39FF14'},
+  {id:'pro',label:'Pro Grade',desc:'Commercial spec. Full Grush integration.',icon:'⭐',tag:'TOP',tagColor:'#C8920A'},
+];
+const OFFGRID_OPTS = [
+  {id:'yes',label:'Add Off-Grid Kit',desc:'Solar inlet, water tank hookup, generator connection. Future-proof your build.',icon:'🔌'},
+  {id:'no',label:'Grid-Connected Only',desc:'Standard connections. Upgradeable later.',icon:'⬜'},
+];
+
+// Astro steps
+const ASTRO_ATMOSPHERE = [
+  {id:'nuclear',label:'Fission Micro-Reactor',desc:'NASA-heritage kilopower fission reactor. 10kWe continuous. No refueling for 10 years.',icon:'☢️',tag:'RECOMMENDED',tagColor:'#9B6DFF'},
+  {id:'solar',label:'Deployable Solar Array',desc:'Ultra-high-efficiency GaAs panels rated for lunar thermal cycling. Paired with Li-ion buffer bank.',icon:'🌞',tag:'PROVEN',tagColor:'#C8920A'},
+  {id:'rtg',label:'Radioisotope Generator',desc:'Pu-238 RTG stack. Zero moving parts. Continuous low-power output for life support and sensors.',icon:'💊',tag:'RELIABLE',tagColor:'#39FF14'},
+  {id:'o2loop',label:'Closed-Loop Life Support',desc:'MOXIE-derived in-situ O₂ extraction from regolith CO₂. ISS-heritage scrubber stack.',icon:'🌬️',tag:'STANDARD',tagColor:'#4488FF'},
+];
+const ASTRO_WATER = [
+  {id:'icemining',label:'Polar Ice Mining',desc:'Thermal drill + sublimation collector targeting confirmed PSR ice deposits at lunar south pole. 50L/day minimum yield.',icon:'🧊',tag:'PRIMARY',tagColor:'#4488FF'},
+  {id:'regolith',label:'Regolith Extraction',desc:'Microwave heating of ilmenite-rich regolith releases bound water. 10–20L/day.',icon:'⛏️',tag:'VERSATILE',tagColor:'#C8920A'},
+  {id:'resupply',label:'Starship Resupply Tank',desc:'Starship-compatible docking collar. 2,000L capacity onboard storage.',icon:'🛸',tag:'RELIABLE',tagColor:'#39FF14'},
+  {id:'recycled',label:'Full Closed-Loop Recycling',desc:'ISS-derived ECLSS water recovery. 93%+ recycling efficiency. Drink up.',icon:'♻️',tag:'EFFICIENT',tagColor:'#9B6DFF'},
+];
+const ASTRO_WASTE = [
+  {id:'compactor',label:'Vacuum Compaction & Storage',desc:'Hard vacuum differential compaction reduces solid waste to <5% original volume. Sealed titanium canisters.',icon:'🗜️',tag:'STANDARD',tagColor:'#9B6DFF'},
+  {id:'bioloop',label:'Biological Processing Loop',desc:'Anaerobic digestion converts organic waste to biogas (fuel) and nutrient slurry (fertilizer). Closes the loop.',icon:'🔬',tag:'INTEGRATED',tagColor:'#39FF14'},
+  {id:'incineration',label:'Plasma Arc Incineration',desc:'High-temp plasma torch reduces all organic waste to inert slag and syngas. Power-intensive but thorough.',icon:'🔥',tag:'CLEAN',tagColor:'#FF6B35'},
+  {id:'regolith_cover',label:'Regolith Burial Protocol',desc:"NASA-compliant surface burial at designated coordinates. Simple, low-power, and it's worked since Apollo.",icon:'🌑',tag:'PROVEN',tagColor:'#C8920A'},
+];
+const ASTRO_TIER = [
+  {id:'essential',label:'Survival Grade',desc:'Bare minimum for human habitation. You will not die. Probably.',icon:'☑',tag:'ENTRY',tagColor:'#888',price:'Contact for Quote'},
+  {id:'production',label:'Operational Grade',desc:'Full crew comfort + redundant life support. Multi-zone pressure isolation.',icon:'☑☑',tag:'RECOMMENDED',tagColor:'#9B6DFF',price:'Contact for Quote'},
+  {id:'pro',label:'Colony Grade',desc:"Long-duration colony spec. Radiation hardened, seismic isolated, full Grush integration. Built for people who aren't coming back soon.",icon:'⭐',tag:'TOP',tagColor:'#C8920A',price:'Contact for Quote'},
+  {id:'moonbase_alpha',label:'Moonbase Alpha Standard',desc:'As seen on Space: 1999. Includes Eagle Transporter parking bay, Commander Koenig-approved corridor lighting.',icon:'📟',tag:'GEN X SPECIAL',tagColor:'#FF4444',isEasterEgg:true,price:'Contact for Quote'},
+];
+const ASTRO_COMMS = [
+  {id:'dsn',label:'Lunar Relay Network',desc:'NASA LunaNet-compatible node. Low-latency relay via L2 halo orbit transponder. 100Mbps down / 10Mbps up.',icon:'📡',tag:'STANDARD',tagColor:'#4488FF'},
+  {id:'starlink',label:'Starlink Lunar Gateway',desc:'SpaceX Starlink constellation extended lunar coverage. Phased array terminal integrated into cottage hull. Self-orienting.',icon:'🛰️',tag:'EMERGING',tagColor:'#39FF14'},
+  {id:'laser',label:'Optical Laser Comms',desc:'LLCD-heritage photon terminal. 600Mbps+ throughput. No RF interference. Requires Earth-side ground station.',icon:'🔆',tag:'HIGH BANDWIDTH',tagColor:'#9B6DFF'},
+  {id:'rotary',label:'Rotary Ansible Uplink',desc:'One (1) rotary landline telephone. Dial 9 for Earth. May experience 1.3-second light-speed delay. Long-distance rates apply.',icon:'☎️',tag:'GEN X SPECIAL',tagColor:'#FF4444',isEasterEgg:true},
+];
+const ASTRO_EMERGENCY = [
+  {id:'pressurevault',label:'Emergency Pressure Vault',desc:'Rapid-seal bulkhead system with independent 72-hour O₂ reserve. Auto-triggers on hull breach detection.',icon:'🛡️',tag:'STANDARD',tagColor:'#4488FF'},
+  {id:'escapepod',label:'Crew Return Vehicle',desc:'Autonomous single-stage return capsule docked to cottage exterior. Pre-programmed Earth return trajectory.',icon:'🛸',tag:'FULL EVAC',tagColor:'#9B6DFF'},
+  {id:'medivac',label:'Autonomous Medical Bay',desc:'AI-assisted surgical suite with remote teleoperation capability. Grush health record integration.',icon:'🏥',tag:'MEDICAL',tagColor:'#39FF14'},
+  {id:'sharks',label:"Sharks With Frickin' Laser Beams",desc:'Perimeter defense AND emergency lighting in one elegant solution. Dr. Evil certified. Sharks are pressure-rated and laser-calibrated.',icon:'🦈',tag:'GEN X SPECIAL',tagColor:'#FF4444',isEasterEgg:true},
+];
+
+const CROWN_ITEMS = [
+  {id:'sharks_tank',label:'Shark Observation Tank',desc:"Pressurized 500-gallon acrylic tank. The sharks need somewhere to live when they're off duty.",icon:'🦈',price:'+$42,000'},
+  {id:'rotary_phone',label:'Rotary Landline Terminal',desc:'Fully operational rotary telephone hardwired to the Ansible Uplink. Dial 9 for Earth.',icon:'☎️',price:'+$1,200'},
+  {id:'pingpong',label:'Ping Pong Table',desc:'Regulation size. One (1) paddle included. 1/6 gravity adds a unique strategic dimension.',icon:'🏓',price:'+$800'},
+  {id:'pool_table',label:'Pool Table',desc:'Eight-ball regulation. Cues in various states of disrepair — some warped, one missing its tip.',icon:'🎱',price:'+$2,400'},
+  {id:'snack_machine',label:'Vending Machine (Vintage)',desc:'Works every other time. Stocked with expired terrestrial snack foods from approximately two years ago. Accepts quarters only.',icon:'🍫',price:'+$3,800'},
+];
+
+const STD_STEPS = ['base','color','power','water','tier','offgrid','lead'];
+const ASTRO_STEPS = ['base','astro_color','astro_atmosphere','astro_water','astro_waste','astro_tier','astro_comms','astro_emergency','astro_crown','lead'];
+
+const STEP_META = {
+  base:             {title:'Choose Your Cottage',      sub:'Select the foundation of your build'},
+  color:            {title:'Choose Your Color',         sub:'Make it yours before anything else'},
+  power:            {title:'Power Configuration',       sub:'How will your cottage be powered?'},
+  water:            {title:'Water Configuration',       sub:'How will your cottage connect to water?'},
+  tier:             {title:'Equipment Tier',            sub:'Choose your build quality level'},
+  offgrid:          {title:'Off-Grid Upgrade',          sub:'Add universal off-grid capability?'},
+  lead:             {title:'Get Your Custom Spec',      sub:"We'll send your full build plan"},
+  astro_color:      {title:'Exterior Configuration',   sub:'Hull color + force field selection'},
+  astro_atmosphere: {title:'Power & Life Support',      sub:'How will your crew breathe and stay warm?'},
+  astro_water:      {title:'Water Source',              sub:'On the moon, water is everything'},
+  astro_waste:      {title:'Waste Management',          sub:'What goes in must come out — somewhere'},
+  astro_tier:       {title:'Habitat Tier',              sub:'How long are you planning to stay?'},
+  astro_comms:      {title:'Communications Array',      sub:'How does your cottage talk to Earth?'},
+  astro_emergency:  {title:'Emergency Backup System',   sub:'When things go sideways at 238,855 miles'},
+  astro_crown:      {title:'The Crown Jewel',           sub:'Optional premium break room attachment'},
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let sel = {
+  base:null, color:null, astro_color:null, forcefield:'none',
+  power:null, water:null, tier:null, offgrid:null,
+  astro_atmosphere:null, astro_water:null, astro_waste:null,
+  astro_tier:null, astro_comms:null, astro_emergency:null,
+  crown:null, crown_items:[],
+  leadFirst:'', leadLast:'', leadEmail:'', leadPhone:'', leadNotes:'',
+};
+let stepIndex = 0;
+let submitted = false;
+let genXTriggered = false;
+let genXDiscount = false;
+let showingGenX = false;
+
+function isAstro() { return sel.base === 'astro'; }
+function steps() { return isAstro() ? ASTRO_STEPS : STD_STEPS; }
+function currentStep() { return steps()[stepIndex]; }
+function base() { return BASES.find(b => b.id === sel.base); }
+function accent() { return base()?.accent || '#39FF14'; }
+
+function hexToRgb(hex) {
+  if (!hex) return '0,0,0';
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+function countEasterEggs() {
+  let c = 0;
+  if (sel.astro_tier === 'moonbase_alpha') c++;
+  if (sel.astro_comms === 'rotary') c++;
+  if (sel.astro_emergency === 'sharks') c++;
+  return c;
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  renderProgress();
+  renderSummary();
+  renderStep();
+  document.getElementById('top-anchor').scrollIntoView({behavior:'smooth'});
+}
+
+function renderProgress() {
+  const ss = steps();
+  const wrap = document.getElementById('progress-wrap');
+  wrap.innerHTML = ss.map((_,i) => {
+    let cls = 'progress-step';
+    if (i < stepIndex) cls += ' done';
+    else if (i === stepIndex) cls += ' active';
+    return `<div class="${cls}" style="background:${i<=stepIndex ? accent() : '#1e2a1e'};opacity:${i<stepIndex?.6:i===stepIndex?1:.3}"></div>`;
+  }).join('') + `<span class="progress-label">${stepIndex+1}/${ss.length}</span>`;
+
+  document.getElementById('title-accent').textContent = isAstro() ? 'LUNAR COTTAGE' : 'COTTAGE';
+  document.getElementById('title-accent').style.color = accent();
+}
+
+function renderSummary() {
+  if (stepIndex === 0) return;
+  const b = base();
+  const color = COLORS.find(c => c.id === sel.color);
+  const ac = ASTRO_COLORS.find(c => c.id === sel.astro_color);
+  const ff = FF_COLORS.find(f => f.id === sel.forcefield);
+  let items = [];
+  if (b) items.push({k:'COTTAGE', v:b.name});
+  if (color) items.push({k:'COLOR', v:color.label});
+  if (ac) items.push({k:'HULL', v:ac.label});
+  const inner = items.map(i => `<div class="sum-item"><span class="sum-key">${i.k}</span><span class="sum-val">${i.v}</span></div>`).join('');
+  const swatchHex = color?.hex || ac?.hex;
+  const swatchHtml = swatchHex ? `<div class="color-swatch" style="background:${swatchHex};border:1px solid #333"></div>` : '';
+  if (items.length) {
+    const existing = document.getElementById('summary-bar');
+    const html = `<div class="summary-bar" id="summary-bar">${inner}${swatchHtml}</div>`;
+    if (existing) existing.outerHTML = html;
+    else {
+      const main = document.getElementById('main-content');
+      main.insertAdjacentHTML('beforebegin', html);
+    }
+  }
+}
+
+function renderStep() {
+  const s = currentStep();
+  const meta = STEP_META[s];
+  const ss = steps();
+  const acc = accent();
+
+  let stepHTML = '';
+  if (meta) {
+    stepHTML = `<div class="step-hdr">
+      <div class="step-num" style="color:${acc}">STEP ${String(stepIndex+1).padStart(2,'0')} / ${String(ss.length).padStart(2,'0')}</div>
+      <div class="step-title" style="color:${stepIndex===0?'#e8e8e0':acc}">${meta.title}</div>
+      <div class="step-sub">${meta.sub}</div>
+    </div>`;
+  }
+
+  let content = '';
+  if (submitted) {
+    content = renderSubmitted();
+  } else {
+    content = renderStepContent(s);
+  }
+
+  const navHTML = submitted ? renderNavSubmitted() : renderNav(s);
+
+  document.getElementById('main-content').innerHTML = stepHTML + content + navHTML;
+  attachHandlers(s);
+}
+
+function renderContainerDiagram() {
+  const b = base();
+  if (!b || !b.zones || !b.zones.length) return '';
+  const total = b.zones.reduce((a,z) => a + parseFloat(z.len),0);
+  const colorHex = COLORS.find(c => c.id === sel.color)?.hex || ASTRO_COLORS.find(c=>c.id===sel.astro_color)?.hex || '#4A5C3A';
+  const zoneHTML = b.zones.map((z,i) => {
+    const pct = (parseFloat(z.len)/total)*100;
+    return `<div class="diag-zone" style="width:${pct}%;background:${z.color};border-right:${i<b.zones.length-1?'1px solid #000':'none'}">
+      <div class="diag-zone-name" style="color:${acc}">${z.name.toUpperCase()}</div>
+      <div class="diag-zone-len">${z.len}</div>
+    </div>`;
+  }).join('');
+  const legHTML = b.zones.map((z,i) => `<div class="diag-leg-item"><div class="diag-leg-dot" style="background:${acc};opacity:.7"></div><span class="diag-leg-txt">Z${i+1} ${z.name.toUpperCase()}</span></div>`).join('');
+  return `<div class="container-diag">
+    <div class="diag-label">40FT HIGH CUBE · FLOOR PLAN</div>
+    <div class="diag-bar" style="border:1px solid ${acc}22">
+      <div class="diag-wall" style="background:${colorHex};border-right:1px solid #000"></div>
+      ${zoneHTML}
+      <div class="diag-wall" style="background:${colorHex};border-left:1px solid #000"></div>
+    </div>
+    <div class="diag-legend">${legHTML}</div>
+  </div>`;
+}
+
+const acc_getter = () => accent();
+
+function renderStepContent(s) {
+  const acc = accent();
+  switch(s) {
+    case 'base': return renderOptionCards(BASES, 'base', 'grid2', acc, b => `
+      <div class="card-dot"></div>
+      <span class="card-icon">${b.icon}</span>
+      <div class="card-name" style="color:${sel.base===b.id?b.accent:'#e8e8e0'}">${b.name}</div>
+      <div class="card-sub">${b.tagline}</div>
+      <div class="card-desc">${b.desc}</div>
+      <div style="margin-top:14px;display:flex;gap:16px">
+        <div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#3a5a3a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2px">OUTPUT</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b8d4b8">${b.output}</div></div>
+        <div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#3a5a3a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2px">SERVICE</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b8d4b8">${b.service}</div></div>
+      </div>
+    `);
+
+    case 'color': return renderContainerDiagram() + renderColorPicker(COLORS, 'color', acc);
+
+    case 'power': return renderOptionCards(POWER_OPTS, 'power', 'grid3', acc);
+    case 'water': return renderOptionCards(WATER_OPTS, 'water', 'grid3', acc);
+    case 'tier':  return renderOptionCards(TIER_OPTS,  'tier',  'grid3', acc);
+    case 'offgrid': return renderOptionCards(OFFGRID_OPTS,'offgrid','grid2',acc);
+
+    case 'astro_color': return renderAstroColorStep();
+    case 'astro_atmosphere': return renderOptionCards(ASTRO_ATMOSPHERE,'astro_atmosphere','grid2','#9B6DFF');
+    case 'astro_water':      return renderOptionCards(ASTRO_WATER,'astro_water','grid2','#9B6DFF');
+    case 'astro_waste':      return renderOptionCards(ASTRO_WASTE,'astro_waste','grid2','#9B6DFF');
+    case 'astro_tier':       return renderOptionCards(ASTRO_TIER,'astro_tier','grid2','#9B6DFF');
+    case 'astro_comms':      return renderOptionCards(ASTRO_COMMS,'astro_comms','grid2','#9B6DFF');
+    case 'astro_emergency':  return renderOptionCards(ASTRO_EMERGENCY,'astro_emergency','grid2','#9B6DFF');
+    case 'astro_crown': return renderCrownStep();
+    case 'lead': return renderLead();
+    default: return '';
+  }
+}
+
+function renderOptionCards(opts, key, gridClass, acc, customInner) {
+  return `<div class="${gridClass}">` + opts.map(opt => {
+    const selected = sel[key] === opt.id;
+    const isEgg = !!opt.isEasterEgg;
+    const cardAcc = isEgg ? '#FF4444' : acc;
+    const inner = customInner ? customInner(opt) : `
+      <div class="card-dot"></div>
+      <span class="card-icon">${opt.icon||''}</span>
+      ${opt.tag ? `<div class="card-tag" style="color:${opt.tagColor||'#888'};border-color:${opt.tagColor||'#888'}">${opt.tag}</div>` : ''}
+      <div class="card-name" style="color:${selected?(isEgg?'#FF4444':acc):'#e8e8e0'}">${opt.label}</div>
+      ${opt.desc ? `<div class="card-desc">${opt.desc}</div>` : ''}
+      ${opt.price ? `<div class="card-price" style="color:${isEgg?'#FF4444':acc}">${opt.price}</div>` : ''}
+    `;
+    return `<div class="card${selected?' selected':''}${isEgg?' easter':''}" data-key="${key}" data-val="${opt.id}"
+      style="background:${selected?`rgba(${hexToRgb(cardAcc)},.08)`:(isEgg?'#1a0a0a':'#0f140f')};border-color:${selected?cardAcc:(isEgg?'#FF444433':'#1e2a1e')}">
+      ${inner}</div>`;
+  }).join('') + '</div>';
+}
+
+function renderColorPicker(colors, key, acc) {
+  return `<div class="grid6c">` + colors.map(c => {
+    const sel_c = sel[key] === c.id;
+    return `<div class="color-item" data-key="${key}" data-val="${c.id}" style="cursor:pointer">
+      <div class="swatch${sel_c?' selected':''}" style="background:${c.hex};border:${c.hex==='#F0EDE8'?'1px solid #333':'1px solid transparent'};border-radius:3px;aspect-ratio:1;${sel_c?`box-shadow:0 0 0 2px #0a0c0a,0 0 0 4px ${acc}`:`box-shadow:0 2px 8px ${c.shadow}40`};transform:${sel_c?'scale(1.05)':'scale(1)'};transition:all .2s"></div>
+      <div class="color-name">${c.label.split(' ')[0].toUpperCase()}</div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function renderAstroColorStep() {
+  const selAC = ASTRO_COLORS.find(c => c.id === sel.astro_color);
+  const selFF = sel.forcefield || 'none';
+  const acColors = `<div style="margin-bottom:32px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.25em;color:#9B6DFF;margin-bottom:16px;text-transform:uppercase">— Hull Color</div>
+    <div class="grid6c">${ASTRO_COLORS.map(c => {
+      const isSel = sel.astro_color === c.id;
+      return `<div class="color-item" data-key="astro_color" data-val="${c.id}" style="cursor:pointer">
+        <div style="aspect-ratio:1;border-radius:3px;background:${c.hex};border:${c.hex==='#E8EDF5'?'1px solid #333':'1px solid transparent'};cursor:pointer;transition:all .2s;${isSel?`box-shadow:0 0 0 2px #0a0c0a,0 0 0 4px #9B6DFF,0 0 20px #9B6DFF44;transform:scale(1.08)`:`box-shadow:0 2px 8px ${c.shadow}60`}"></div>
+        <div class="color-name" style="color:#5a5a7a">${c.label.split(' ')[0].toUpperCase()}</div>
+      </div>`;
+    }).join('')}</div>
+    ${selAC ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9B6DFF;letter-spacing:.15em;margin-top:8px">▸ ${selAC.label.toUpperCase()}</div>` : ''}
+  </div>`;
+
+  const ffBox = `<div class="ff-box">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+      <div class="ff-title">⚡ Force Field — Premium Add-On</div>
+      <div class="ff-price">+$18,000</div>
+    </div>
+    <div class="ff-sub">Electromagnetic perimeter defense rated for micrometeorite impact, cosmic radiation shielding, and looking extremely cool. Select a field color or skip.</div>
+    <div class="grid6c" style="margin-bottom:0">${FF_COLORS.map(ff => {
+      const isSel = selFF === ff.id;
+      return `<div class="color-item" data-key="forcefield" data-val="${ff.id}" style="cursor:pointer">
+        <div style="aspect-ratio:1;border-radius:3px;background:${ff.hex||'#0f0f1a'};border:1px solid ${ff.hex?ff.hex+'66':'#2a1a4a'};cursor:pointer;transition:all .2s;${isSel?(ff.hex?`box-shadow:0 0 0 2px #0a0c0a,0 0 0 3px ${ff.hex},0 0 16px ${ff.hex}88`:`box-shadow:0 0 0 2px #9B6DFF`):'none'};transform:${isSel?'scale(1.08)':'scale(1)'};display:flex;align-items:center;justify-content:center;font-size:${ff.hex?0:14}px;color:#444">${!ff.hex?'✕':''}</div>
+        <div class="color-name" style="color:#4a4a6a">${ff.label.split(' ')[0].toUpperCase()}</div>
+      </div>`;
+    }).join('')}</div>
+  </div>`;
+
+  return acColors + ffBox;
+}
+
+function renderCrownStep() {
+  const wantsCrown = sel.crown === 'yes';
+  const crownItems = sel.crown_items || [];
+  const choices = ['yes','no'].map(id => {
+    const isSel = sel.crown === id;
+    return `<div class="crown-choice" data-key="crown" data-val="${id}" style="background:${isSel?(id==='yes'?'rgba(200,146,10,.1)':'#0f140f'):'#0a0a10'};border-color:${isSel?(id==='yes'?'#C8920A':'#2a3a2a'):'#1e1e2a'}">
+      ${isSel?`<div style="width:6px;height:6px;border-radius:50%;background:${id==='yes'?'#C8920A':'#39FF14'};box-shadow:0 0 8px ${id==='yes'?'#C8920A':'#39FF14'};float:right"></div>`:''}
+      <div class="crown-choice-name" style="color:${isSel?(id==='yes'?'#C8920A':'#39FF14'):'#6a6a7a'}">${id==='yes'?'ADD THE CROWN JEWEL':'NO THANK YOU'}</div>
+      <div class="crown-choice-desc" style="color:#5a5a6a">${id==='yes'?"I deserve this.":"I will regret this."}</div>
+    </div>`;
+  }).join('');
+
+  const amenities = wantsCrown ? CROWN_ITEMS.map(item => {
+    const isSel = crownItems.includes(item.id);
+    return `<div class="crown-amenity${isSel?' selected':''}" data-crown-item="${item.id}">
+      <div class="crown-amenity-icon">${item.icon}</div>
+      <div style="flex:1">
+        <div class="crown-amenity-name" style="color:${isSel?'#C8920A':'#b8b8c8'}">${item.label}</div>
+        <div class="crown-amenity-desc">${item.desc}</div>
+      </div>
+      <div class="crown-amenity-price" style="color:${isSel?'#C8920A':'#4a4a5a'}">${item.price}</div>
+      <div class="crown-check" style="border-color:${isSel?'#C8920A':'#3a3a4a'};background:${isSel?'#C8920A22':'transparent'};color:#C8920A">${isSel?'✓':''}</div>
+    </div>`;
+  }).join('') : '';
+
+  return `<div class="crown-box">
+    <div class="crown-title">👑 THE CROWN JEWEL</div>
+    <div class="crown-desc">The Crown Jewel is a pressurized break room module that attaches to the side of your AstroCottage. It is the pinnacle of lunar hospitality. It is not required. It may be necessary.</div>
+    <div class="crown-choices">${choices}</div>
+  </div>
+  ${wantsCrown?`<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.25em;color:#C8920A;margin-bottom:16px;text-transform:uppercase">— Select Your Amenities</div>${amenities}`:''}`;
+}
+
+function renderLead() {
+  const b = base();
+  const acc = accent();
+  const specRows = isAstro() ? [
+    ['COTTAGE', b?.name],
+    ['HULL COLOR', ASTRO_COLORS.find(c=>c.id===sel.astro_color)?.label],
+    ['FORCE FIELD', FF_COLORS.find(f=>f.id===sel.forcefield)?.label],
+    ['LIFE SUPPORT', ASTRO_ATMOSPHERE.find(a=>a.id===sel.astro_atmosphere)?.label],
+    ['WATER SOURCE', ASTRO_WATER.find(w=>w.id===sel.astro_water)?.label],
+    ['WASTE MGMT', ASTRO_WASTE.find(w=>w.id===sel.astro_waste)?.label],
+    ['HABITAT TIER', ASTRO_TIER.find(t=>t.id===sel.astro_tier)?.label],
+    ['COMMS ARRAY', ASTRO_COMMS.find(c=>c.id===sel.astro_comms)?.label],
+    ['EMERGENCY', ASTRO_EMERGENCY.find(e=>e.id===sel.astro_emergency)?.label],
+    sel.crown==='yes' ? ['CROWN JEWEL','YES · '+(sel.crown_items?.length||0)+' AMENITIES'] : null,
+    genXDiscount ? ['DISCOUNT','10% GEN X DISCOUNT APPLIED 😤'] : null,
+  ].filter(Boolean) : [
+    ['COTTAGE', b?.name],
+    ['COLOR', COLORS.find(c=>c.id===sel.color)?.label],
+    ['POWER', POWER_OPTS.find(p=>p.id===sel.power)?.label],
+    ['WATER', WATER_OPTS.find(w=>w.id===sel.water)?.label],
+    ['TIER', TIER_OPTS.find(t=>t.id===sel.tier)?.label],
+    ['OFF-GRID', OFFGRID_OPTS.find(o=>o.id===sel.offgrid)?.label],
+  ].filter(Boolean);
+
+  const discBar = genXDiscount ? `<div class="discount-bar"><div style="font-size:24px">😤</div><div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4444;letter-spacing:.15em;margin-bottom:2px">GEN X DISCOUNT APPLIED</div><div style="font-size:12px;color:#8a5a5a">10% off your build. You've earned it. Probably.</div></div></div>` : '';
+
+  return discBar + `<div class="spec-box">
+    <div class="spec-title" style="color:${acc}">YOUR CONFIGURATION</div>
+    ${specRows.map(([k,v])=>v?`<div class="spec-row"><span class="spec-key">${k}</span><span class="spec-val" style="color:${k==='DISCOUNT'?'#FF4444':'#b8d4b8'}">${v}</span></div>`:'').join('')}
+  </div>
+  <div style="margin-top:28px">
+    <div class="form-grid" style="margin-bottom:0">
+      <div class="form-group"><label class="form-label">${isAstro()?'Commander First Name':'First Name'}</label><input class="form-input" id="f-first" placeholder="John" value="${sel.leadFirst||''}"/></div>
+      <div class="form-group"><label class="form-label">${isAstro()?'Commander Last Name':'Last Name'}</label><input class="form-input" id="f-last" placeholder="Smith" value="${sel.leadLast||''}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="f-email" type="email" placeholder="${isAstro()?'you@moonbase.gov':'you@example.com'}" value="${sel.leadEmail||''}"/></div>
+    <div class="form-group"><label class="form-label">Phone (optional)</label><input class="form-input" id="f-phone" placeholder="(555) 000-0000" value="${sel.leadPhone||''}"/></div>
+    <div class="form-group"><label class="form-label">${isAstro()?'Mission notes / deployment coordinates (optional)':'Site location / notes (optional)'}</label><textarea class="form-textarea" id="f-notes" placeholder="${isAstro()?'Lunar south pole preferred. Near the ice.':'City, state, site conditions, questions...'}">${sel.leadNotes||''}</textarea></div>
+  </div>`;
+}
+
+function renderSubmitted() {
+  const b = base();
+  const acc = accent();
+  return `<div class="submitted-wrap">
+    <div class="submitted-title" style="color:${acc}">${isAstro()?'LUNAR BUILD REQUEST TRANSMITTED':'SPEC REQUEST SENT'}</div>
+    <div class="submitted-sub" style="color:#4a6a4a;letter-spacing:.15em">${isAstro()?'SIGNAL TRAVELING AT LIGHT SPEED · ETA 1.3 SECONDS':'YOUR BUILD PLAN IS BEING PREPARED'}</div>
+    <div class="spec-box">
+      <div class="spec-title" style="color:${acc}">BUILD SUMMARY · ${b?.name}</div>
+      <div class="spec-row"><span class="spec-key">NAME</span><span class="spec-val">${sel.leadFirst} ${sel.leadLast}</span></div>
+      <div class="spec-row"><span class="spec-key">EMAIL</span><span class="spec-val">${sel.leadEmail}</span></div>
+      <div class="spec-row"><span class="spec-key">COTTAGE</span><span class="spec-val">${b?.name}</span></div>
+      ${genXDiscount?`<div class="spec-row"><span class="spec-key">DISCOUNT</span><span class="spec-val" style="color:#FF4444">10% GEN X DISCOUNT 😤</span></div>`:''}
+      <div style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3a5a3a;letter-spacing:.15em">GRUSH INTEGRATED · CONFIDENTIAL · FOR LICENSED USE ONLY</div>
+    </div>
+  </div>`;
+}
+
+function renderNav(s) {
+  const canGo = canAdvance(s);
+  const acc = accent();
+  const isSkippable = s === 'offgrid';
+  return `<div class="nav-row">
+    ${stepIndex > 0 ? `<button class="btn-secondary" onclick="goBack()">← BACK</button>` : ''}
+    <button class="btn-primary" ${!canGo?'disabled':''} onclick="advance()" style="background:${acc};color:#0a0c0a">${s==='lead'?'SUBMIT REQUEST →':'CONTINUE →'}</button>
+    ${isSkippable ? `<button class="btn-skip" onclick="advance()">skip · use default</button>` : ''}
+    ${stepIndex > 0 && !isSkippable ? `<button class="btn-skip" onclick="restart()">start over</button>` : ''}
+  </div>`;
+}
+
+function renderNavSubmitted() {
+  return `<div class="nav-row"><button class="btn-secondary" onclick="restart()">CONFIGURE ANOTHER</button></div>`;
+}
+
+// ─── ADVANCE / BACK ──────────────────────────────────────────────────────────
+function canAdvance(s) {
+  const map = {
+    base:sel.base, color:sel.color, astro_color:sel.astro_color, power:sel.power,
+    water:sel.water, tier:sel.tier, offgrid:sel.offgrid,
+    astro_atmosphere:sel.astro_atmosphere, astro_water:sel.astro_water,
+    astro_waste:sel.astro_waste, astro_tier:sel.astro_tier,
+    astro_comms:sel.astro_comms, astro_emergency:sel.astro_emergency,
+    astro_crown:sel.crown, lead:sel.leadEmail,
+  };
+  return !!map[s];
+}
+
+function advance() {
+  const s = currentStep();
+  if (s === 'lead') { submitted = true; render(); return; }
+
+  // Gen X check on egg steps
+  if (!genXTriggered && ['astro_tier','astro_comms','astro_emergency'].includes(s)) {
+    if (countEasterEggs() >= 2) {
+      genXTriggered = true; genXDiscount = true;
+      triggerGenX(); return;
+    }
+  }
+
+  if (stepIndex < steps().length - 1) { stepIndex++; render(); }
+}
+
+function goBack() {
+  if (stepIndex > 0) { stepIndex--; render(); }
+}
+
+function restart() {
+  sel = {base:null,color:null,astro_color:null,forcefield:'none',power:null,water:null,tier:null,offgrid:null,astro_atmosphere:null,astro_water:null,astro_waste:null,astro_tier:null,astro_comms:null,astro_emergency:null,crown:null,crown_items:[],leadFirst:'',leadLast:'',leadEmail:'',leadPhone:'',leadNotes:''};
+  stepIndex = 0; submitted = false; genXTriggered = false; genXDiscount = false;
+  document.getElementById('main-content').innerHTML = '';
+  const sb = document.getElementById('summary-bar'); if (sb) sb.remove();
+  render();
+}
+
+function triggerGenX() {
+  const el = document.getElementById('genx-flash');
+  el.style.display = 'flex';
+  let count = 0;
+  const interval = setInterval(() => {
+    el.style.background = count % 2 === 0 ? '#CC0000' : '#0a0c0a';
+    count++;
+    if (count >= 12) {
+      clearInterval(interval);
+      el.style.background = '#CC0000';
+      setTimeout(() => { el.style.display='none'; stepIndex++; render(); }, 1800);
+    }
+  }, 160);
+}
+
+// ─── EVENT DELEGATION ────────────────────────────────────────────────────────
+function attachHandlers(s) {
+  document.getElementById('main-content').addEventListener('click', function(e) {
+    const card = e.target.closest('[data-key]');
+    if (card) {
+      sel[card.dataset.key] = card.dataset.val;
+      // auto-advance single-choice steps
+      if (!['base','lead','astro_crown'].includes(s)) {
+        setTimeout(() => { if (canAdvance(s)) advance(); else render(); }, 180);
+      } else { render(); }
+      return;
+    }
+    const colorItem = e.target.closest('.color-item[data-key]');
+    if (colorItem) {
+      sel[colorItem.dataset.key] = colorItem.dataset.val;
+      render(); return;
+    }
+    const crownItem = e.target.closest('[data-crown-item]');
+    if (crownItem) {
+      const id = crownItem.dataset.crownItem;
+      const idx = (sel.crown_items||[]).indexOf(id);
+      if (idx >= 0) sel.crown_items.splice(idx,1);
+      else { sel.crown_items = sel.crown_items||[]; sel.crown_items.push(id); }
+      render(); return;
+    }
+  });
+  // form inputs
+  ['f-first','f-last','f-email','f-phone','f-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function() {
+      const map = {'f-first':'leadFirst','f-last':'leadLast','f-email':'leadEmail','f-phone':'leadPhone','f-notes':'leadNotes'};
+      sel[map[id]] = this.value;
+      // re-enable button without full render
+      const btn = document.querySelector('.btn-primary');
+      if (btn) btn.disabled = !canAdvance('lead');
+    });
+  });
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

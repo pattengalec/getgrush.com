@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskMask — Window Overlay Theming System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #050a18;
+  --cyan: #00c8ff;
+  --cyan-dim: rgba(0,200,255,0.07);
+  --cyan-glow: rgba(0,200,255,0.25);
+  --chartreuse: #c8ff00;
+  --amber: #ffb830;
+  --white: #f0f4ff;
+  --muted: #5a7090;
+  --mid: #0a1428;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* NAV */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px; height:64px;
+  background:rgba(5,10,24,0.9); backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(0,200,255,0.07);
+}
+.nav-logo { font-family:'Courier Prime',monospace; font-weight:700; font-size:15px; color:var(--cyan); letter-spacing:0.12em; text-decoration:none; text-transform:uppercase; }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+.nav-links a:hover { color:var(--cyan); }
+.nav-links a.active { color:var(--cyan); }
+.nav-back { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+.nav-back:hover { color:var(--cyan); }
+
+/* HERO */
+.hero {
+  position:relative; z-index:1;
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding:100px 80px 60px;
+  gap:80px; overflow:hidden;
+}
+
+/* Window mockup */
+.window-vis {
+  position:relative; flex-shrink:0;
+  width:340px;
+  opacity:0; animation:fadeUp 1s 0.5s forwards;
+}
+
+/* Base window (the app underneath) */
+.window-base {
+  background: #0d1829;
+  border: 1px solid rgba(0,200,255,0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+}
+.window-titlebar {
+  display:flex; align-items:center; gap:8px;
+  padding: 10px 14px;
+  background: #0a1020;
+  border-bottom: 1px solid rgba(0,200,255,0.08);
+}
+.wb-dot { width:10px; height:10px; border-radius:50%; }
+.window-body { padding:20px; }
+.window-lines { display:flex; flex-direction:column; gap:7px; }
+.wl { height:8px; border-radius:2px; background:rgba(0,200,255,0.08); }
+.wl.accent { background:rgba(0,200,255,0.18); width:60%; }
+
+/* Overlay window (TaskMask layer) */
+.window-overlay {
+  position:absolute;
+  top: 32px; left: 24px; right: -24px;
+  background: rgba(8,18,36,0.94);
+  border: 1.5px solid var(--cyan);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 32px rgba(0,200,255,0.18), 0 24px 64px rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+}
+.overlay-titlebar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 10px 14px;
+  background: rgba(0,200,255,0.06);
+  border-bottom: 1px solid rgba(0,200,255,0.12);
+}
+.overlay-task-name {
+  font-family:'Courier Prime',monospace; font-size:11px;
+  color:var(--cyan); letter-spacing:0.1em;
+}
+.overlay-badge {
+  font-size:9px; letter-spacing:0.15em; text-transform:uppercase;
+  background:rgba(0,200,255,0.15); color:var(--cyan);
+  padding:2px 8px; border-radius:2px;
+}
+.overlay-body { padding:16px; }
+.overlay-task-title {
+  font-family:'Playfair Display',serif; font-size:15px; font-weight:700;
+  color:var(--white); margin-bottom:8px;
+}
+.overlay-desc {
+  font-family:'Courier Prime',monospace; font-size:11px; line-height:1.6;
+  color:var(--muted); margin-bottom:14px;
+}
+.overlay-tag-row { display:flex; gap:6px; flex-wrap:wrap; }
+.overlay-tag {
+  font-size:9px; letter-spacing:0.12em; text-transform:uppercase;
+  border:1px solid rgba(0,200,255,0.2); color:var(--cyan);
+  padding:3px 8px; border-radius:2px;
+}
+/* Dissolve indicator */
+.dissolve-hint {
+  position:absolute; bottom:-28px; right:0;
+  font-family:'Courier Prime',monospace; font-size:9px;
+  letter-spacing:0.15em; color:var(--muted); opacity:0.6;
+}
+
+/* Drag indicator (task chip) */
+.task-chip {
+  position:absolute; top:-18px; left:50%;
+  transform:translateX(-50%);
+  background:var(--cyan); color:var(--navy);
+  font-family:'Space Mono',monospace; font-size:9px; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase;
+  padding:4px 12px; border-radius:2px;
+  box-shadow:0 0 12px rgba(0,200,255,0.4);
+  white-space:nowrap;
+}
+
+/* AI glow pulse */
+@keyframes aiPulse {
+  0%,100% { box-shadow:0 0 32px rgba(0,200,255,0.18), 0 24px 64px rgba(0,0,0,0.7); border-color:var(--cyan); }
+  50% { box-shadow:0 0 56px rgba(0,200,255,0.35), 0 24px 64px rgba(0,0,0,0.7); border-color:#44ddff; }
+}
+.window-overlay { animation:aiPulse 3s ease-in-out infinite; }
+
+/* HERO TEXT */
+.hero-content { position:relative; max-width:520px; }
+.hero-eyebrow { font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:var(--cyan); margin-bottom:20px; opacity:0; animation:fadeUp 0.7s 0.2s forwards; }
+.hero-title { font-family:'Playfair Display',serif; font-size:clamp(52px,7vw,96px); font-weight:900; line-height:0.9; letter-spacing:-0.03em; opacity:0; animation:fadeUp 0.8s 0.35s forwards; }
+.hero-title .accent { color:var(--cyan); }
+.hero-sub { font-family:'Courier Prime',monospace; font-size:14.5px; line-height:1.75; color:var(--muted); margin-top:24px; max-width:460px; opacity:0; animation:fadeUp 0.8s 0.5s forwards; }
+.patent-badge { display:inline-flex; align-items:center; gap:8px; margin-top:20px; padding:8px 16px; border:1px solid rgba(200,255,0,0.25); background:rgba(200,255,0,0.06); opacity:0; animation:fadeUp 0.8s 0.62s forwards; }
+.patent-badge-label { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--chartreuse); }
+.patent-badge-val { font-family:'Courier Prime',monospace; font-size:11px; color:var(--chartreuse); }
+.hero-cta { margin-top:28px; display:flex; gap:16px; flex-wrap:wrap; opacity:0; animation:fadeUp 0.8s 0.75s forwards; }
+.btn-primary { display:inline-block; padding:14px 32px; background:var(--cyan); color:var(--navy); font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; font-weight:700; text-decoration:none; border-radius:2px; transition:all 0.2s; }
+.btn-primary:hover { background:#33d4ff; box-shadow:0 0 24px var(--cyan-glow); }
+.btn-outline { display:inline-block; padding:14px 32px; border:1px solid var(--cyan); color:var(--cyan); font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; border-radius:2px; transition:all 0.2s; }
+.btn-outline:hover { background:var(--cyan-dim); }
+
+/* STATS */
+.stats-bar { position:relative; z-index:1; border-top:1px solid rgba(0,200,255,0.07); border-bottom:1px solid rgba(0,200,255,0.07); display:grid; grid-template-columns:repeat(4,1fr); background:rgba(10,20,40,0.5); }
+.stat { padding:32px 40px; border-right:1px solid rgba(0,200,255,0.05); opacity:0; animation:fadeUp 0.5s forwards; }
+.stat:nth-child(1){animation-delay:0.1s}.stat:nth-child(2){animation-delay:0.2s}.stat:nth-child(3){animation-delay:0.3s}.stat:nth-child(4){animation-delay:0.4s;border-right:none}
+.stat-num { font-family:'Playfair Display',serif; font-size:40px; font-weight:900; color:var(--cyan); line-height:1; }
+.stat-label { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-top:6px; }
+
+/* SECTIONS */
+section { position:relative; z-index:1; padding:96px 80px; max-width:1200px; margin:0 auto; }
+.section-label { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--cyan); margin-bottom:16px; }
+.section-title { font-family:'Playfair Display',serif; font-size:clamp(32px,4vw,48px); font-weight:700; letter-spacing:-0.02em; line-height:1.1; margin-bottom:20px; }
+.section-body { font-family:'Courier Prime',monospace; font-size:14px; line-height:1.8; color:var(--muted); max-width:560px; }
+
+/* HOW IT WORKS STEPS */
+.how-steps { margin-top:56px; display:grid; grid-template-columns:repeat(4,1fr); position:relative; }
+.how-steps::before { content:''; position:absolute; top:24px; left:12.5%; right:12.5%; height:1px; background:rgba(0,200,255,0.12); }
+.how-step { padding:0 16px 32px; text-align:center; position:relative; }
+.step-circle { width:48px; height:48px; border-radius:50%; border:1px solid rgba(0,200,255,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-family:'Playfair Display',serif; font-size:18px; font-weight:900; color:var(--cyan); background:var(--navy); position:relative; z-index:1; }
+.step-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--white); margin-bottom:8px; }
+.step-body { font-family:'Courier Prime',monospace; font-size:12px; line-height:1.65; color:var(--muted); }
+
+/* TECH ARCHITECTURE */
+.arch-grid { margin-top:48px; display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.arch-item { padding:28px 32px; border:1px solid rgba(0,200,255,0.08); background:rgba(10,20,40,0.4); transition:all 0.2s; }
+.arch-item:hover { border-color:rgba(0,200,255,0.22); background:rgba(10,20,40,0.7); }
+.arch-label { font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--cyan); opacity:0.6; margin-bottom:8px; }
+.arch-name { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--white); margin-bottom:8px; }
+.arch-desc { font-family:'Courier Prime',monospace; font-size:12.5px; line-height:1.65; color:var(--muted); }
+.arch-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.arch-chip { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border:1px solid rgba(0,200,255,0.15); color:var(--cyan); border-radius:2px; }
+
+/* THEME SCHEMA */
+.schema-table { margin-top:40px; border:1px solid rgba(0,200,255,0.08); }
+.schema-row { display:grid; grid-template-columns:1fr 2fr; gap:0; border-bottom:1px solid rgba(0,200,255,0.05); }
+.schema-row:last-child { border-bottom:none; }
+.schema-key { padding:12px 20px; font-family:'Courier Prime',monospace; font-size:12px; color:var(--cyan); background:rgba(0,200,255,0.03); border-right:1px solid rgba(0,200,255,0.05); }
+.schema-val { padding:12px 20px; font-family:'Courier Prime',monospace; font-size:12px; color:var(--muted); }
+
+/* IP STATUS */
+.ip-box { margin-top:48px; border:1px solid var(--chartreuse); padding:40px 48px; background:rgba(200,255,0,0.04); position:relative; overflow:hidden; }
+.ip-box::before { content:'PATENT PENDING'; position:absolute; top:20px; right:24px; font-size:9px; letter-spacing:0.3em; color:var(--chartreuse); border:1px solid var(--chartreuse); padding:3px 10px; border-radius:2px; }
+.ip-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--white); margin-bottom:12px; }
+.ip-body { font-family:'Courier Prime',monospace; font-size:14px; line-height:1.75; color:var(--muted); max-width:600px; margin-bottom:20px; }
+.ip-claims { display:flex; flex-direction:column; gap:6px; }
+.ip-claim { font-family:'Courier Prime',monospace; font-size:12px; color:var(--muted); display:flex; gap:12px; }
+.ip-claim-num { color:var(--cyan); flex-shrink:0; width:20px; }
+
+/* USE CASES */
+.use-grid { margin-top:48px; display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.use-item { display:flex; align-items:flex-start; gap:20px; padding:28px 32px; border:1px solid rgba(0,200,255,0.08); background:rgba(10,20,40,0.3); transition:all 0.2s; }
+.use-item:hover { border-color:rgba(0,200,255,0.22); background:rgba(10,20,40,0.7); }
+.use-icon { font-size:22px; flex-shrink:0; padding-top:2px; }
+.use-content h4 { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--white); margin-bottom:6px; }
+.use-content p { font-family:'Courier Prime',monospace; font-size:13px; line-height:1.65; color:var(--muted); }
+
+/* REVENUE */
+.revenue-grid { margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.rev-card { border:1px solid rgba(0,200,255,0.12); background:rgba(10,20,40,0.5); padding:32px 24px; }
+.rev-tier { font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--cyan); margin-bottom:8px; }
+.rev-name { font-family:'Playfair Display',serif; font-size:22px; font-weight:900; color:var(--white); margin-bottom:4px; }
+.rev-price { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:var(--cyan); margin-bottom:12px; line-height:1; }
+.rev-price-sub { font-size:10px; color:var(--muted); }
+.rev-desc { font-family:'Courier Prime',monospace; font-size:12px; line-height:1.65; color:var(--muted); }
+
+.divider { position:relative; z-index:1; border-top:1px solid rgba(0,200,255,0.04); max-width:1200px; margin:0 auto; }
+footer { position:relative; z-index:1; border-top:1px solid rgba(0,200,255,0.06); padding:32px 80px; display:flex; align-items:center; justify-content:space-between; }
+footer p { font-size:10px; letter-spacing:0.12em; color:var(--muted); opacity:0.5; }
+footer a { font-size:10px; letter-spacing:0.12em; color:var(--cyan); text-decoration:none; opacity:0.6; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:960px){
+  .hero{flex-direction:column;padding:100px 32px 60px;gap:40px}
+  .window-vis{width:100%;max-width:340px}
+  .how-steps{grid-template-columns:1fr 1fr}.how-steps::before{display:none}
+  .arch-grid{grid-template-columns:1fr}
+  .use-grid{grid-template-columns:1fr}
+  .revenue-grid{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:none}
+  section{padding:64px 32px}
+  footer{flex-direction:column;gap:12px;padding:32px;text-align:center}
+  .schema-row{grid-template-columns:1fr}
+  .schema-key{border-right:none;border-bottom:1px solid rgba(0,200,255,0.05)}
+  .ip-box{padding:28px 24px}
+}
+
+
+/* ─── GLOBAL MOBILE RESPONSIVE ─────────────────────────────────────── */
+
+/* Better base typography */
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+/* Mobile breakpoint: phone-first clean layout */
+@media (max-width: 640px) {
+  nav {
+    padding: 0 20px;
+    height: 56px;
+  }
+  .nav-links { display: none; }
+  .nav-logo { font-size: 13px; }
+  .nav-back { font-size: 10px; }
+
+  .hero {
+    flex-direction: column !important;
+    padding: 80px 24px 48px !important;
+    gap: 32px !important;
+    min-height: auto !important;
+    text-align: left;
+  }
+
+  /* Hero visuals — scale down on mobile */
+  .hero > *:first-child {
+    width: 100% !important;
+    max-width: 300px !important;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: clamp(44px, 13vw, 64px) !important;
+    line-height: 0.92 !important;
+  }
+  .hero-eyebrow { font-size: 10px !important; }
+  .hero-sub { font-size: 14px !important; line-height: 1.7 !important; }
+  .hero-cta { flex-direction: column; gap: 12px !important; }
+  .btn-primary, .btn-outline {
+    display: block; text-align: center;
+    padding: 14px 24px !important;
+    font-size: 11px !important;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .stat {
+    padding: 20px 20px !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .stat-num { font-size: 28px !important; }
+  .stat-label { font-size: 9px !important; }
+
+  /* Sections */
+  section {
+    padding: 52px 24px !important;
+  }
+  .section-title {
+    font-size: clamp(26px, 7vw, 36px) !important;
+    line-height: 1.05 !important;
+  }
+  .section-body { font-size: 13px !important; line-height: 1.75 !important; }
+
+  /* Grids → single column */
+  .product-grid,
+  .product-pair,
+  .use-grid,
+  .arch-grid,
+  .char-section,
+  .revenue-grid,
+  .restoration-layout,
+  .build-steps,
+  .how-steps,
+  .subject-grid,
+  .pellet-grid,
+  .market-list { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+  /* Timeline */
+  .timeline-item { flex-direction: column; gap: 6px; padding: 20px; }
+  .timeline-year { font-size: 18px; }
+
+  /* Cards */
+  .product-card, .arch-item, .use-item,
+  .feature-item, .rev-card, .char-card { padding: 20px 16px !important; }
+
+  /* Schema table */
+  .schema-row { grid-template-columns: 1fr !important; }
+  .schema-key { border-right: none !important; border-bottom: 1px solid rgba(0,200,255,0.05); }
+
+  /* IP box */
+  .ip-box { padding: 20px 18px !important; }
+  .ip-box::before { display: none; }
+
+  /* Footer */
+  footer {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 24px !important;
+    text-align: center;
+  }
+
+  /* Venture cards on index */
+  .ventures-grid { grid-template-columns: 1fr !important; }
+
+  /* Character stage on pocketquiz */
+  .char-stage { width: 100% !important; max-width: 320px !important; min-height: 320px !important; }
+  .char-svg { max-width: 120px !important; }
+
+  /* How-steps horizontal line */
+  .how-steps::before { display: none !important; }
+
+  /* Container diagram */
+  .container-diag { overflow-x: auto; }
+
+  /* Configurator */
+  .grid2, .grid3, .grid4, .grid6c { grid-template-columns: 1fr !important; }
+  .form-grid { grid-template-columns: 1fr !important; }
+  .crown-choices { flex-direction: column !important; }
+}
+
+/* Tablet: 641–959px */
+@media (min-width: 641px) and (max-width: 959px) {
+  nav { padding: 0 28px; }
+  .hero { padding: 90px 40px 52px !important; gap: 48px !important; }
+  .hero-title { font-size: clamp(48px, 8vw, 72px) !important; }
+  section { padding: 72px 40px !important; }
+  .product-grid { grid-template-columns: 1fr !important; }
+  .use-grid { grid-template-columns: 1fr !important; }
+  .revenue-grid { grid-template-columns: 1fr 1fr !important; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr) !important; }
+  .stat:nth-child(2) { border-right: none !important; }
+  .stat:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.04); }
+}
+
+/* ─── GLOBAL FONT IMPROVEMENTS ──────────────────────────────────────── */
+
+/* Body copy — Space Mono stays but with better sizing and spacing */
+body {
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Courier Prime body copy — improved line height */
+.section-body,
+.hero-sub,
+.card-desc,
+.card-pitch,
+.arch-desc,
+.step-body,
+.use-content p,
+.feature-content p,
+.rev-desc,
+.ip-body,
+.timeline-content p,
+.pellet-desc,
+.market-content p,
+.restoration-text p,
+.char-card-desc {
+  font-size: 14px !important;
+  line-height: 1.82 !important;
+  letter-spacing: 0.01em;
+}
+
+/* Playfair Display headings — tighter but more readable */
+.section-title {
+  font-size: clamp(30px, 3.8vw, 46px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.025em !important;
+}
+.card-name, .arch-name, .rev-name,
+.step-title, .char-card-name,
+.poc-title, .ip-title, .crown-title { 
+  letter-spacing: -0.01em;
+}
+
+/* Mono labels — slightly more breathing room */
+.section-label, .hero-eyebrow, .card-eyebrow, .arch-label,
+.rev-tier, .stat-label, .spec-key, .sum-key,
+.form-label, .card-tag, .card-sub {
+  letter-spacing: 0.22em !important;
+  font-size: 10px !important;
+}
+
+/* Nav links — slightly bigger for readability */
+.nav-links a { font-size: 11.5px !important; letter-spacing: 0.14em !important; }
+
+/* Stat numbers */
+.stat-num { font-size: 38px !important; }
+
+/* Buttons */
+.btn-primary, .btn-outline, .btn-secondary { letter-spacing: 0.14em !important; }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Getgrush.com</a>
+  <ul class="nav-links">
+    <li><a href="taskmask.html" class="active">TaskMask</a></li>
+    <li><a href="pocketquiz.html">PocketQuiz</a></li>
+    <li><a href="grush.html">Grush</a></li>
+    <li><a href="cottages.html">Cottages</a></li>
+    <li><a href="funguyfungi.html">Fun Guy Fungi</a></li>
+  </ul>
+  <a href="/" class="nav-back">&larr; Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+
+  <!-- Window mockup illustration -->
+  <div class="window-vis">
+    <!-- Task chip being dragged -->
+    <div class="task-chip">⬛ Deep Work Session</div>
+
+    <!-- Base app window (underneath) -->
+    <div class="window-base">
+      <div class="window-titlebar">
+        <div class="wb-dot" style="background:#ff5f57"></div>
+        <div class="wb-dot" style="background:#febc2e"></div>
+        <div class="wb-dot" style="background:#28c840"></div>
+        <div style="font-family:'Courier Prime',monospace;font-size:10px;color:var(--muted);margin-left:8px;letter-spacing:0.1em">Visual Studio Code</div>
+      </div>
+      <div class="window-body">
+        <div class="window-lines">
+          <div class="wl" style="width:80%"></div>
+          <div class="wl accent"></div>
+          <div class="wl" style="width:90%"></div>
+          <div class="wl" style="width:45%"></div>
+          <div class="wl" style="width:70%"></div>
+          <div class="wl accent" style="width:55%"></div>
+          <div class="wl" style="width:85%"></div>
+          <div class="wl" style="width:30%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TaskMask overlay -->
+    <div class="window-overlay">
+      <div class="overlay-titlebar">
+        <div class="overlay-task-name">⬛ DEEP WORK SESSION</div>
+        <div class="overlay-badge">AI THEME ACTIVE</div>
+      </div>
+      <div class="overlay-body">
+        <div class="overlay-task-title">Patent Filing Sprint</div>
+        <div class="overlay-desc">Provisional spec — sections 4 through 7. No interruptions. Timer running.</div>
+        <div class="overlay-tag-row">
+          <span class="overlay-tag">Focus Mode</span>
+          <span class="overlay-tag">TaskMask-PROV-001</span>
+          <span class="overlay-tag">2h 14m</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dissolve-hint">↑ auto-dissolves when session ends</div>
+  </div>
+
+  <!-- Hero text -->
+  <div class="hero-content">
+    <p class="hero-eyebrow">Venture 01 &mdash; App Software &mdash; Seed Revenue</p>
+    <h1 class="hero-title">
+      Task<span class="accent">Mask.</span>
+    </h1>
+    <p class="hero-sub">
+      Drag a task onto any open application window. An AI generates a
+      distinctive visual theme for that context — colors, typography, ambient
+      tone. The overlay auto-dissolves when the session ends. Zero friction,
+      zero setup.
+    </p>
+    <div class="patent-badge">
+      <span class="patent-badge-label">Provisional Patent</span>
+      <span class="patent-badge-val">TaskMask-PROV-001 · USPTO Patent Center</span>
+    </div>
+    <div class="hero-cta">
+      <a href="mailto:chad@getgrush.com" class="btn-primary">Early Access</a>
+      <a href="/" class="btn-outline">See All Ventures</a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">0</div><div class="stat-label">Setup required</div></div>
+  <div class="stat"><div class="stat-num">AI</div><div class="stat-label">Theme generation</div></div>
+  <div class="stat"><div class="stat-num">20</div><div class="stat-label">Theme schema fields</div></div>
+  <div class="stat"><div class="stat-num">Pro Se</div><div class="stat-label">Micro entity inventor</div></div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section>
+  <p class="section-label">How It Works</p>
+  <h2 class="section-title">Drag. Theme.<br>Work. Dissolve.</h2>
+  <p class="section-body">
+    TaskMask overlays contextual visual identity onto any open application window.
+    No plugins, no reconfiguration, no workflow disruption. The system reads the
+    active app, generates a theme, and removes itself when you're done.
+  </p>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="step-circle">1</div>
+      <div class="step-title">Drag Task</div>
+      <p class="step-body">Pull a task card from your list and drop it onto any open application window — VS Code, a browser tab, a document editor.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-circle">2</div>
+      <div class="step-title">AI Generates Theme</div>
+      <p class="step-body">The AI abstraction layer reads the task context and target application, then generates a full visual theme: colors, fonts, ambient tone, intensity.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-circle">3</div>
+      <div class="step-title">Overlay Applies</div>
+      <p class="step-body">A render adapter applies the theme to the window surface — border glow, color grading, overlay UI — without modifying the underlying application.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-circle">4</div>
+      <div class="step-title">Auto-Dissolves</div>
+      <p class="step-body">When the session ends, the task is marked complete, or the window closes, the overlay dissolves cleanly. No residue, no cleanup, no config to undo.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH ARCHITECTURE -->
+<section>
+  <p class="section-label">Architecture</p>
+  <h2 class="section-title">AI Abstraction Layer.<br>Render Adapters.</h2>
+  <p class="section-body">
+    TaskMask is built around two patented core systems: an AI abstraction layer
+    that generates theme specifications, and a render adapter system that applies
+    them to target environments without modification.
+  </p>
+  <div class="arch-grid">
+    <div class="arch-item">
+      <div class="arch-label">Core System 1</div>
+      <div class="arch-name">AI Abstraction Layer (130–135)</div>
+      <div class="arch-desc">
+        Receives task metadata and target application context. Passes inputs to
+        an LLM inference engine that generates a 20-field theme specification.
+        The abstraction layer is provider-agnostic — swappable between OpenAI,
+        Anthropic, or local inference without changing downstream render logic.
+      </div>
+      <div class="arch-chips">
+        <span class="arch-chip">LLM Inference</span>
+        <span class="arch-chip">Provider-Agnostic</span>
+        <span class="arch-chip">20-Field Schema</span>
+        <span class="arch-chip">Task Context</span>
+      </div>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Core System 2</div>
+      <div class="arch-name">Render Adapter System (140–146)</div>
+      <div class="arch-desc">
+        Translates theme specifications into platform-specific rendering instructions.
+        Adapters for Windows 11 DWM, macOS Core Animation, web environments, and
+        Electron are implemented independently, allowing any adapter to be added
+        without modifying the core theme engine.
+      </div>
+      <div class="arch-chips">
+        <span class="arch-chip">Windows 11 DWM</span>
+        <span class="arch-chip">macOS Core Animation</span>
+        <span class="arch-chip">Web / Browser</span>
+        <span class="arch-chip">Electron</span>
+      </div>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Interaction System</div>
+      <div class="arch-name">Drag-and-Drop Assignment (Steps 201–208)</div>
+      <div class="arch-desc">
+        User initiates a drag gesture from a task card. The system detects the target
+        window under cursor, resolves the application identity, invokes the AI layer
+        with full context, receives the generated theme, and applies it through the
+        appropriate render adapter — all within a single interaction.
+      </div>
+      <div class="arch-chips">
+        <span class="arch-chip">Window Detection</span>
+        <span class="arch-chip">App Identity Resolver</span>
+        <span class="arch-chip">Context Assembly</span>
+        <span class="arch-chip">One-Gesture UX</span>
+      </div>
+    </div>
+    <div class="arch-item">
+      <div class="arch-label">Lifecycle System</div>
+      <div class="arch-name">Session Lifecycle (Steps 301–306)</div>
+      <div class="arch-desc">
+        Themes are bound to sessions, not windows. Each session tracks task assignment,
+        active application, and elapsed time. Dissolution triggers fire automatically
+        on task completion, window close, or manual override — leaving no persistent
+        state behind in the target application.
+      </div>
+      <div class="arch-chips">
+        <span class="arch-chip">Session Binding</span>
+        <span class="arch-chip">Auto-Dissolve</span>
+        <span class="arch-chip">Zero Residue</span>
+        <span class="arch-chip">State Isolation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- THEME SCHEMA -->
+<section>
+  <p class="section-label">Theme Schema</p>
+  <h2 class="section-title">20-Field Specification.<br>AI-Generated Per Session.</h2>
+  <p class="section-body">
+    Every TaskMask theme is a structured 20-field specification generated fresh
+    by the AI abstraction layer for each task-window pair. No pre-built themes,
+    no user configuration.
+  </p>
+  <div class="schema-table" style="margin-top:40px">
+    <div class="schema-row"><div class="schema-key">primary_color</div><div class="schema-val">Dominant hue — derived from task category and urgency</div></div>
+    <div class="schema-row"><div class="schema-key">secondary_color</div><div class="schema-val">Supporting accent, harmonically related to primary</div></div>
+    <div class="schema-row"><div class="schema-key">background_tone</div><div class="schema-val">Base surface tint for the overlay environment</div></div>
+    <div class="schema-row"><div class="schema-key">border_glow</div><div class="schema-val">Window edge illumination color and intensity</div></div>
+    <div class="schema-row"><div class="schema-key">font_family</div><div class="schema-val">Typeface selection appropriate to task cognitive mode</div></div>
+    <div class="schema-row"><div class="schema-key">font_weight</div><div class="schema-val">Weight tuned to reading vs. creation vs. review context</div></div>
+    <div class="schema-row"><div class="schema-key">ambient_mode</div><div class="schema-val">Focus / Flow / Review / Sprint — drives overall tone</div></div>
+    <div class="schema-row"><div class="schema-key">intensity</div><div class="schema-val">0–100 scale controlling overlay visual saturation</div></div>
+    <div class="schema-row"><div class="schema-key">animation_style</div><div class="schema-val">Static / Subtle / Pulse — matched to task urgency</div></div>
+    <div class="schema-row"><div class="schema-key">dissolve_trigger</div><div class="schema-val">Condition set for automatic theme removal</div></div>
+  </div>
+  <div style="margin-top:12px;font-family:'Courier Prime',monospace;font-size:11px;color:var(--muted);letter-spacing:0.1em">+ 10 additional fields covering overlay opacity, corner radius, taskbar integration, notification suppression, and session metadata.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- IP STATUS -->
+<section>
+  <p class="section-label">Intellectual Property</p>
+  <h2 class="section-title">Pro Se Provisional.<br>12-Month Priority Clock Running.</h2>
+  <div class="ip-box">
+    <div class="ip-title">TaskMask Provisional Patent Application</div>
+    <p class="ip-body">
+      Filed pro se as micro entity at USPTO Patent Center. Reference: TaskMask-PROV-001.
+      The provisional establishes a 12-month priority date covering the core systems —
+      AI abstraction layer, render adapter architecture, drag-and-drop assignment,
+      session lifecycle, and the 20-field theme schema.
+    </p>
+    <div class="ip-claims">
+      <div class="ip-claim"><span class="ip-claim-num">1.</span><span>System for generating context-aware visual themes by associating a user task with a target application window via drag-and-drop gesture</span></div>
+      <div class="ip-claim"><span class="ip-claim-num">2.</span><span>System wherein a render adapter applies the generated theme to the window surface without modifying the underlying application</span></div>
+      <div class="ip-claim"><span class="ip-claim-num">3.</span><span>Method for assigning a task to an application window, generating a theme, applying via adapter, and dissolving the theme upon session completion</span></div>
+      <div class="ip-claim"><span class="ip-claim-num">4.</span><span>Method wherein the theme specification includes at least 10 visual and behavioral parameters generated by a large language model</span></div>
+      <div class="ip-claim"><span class="ip-claim-num">5.</span><span>AI abstraction layer that receives task metadata and target application context and outputs a structured theme specification via LLM inference</span></div>
+      <div class="ip-claim"><span class="ip-claim-num">6.</span><span>Render adapter system that translates theme specifications into platform-specific rendering instructions across multiple operating environments</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- USE CASES -->
+<section>
+  <p class="section-label">Who It's For</p>
+  <h2 class="section-title">Any Knowledge Worker.<br>Any App.</h2>
+  <div class="use-grid">
+    <div class="use-item">
+      <div class="use-icon">👨‍💻</div>
+      <div class="use-content">
+        <h4>Software Developers</h4>
+        <p>Drop a JIRA ticket onto VS Code. TaskMask applies a focused dark theme tuned to the ticket's sprint context. Switch to a different ticket, get a different environment.</p>
+      </div>
+    </div>
+    <div class="use-item">
+      <div class="use-icon">✍️</div>
+      <div class="use-content">
+        <h4>Writers & Editors</h4>
+        <p>Assign a writing session to your document editor. The AI generates a calm, low-contrast environment for long-form work — different from the high-energy theme it'd generate for a deadline sprint.</p>
+      </div>
+    </div>
+    <div class="use-item">
+      <div class="use-icon">📊</div>
+      <div class="use-content">
+        <h4>Analysts & Researchers</h4>
+        <p>Associate a research task with a browser window. The theme signals "review mode" — visual cues that reinforce the cognitive mode without requiring conscious switching.</p>
+      </div>
+    </div>
+    <div class="use-item">
+      <div class="use-icon">🎓</div>
+      <div class="use-content">
+        <h4>Students</h4>
+        <p>Drag a study block onto a PDF reader or note-taking app. The environment reinforces the subject context — study sessions for organic chemistry look different from lecture review.</p>
+      </div>
+    </div>
+    <div class="use-item">
+      <div class="use-icon">🏢</div>
+      <div class="use-content">
+        <h4>Enterprise Teams</h4>
+        <p>License TaskMask for a team or department. Each team member gets the same contextual overlay system without IT configuration — installed once, works across every application they use.</p>
+      </div>
+    </div>
+    <div class="use-item">
+      <div class="use-icon">⚡</div>
+      <div class="use-content">
+        <h4>Power Users</h4>
+        <p>The render adapter API is exposed for custom integrations. Advanced users can write their own adapters for niche environments — custom IDEs, proprietary tools, internal dashboards.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REVENUE MODEL -->
+<section>
+  <p class="section-label">Revenue Model</p>
+  <h2 class="section-title">Individual. Team.<br>Enterprise.</h2>
+  <p class="section-body">
+    TaskMask is the seed revenue engine for the portfolio — first to market,
+    lowest build cost, highest margin. SaaS licensing with three tiers.
+  </p>
+  <div class="revenue-grid">
+    <div class="rev-card">
+      <div class="rev-tier">Individual</div>
+      <div class="rev-name">Solo</div>
+      <div class="rev-price">$9<span class="rev-price-sub">/mo</span></div>
+      <div class="rev-desc">Single user. All adapters. Unlimited sessions. AI theme generation included. No usage cap.</div>
+    </div>
+    <div class="rev-card" style="border-color:rgba(0,200,255,0.3)">
+      <div class="rev-tier" style="color:var(--cyan)">Team</div>
+      <div class="rev-name">Team</div>
+      <div class="rev-price" style="color:var(--cyan)">$6<span class="rev-price-sub">/seat/mo</span></div>
+      <div class="rev-desc">5–50 seats. Shared task board integration. Team-wide theme consistency options. Admin dashboard.</div>
+    </div>
+    <div class="rev-card">
+      <div class="rev-tier">Organization</div>
+      <div class="rev-name">Enterprise</div>
+      <div class="rev-price">Custom</div>
+      <div class="rev-desc">Unlimited seats. SSO, MDM deployment, custom adapter development, SLA, dedicated support channel.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Chad Eric Pattengale &mdash; TaskMask &mdash; getgrush.com</p>
+  <a href="mailto:chad@getgrush.com">chad@getgrush.com</a>
+</footer>
+
+</body>
+</html>
