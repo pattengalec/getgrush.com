@@ -1783,10 +1783,10 @@ var DPS_SECTIONS = [
 ];
 
 function svgSupplyDemand(){
-  // Connected supply -> demand. UHC = one line. À-la-carte = six lines.
-  // Geometry does the persuading: one connection vs. six.
+  // Connected supply -> demand. UHC blue pulses once then holds; six reds cascade.
   var w=620, h=560, out='';
   out+='<svg class="detail-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" style="max-width:620px">';
+  out+='<style>@keyframes sdBlue{0%{stroke-opacity:0.3}6%{stroke-opacity:1}16%{stroke-opacity:0.92}100%{stroke-opacity:0.92}}@keyframes sdRed{0%{stroke:rgba(150,170,190,0.35);stroke-width:1}4%{stroke:#ff4a4a;stroke-width:2.6}90%{stroke:#ff4a4a;stroke-width:2.6}97%{stroke:rgba(150,170,190,0.35);stroke-width:1}100%{stroke:rgba(150,170,190,0.35);stroke-width:1}}.sd-blue{animation:sdBlue 7s ease-out infinite}.sd-red{animation:sdRed 7s linear infinite}</style>';
   out+='<text x="150" y="24" fill="#8aaab8" font-size="12" font-family="sans-serif" text-anchor="middle" letter-spacing="2">SUPPLY</text>';
   out+='<text x="500" y="24" fill="#8aaab8" font-size="12" font-family="sans-serif" text-anchor="middle" letter-spacing="2">DEMAND</text>';
   out+='<line x1="310" y1="34" x2="310" y2="540" stroke="rgba(255,255,255,0.06)"/>';
@@ -1811,7 +1811,7 @@ var cots=[['Lab',60,'lab'],['Grow',122,'grow'],['MYCottage',184,'myc'],['Office'
   out+='<text x="115" y="95" fill="#00c8ff" font-size="14" font-family="sans-serif" text-anchor="middle" font-weight="bold">Utility Cottage</text>';
   out+='<text x="115" y="113" fill="#9fc7d6" font-size="9" font-family="sans-serif" text-anchor="middle">all utilities · one unit</text>';
   // single clean line UHC -> junction
-  out+='<path d="M190 99 C 300 99, 320 235, '+junctionX+' 235" fill="none" stroke="#00c8ff" stroke-width="3"/>';
+out+='<path class="sd-blue" d="M190 99 C 300 99, 320 235, '+junctionX+' 235" fill="none" stroke="#00c8ff" stroke-width="3" stroke-opacity="0.92"/>';
   out+='<text x="270" y="150" fill="#00c8ff" font-size="10" font-family="sans-serif" text-anchor="middle">one connection</text>';
 
   // ---- divider OR ----
@@ -1819,12 +1819,13 @@ var cots=[['Lab',60,'lab'],['Grow',122,'grow'],['MYCottage',184,'myc'],['Office'
 
   // ---- SUPPLY OPTION B: à-la-carte — SIX boxes, SIX lines ----
   var srcs=[['Solar',200],['Generator',242],['Battery',284],['Grid',326],['Internet',368],['Water',410]];
-  for(var s=0;s<srcs.length;s++){
+for(var s=0;s<srcs.length;s++){
     var sy=srcs[s][1];
+    var rdelay=(0.9+s*0.42).toFixed(2);
     out+='<rect x="40" y="'+sy+'" width="120" height="30" rx="4" fill="rgba(120,140,160,0.08)" stroke="rgba(150,170,190,0.4)"/>';
     out+='<text x="100" y="'+(sy+20)+'" fill="#9fb0bf" font-size="11" font-family="sans-serif" text-anchor="middle">'+srcs[s][0]+'</text>';
-    // each its own meandering line to the junction — deliberately many
-    out+='<path d="M160 '+(sy+15)+' C 250 '+(sy+15)+', 330 '+(sy+15)+', '+junctionX+' '+(sy+15)+'" fill="none" stroke="rgba(150,170,190,0.35)" stroke-width="1"/>';
+    out+='<path class="sd-red" style="animation-delay:'+rdelay+'s" d="M160 '+(sy+15)+' C 250 '+(sy+15)+', 330 '+(sy+15)+', '+junctionX+' '+(sy+15)+'" fill="none"/>';
+  }
   }
   out+='<text x="100" y="460" fill="#7a8a96" font-size="10" font-family="sans-serif" text-anchor="middle">six separate sources</text>';
   out+='<text x="100" y="475" fill="#5a6b7a" font-size="9" font-family="sans-serif" text-anchor="middle">each sourced, wired &amp; maintained alone</text>';
