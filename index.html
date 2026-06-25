@@ -740,6 +740,33 @@ html, body {
 
 
 /* ===== END INTRO SPLASH ===== */
+
+/* ===== MOBILE FIX: closing two-card scene (scene 8) ===== */
+@media (max-width: 640px) {
+  /* Let the cards scene scroll; stack the two cards vertically */
+  #cards-wrap {
+    flex-direction: column;
+    width: 100vw;
+    max-width: 100vw;
+    gap: 16px;
+    padding: 88px 16px 120px;   /* top clears the brand bar, bottom clears nav/vol */
+    margin: 0;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    align-items: stretch;
+    justify-content: flex-start;
+    z-index: 30;                /* sit above the site chrome so nothing bleeds through */
+    background: var(--navy);     /* opaque so brand/caption don't show through */
+  }
+  .grush-card {
+    flex: 0 0 auto;             /* don't stretch to fill; size to content */
+    width: 100%;
+    padding: 1.6rem 1.4rem 1.4rem;
+  }
+  .card-headline { font-size: 22px; }
+  .card-body { font-size: 13.5px; }
+}
 </style>
 </head>
 <body>
