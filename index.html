@@ -20,6 +20,56 @@
   --card-bdr:  rgba(255,255,255,0.08);
 }
 
+/* ---- LAYER 2: EXPLORE BUTTON + DETAIL OVERLAY ---- */
+.card-explore {
+  display:block; width:100%; margin:0 0 0.6rem 0; padding:0.7rem 1rem;
+  background:transparent; border:1px solid rgba(255,255,255,0.18); border-radius:6px;
+  color:var(--white); font:inherit; font-size:13px; letter-spacing:0.04em; cursor:pointer;
+  transition:background .2s,border-color .2s;
+}
+.card-dps  .card-explore:hover { background:rgba(0,200,255,0.14); border-color:rgba(0,200,255,0.5); color:var(--cyan); }
+.card-cott .card-explore:hover { background:rgba(255,184,48,0.12); border-color:rgba(255,184,48,0.5); color:var(--amber); }
+
+#detail-overlay {
+  position:fixed; inset:0; z-index:60; background:rgba(5,10,24,0.97);
+  opacity:0; pointer-events:none; transition:opacity .4s ease; overflow-y:auto;
+  backdrop-filter:blur(2px);
+}
+#detail-overlay.show { opacity:1; pointer-events:auto; }
+.detail-inner { max-width:780px; margin:0 auto; padding:64px 28px 96px; }
+#detail-close {
+  position:fixed; top:20px; right:24px; z-index:62; width:42px; height:42px;
+  border-radius:50%; border:1px solid rgba(255,255,255,0.2); background:rgba(0,0,0,0.4);
+  color:var(--steel); font-size:22px; line-height:1; cursor:pointer; transition:.2s;
+}
+#detail-close:hover { color:var(--white); border-color:rgba(255,255,255,0.5); }
+.detail-eyebrow { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:0.5rem; }
+.detail-title { font-size:clamp(26px,5vw,40px); font-weight:700; color:var(--white); line-height:1.1; margin-bottom:1.4rem; }
+.detail-lead { font-size:15px; line-height:1.7; color:var(--steel); margin-bottom:2.2rem; max-width:640px; }
+/* picker tabs */
+.cott-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:1.8rem; }
+.cott-tab {
+  padding:0.5rem 0.95rem; border:1px solid rgba(255,184,48,0.3); border-radius:20px;
+  background:transparent; color:var(--steel); font:inherit; font-size:12.5px; cursor:pointer; transition:.2s;
+}
+.cott-tab:hover { color:var(--white); }
+.cott-tab.active { background:rgba(255,184,48,0.16); border-color:var(--amber); color:var(--amber); }
+.dps-tab.active { background:rgba(0,200,255,0.16); border-color:var(--cyan); color:var(--cyan); }
+.dps-tab { border-color:rgba(0,200,255,0.3); }
+/* detail body */
+.detail-section { animation:detailFade .4s ease; }
+@keyframes detailFade { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+.detail-h { font-size:20px; font-weight:600; color:var(--white); margin:0 0 0.4rem; }
+.detail-sub { font-size:12px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem; }
+.detail-p { font-size:14px; line-height:1.7; color:var(--steel); margin-bottom:1.6rem; max-width:620px; }
+.detail-specs { display:grid; grid-template-columns:1fr 1fr; gap:0; margin:1.4rem 0 2rem; border-top:1px solid rgba(255,255,255,0.08); }
+.detail-spec { display:flex; justify-content:space-between; gap:10px; padding:9px 2px; border-bottom:1px solid rgba(255,255,255,0.07); font-size:12.5px; }
+.detail-spec .l { color:var(--dim); }
+.detail-spec .v { color:#a8bec8; text-align:right; }
+.detail-svg { width:100%; max-width:620px; margin:0.5rem 0 2rem; border:1px solid rgba(255,255,255,0.07); border-radius:8px; background:rgba(0,0,0,0.25); }
+@media(max-width:560px){ .detail-specs{grid-template-columns:1fr;} }
+
+
 html, body {
   height: 100%;
   background: var(--navy);
@@ -38,13 +88,27 @@ html, body {
   justify-content: center;
 }
 
+/* Option-3 dimensional lift — subtle radial glow behind content so the
+   page reads as dark-but-dimensional rather than flat black. Sits above
+   the per-scene bg color but below content and the 3D canvases. */
+#stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 38%, rgba(40,64,96,0.30) 0%, rgba(20,34,56,0.12) 45%, rgba(0,0,0,0) 75%),
+    radial-gradient(ellipse 120% 80% at 50% 120%, rgba(34,46,72,0.22) 0%, rgba(0,0,0,0) 60%);
+}
+
 /* ---- 3D CANVAS ---- */
 #three-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  z-index: 1;
   opacity: 0;
   transition: opacity 1.4s ease;
   pointer-events: none;
@@ -498,6 +562,12 @@ html, body {
 <div id="nav-next" onclick="nextScene()">Next &#8594;</div>
 
 <div id="zone-hint">Click a zone on the model for full specifications</div>
+
+<div id="detail-overlay">
+  <button id="detail-close" onclick="closeDetail()">&times;</button>
+  <div class="detail-inner" id="detail-inner"></div>
+</div>
+
 
 <div id="ui">
   <div id="prog-wrap"><div id="prog-bar"></div></div>
@@ -1272,6 +1342,7 @@ function renderScene(idx) {
           <div class="card-spec-row"><span class="card-spec-label">Locking</span><span class="card-spec-val">Zero-power mechanical pin</span></div>
           <div class="card-spec-row"><span class="card-spec-label">Utility zones</span><span class="card-spec-val">Power · Data · Air · Water</span></div>
         </div>
+        <button class="card-explore" onclick="openDetail('dps')">Explore the system &rarr;</button>
         <a class="card-cta" href="mailto:chad@getgrush.com?subject=GC-DPS Inquiry">Inquire about GC-DPS &rarr;</a>
         <div class="card-contact">Seeking fabricators, pilot sites &amp; investors<br><a href="mailto:chad@getgrush.com">chad@getgrush.com</a> &nbsp;·&nbsp; <a href="https://getgrush.com" target="_blank">getgrush.com</a></div>
       </div>
@@ -1282,10 +1353,11 @@ function renderScene(idx) {
         <div class="card-specs">
           <div class="card-spec-row"><span class="card-spec-label">Connection type</span><span class="card-spec-val">Linear chain, port-to-port</span></div>
           <div class="card-spec-row"><span class="card-spec-label">Utility transfer</span><span class="card-spec-val">Power · Data · Air · Water</span></div>
-          <div class="card-spec-row"><span class="card-spec-label">Standalone capable</span><span class="card-spec-val">Yes — generator + tank</span></div>
+          <div class="card-spec-row"><span class="card-spec-label">Standalone capable</span><span class="card-spec-val">Yes — solar / grid / generator</span></div>
           <div class="card-spec-row"><span class="card-spec-label">Scale model</span><span class="card-spec-val">Add units, same port spec</span></div>
           <div class="card-spec-row"><span class="card-spec-label">Status</span><span class="card-spec-val">Seeking pilot deployment</span></div>
         </div>
+        <button class="card-explore" onclick="openDetail('cottages')">Explore the cottages &rarr;</button>
         <a class="card-cta" href="mailto:chad@getgrush.com?subject=Cottages Inquiry">Inquire about Cottages &rarr;</a>
         <div class="card-contact">Seeking pilot sites, operators &amp; investors<br><a href="mailto:chad@getgrush.com">chad@getgrush.com</a> &nbsp;·&nbsp; <a href="https://getgrush.com" target="_blank">getgrush.com</a></div>
       </div>`;
@@ -1421,6 +1493,20 @@ function heroBuild(){
   var wrap = document.createElement('div');
   wrap.id = 'hero-wrap';
   wrap.style.cssText = 'position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .8s ease;pointer-events:none;';
+  // Twilight sky layer — cool blue-hour with faint warm horizon. Fades in on connection.
+  var sky = document.createElement('div');
+  sky.id = 'hero-sky';
+  sky.style.cssText = 'position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease;'
+    + 'background:linear-gradient(to bottom,'
+    + ' #0a1430 0%,'      /* deep blue zenith */
+    + ' #14233f 38%,'     /* blue hour mid */
+    + ' #2a3a55 64%,'     /* lighter slate toward horizon */
+    + ' #4a4a5e 82%,'     /* dusk band */
+    + ' #6e5a52 93%,'     /* faint warm horizon */
+    + ' #3a3340 100%);';  /* ground shadow */
+  wrap.appendChild(sky);
+  heroState.sky = sky;
+
   var canvasHost = document.createElement('div');
   canvasHost.id = 'hero-canvas'; canvasHost.style.cssText='position:absolute;inset:0;';
   wrap.appendChild(canvasHost);
@@ -1464,6 +1550,12 @@ function heroBuild(){
   var cottage=makeUnit({color:STEEL,w:720,windows:4,portSide:+1});
   var uhc=makeUnit({color:STEEL_LT,w:560,windows:2,portSide:-1});
   scene.add(cottage.group); scene.add(uhc.group);
+
+  // Ground plane — faint, sits the units in a landscape. Hidden until twilight.
+  var groundMat = new THREE.MeshStandardMaterial({color:0x2a3142, roughness:0.95, metalness:0.0, transparent:true, opacity:0});
+  var ground = new THREE.Mesh(new THREE.PlaneGeometry(6000,3000), groundMat);
+  ground.rotation.x = -Math.PI/2; ground.position.y = -170; scene.add(ground);
+  heroState.groundMat = groundMat;
 
   var boltGroup=new THREE.Group(); scene.add(boltGroup); var bolts=[];
   for(var b=0;b<5;b++){
@@ -1527,6 +1619,12 @@ function heroFrame(now){
   // text lands on the illumination beat
   if(t>HT.settleEnd+200){ heroState.textEl.style.opacity='1'; }
 
+  // twilight blooms in on connection — sky fades up, ground appears
+  if(t>HT.settleEnd){
+    if(heroState.sky) heroState.sky.style.opacity='1';
+    if(heroState.groundMat) heroState.groundMat.opacity = Math.min(0.85, (t-HT.settleEnd)/1400);
+  }
+
   heroState.renderer.render(heroState.scene, heroState.cam);
   heroState.raf=requestAnimationFrame(heroFrame);
 }
@@ -1537,6 +1635,8 @@ function heroStart(){
   heroState.active=true;
   heroState.t0=performance.now();
   heroState.textEl.style.opacity='0';
+  if(heroState.sky) heroState.sky.style.opacity='0';
+  if(heroState.groundMat) heroState.groundMat.opacity=0;
   heroState.wrap.style.opacity='1';
   cancelAnimationFrame(heroState.raf);
   heroState.raf=requestAnimationFrame(heroFrame);
@@ -1554,6 +1654,243 @@ function heroStop(){
 }
 
 window.addEventListener('resize', heroResize);
+
+
+// ============================================================
+// LAYER 2 — DETAIL OVERLAY (DPS depth + cottage picker)
+// ============================================================
+function svgSpine(zones, accent){
+  // horizontal clean->dirty spine bar with labeled segments
+  var w=600,h=120,n=zones.length,seg=(w-40)/n,out='';
+  out+='<svg class="detail-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">';
+  out+='<defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#00c8ff" stop-opacity="0.25"/><stop offset="1" stop-color="#ffb830" stop-opacity="0.25"/></linearGradient></defs>';
+  out+='<text x="20" y="20" fill="#00c8ff" font-size="10" font-family="sans-serif">PIN-SIDE · CLEANEST</text>';
+  out+='<text x="'+(w-20)+'" y="20" fill="#ffb830" font-size="10" font-family="sans-serif" text-anchor="end">POCKET-SIDE · DIRTIEST</text>';
+  out+='<rect x="20" y="34" width="'+(w-40)+'" height="44" rx="6" fill="url(#sg)" stroke="rgba(255,255,255,0.12)"/>';
+  for(var i=0;i<n;i++){
+    var x=20+i*seg;
+    if(i>0) out+='<line x1="'+x+'" y1="34" x2="'+x+'" y2="78" stroke="rgba(255,255,255,0.12)"/>';
+    out+='<text x="'+(x+seg/2)+'" y="60" fill="#cfe0ea" font-size="11" font-family="sans-serif" text-anchor="middle">'+zones[i]+'</text>';
+  }
+  out+='<text x="'+(w/2)+'" y="100" fill="#5a6b7a" font-size="9.5" font-family="sans-serif" text-anchor="middle">directional airflow gradient — clean upstream to dirty downstream</text>';
+  out+='</svg>';
+  return out;
+}
+function svgChain(){
+  var w=600,h=120,out='';
+  out+='<svg class="detail-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">';
+  var units=[['UHC','#556070'],['Cottage 1','#3a4654'],['Cottage 2','#3a4654']];
+  var bw=130, gap=40, x0=40;
+  for(var i=0;i<units.length;i++){
+    var x=x0+i*(bw+gap);
+    out+='<rect x="'+x+'" y="40" width="'+bw+'" height="44" rx="4" fill="'+units[i][1]+'" stroke="rgba(0,200,255,0.4)"/>';
+    out+='<text x="'+(x+bw/2)+'" y="67" fill="#eef2f4" font-size="12" font-family="sans-serif" text-anchor="middle">'+units[i][0]+'</text>';
+    if(i<units.length-1){
+      var jx=x+bw;
+      out+='<circle cx="'+(jx+gap/2)+'" cy="62" r="6" fill="#00c8ff"/>';
+      out+='<line x1="'+jx+'" y1="62" x2="'+(jx+gap)+'" y2="62" stroke="#00c8ff" stroke-width="2"/>';
+    }
+  }
+  out+='<text x="'+(w/2)+'" y="105" fill="#5a6b7a" font-size="9.5" font-family="sans-serif" text-anchor="middle">directional linear spine — each unit draws its own load AND relays to the next · max 2 per UHC</text>';
+  out+='</svg>';
+  return out;
+}
+function svgBulkhead(){
+  var w=600,h=150,out='';
+  out+='<svg class="detail-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">';
+  out+='<rect x="200" y="14" width="200" height="122" rx="4" fill="#1a2230" stroke="rgba(255,255,255,0.15)"/>';
+  var z=[['Z1 Power','#ffb830',250,40],['Z2 Data','#00c8ff',350,40],['Z3 Air','#7fb3d5',250,95],['Z4 Water','#4c7ebf',350,95]];
+  for(var i=0;i<z.length;i++){
+    out+='<circle cx="'+z[i][2]+'" cy="'+z[i][3]+'" r="16" fill="'+z[i][1]+'" fill-opacity="0.3" stroke="'+z[i][1]+'"/>';
+    out+='<text x="'+z[i][2]+'" y="'+(z[i][3]+4)+'" fill="#eef2f4" font-size="8.5" font-family="sans-serif" text-anchor="middle">'+z[i][0]+'</text>';
+  }
+  out+='<rect x="285" y="60" width="30" height="50" rx="2" fill="#2a323c" stroke="rgba(255,255,255,0.2)"/>';
+  out+='<text x="300" y="90" fill="#8aaab8" font-size="7" font-family="sans-serif" text-anchor="middle" transform="rotate(90 300 90)">36in DOOR</text>';
+  out+='<text x="100" y="78" fill="#5a6b7a" font-size="10" font-family="sans-serif" text-anchor="middle">DRY SIDE</text>';
+  out+='<text x="500" y="78" fill="#5a6b7a" font-size="10" font-family="sans-serif" text-anchor="middle">WET SIDE</text>';
+  out+='</svg>';
+  return out;
+}
+function svgBuiltins(items){
+  var w=600,h=130,out='';
+  out+='<svg class="detail-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">';
+  var per=Math.ceil(items.length/2), bw=170, bh=40, x0=40, y0=22, gx=20, gy=18;
+  for(var i=0;i<items.length;i++){
+    var col=i%per, row=Math.floor(i/per);
+    var x=x0+col*(bw+gx), y=y0+row*(bh+gy);
+    out+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+bh+'" rx="5" fill="rgba(200,255,0,0.08)" stroke="rgba(200,255,0,0.35)"/>';
+    out+='<text x="'+(x+bw/2)+'" y="'+(y+25)+'" fill="#dfeec0" font-size="11.5" font-family="sans-serif" text-anchor="middle">'+items[i]+'</text>';
+  }
+  out+='</svg>';
+  return out;
+}
+function svgMission(){
+  var w=600,h=140,out='';
+  out+='<svg class="detail-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">';
+  var cots=['Grow','MYCottage','Lab','Shop'];
+  for(var i=0;i<cots.length;i++){
+    var x=40+i*100;
+    out+='<rect x="'+x+'" y="18" width="80" height="30" rx="4" fill="#2a3142" stroke="rgba(255,255,255,0.18)"/>';
+    out+='<text x="'+(x+40)+'" y="37" fill="#cfe0ea" font-size="10" font-family="sans-serif" text-anchor="middle">'+cots[i]+'</text>';
+    out+='<line x1="'+(x+40)+'" y1="48" x2="300" y2="92" stroke="#00c8ff" stroke-opacity="0.4" stroke-width="1.5"/>';
+  }
+  out+='<rect x="220" y="92" width="160" height="34" rx="5" fill="rgba(0,200,255,0.14)" stroke="#00c8ff"/>';
+  out+='<text x="300" y="113" fill="#00c8ff" font-size="12" font-family="sans-serif" text-anchor="middle">MISSION CONTROL</text>';
+  out+='<text x="300" y="138" fill="#5a6b7a" font-size="9" font-family="sans-serif" text-anchor="middle">all cottage data over Zone 2 fiber → one command dashboard</text>';
+  out+='</svg>';
+  return out;
+}
+
+var COTTAGES = [
+  { id:'lab', name:'Lab', accent:'#00c8ff',
+    p:'A deployable environmental field lab — sample receiving, prep, and local screening for offsite definitive analysis. It rides the controlled-cultivation chassis unchanged, adding a ducted fume hood and an activated exhaust path. Air moves on a strict clean-to-dirty gradient: makeup air enters clean, gets pulled across the benches, and exhausts at the far end through HEPA and activated carbon.',
+    specs:[['Type','Controlled-cultivation chassis'],['Ventilation','Negative-pressure containment'],['Exhaust','HEPA + activated carbon'],['Benches','Fixed epoxy wet + drop-leaf flex'],['Open flame','None — electric digesters']],
+    svg:function(){return svgSpine(['Intake / Log','Screening','Wet Prep','Fume Hood'],'#00c8ff');} },
+  { id:'grow', name:'Grow', accent:'#c8ff00',
+    p:'Indoor plant production in one shell, with a customer-chosen package: hydroponic or soil. Both share the same bench structure and a universal drainage tray — the method is just the fit-out. Hydro adds NFT channels and a recirculating reservoir; soil drips to waste through a sediment trap. Full-spectrum dimmable white LED bars cover both crops from one fixture.',
+    specs:[['Type','Controlled-cultivation chassis'],['Packages','Hydroponic or Soil'],['Shared layer','Universal bench + drainage tray'],['Lighting','Dimmable white bar, ≥2.7 µmol/J'],['Power check','~100–125A — passed']],
+    svg:function(){return svgBuiltins(['Bench structure','Universal tray','NFT / pots','Reservoir bay','LED light rail','Sediment trap']);} },
+  { id:'myc', name:'MYCottage', accent:'#c8ff00',
+    p:'A full start-to-finish mycology workflow on one floor — inoculation through fruiting — built species-agnostic, so spore control is sized for the worst case. The hard problem is two opposed climates in one tube: a clean, still, positive-pressure lab end and a humid, spore-shedding fruiting end. The fix is a clean-to-dirty spine with a physical anteroom firebreak between them, plus an electric steam sterilization module.',
+    specs:[['Type','Controlled-cultivation chassis'],['Workflow','Inoculation → fruiting, one floor'],['Separation','Physical anteroom firebreak'],['Sterilization','Electric steam, ~9–12 kW'],['Power check','~125A — passed']],
+    svg:function(){return svgSpine(['Lab / Inoc.','Anteroom','Sterilize','Colonize','Fruiting'],'#c8ff00');} },
+  { id:'office', name:'Office', accent:'#00c8ff',
+    p:'An incident management center and construction office — the one human-occupancy type. Dry, comfort-tuned, equipment-dense. It strips the cultivation chassis hard (no washdown liner, no trench, no fog) and adds the site command role: every cottage\u2019s data comes home here over Zone 2 fiber and surfaces on one Mission Control dashboard, mirrored remotely for an offsite commander.',
+    specs:[['Type','Human-occupancy (dry)'],['Role','Site-wide Mission Control'],['Data','All cottages → command dashboard'],['Remote','Mirrored, local-lockout option'],['Power check','~65–105A — lightest type']],
+    svg:function(){return svgMission();} },
+  { id:'shop', name:'Shop', accent:'#c8ff00',
+    p:'A general DIY / home-handyman task area — the high-power, open type, de-scoped from industrial fab to one-tool-at-a-time use. Barest, most open build in the lineup: a tough, well-ventilated box the customer fills with their own tools, with six built-ins fixed along one spine and the rest left open.',
+    specs:[['Type','High-power / open'],['Built-ins','Power · water · air · dust · first-aid · worktop'],['Water','Utility sink, greywater'],['Dust','Built-in extraction + exhaust'],['Power check','~70–115A — passed']],
+    svg:function(){return svgBuiltins(['Power + 240V circuits','Utility sink','Compressed air','Dust extraction','First-aid station','Worktop']);} }
+];
+
+var DPS_SECTIONS = [
+  { id:'overview', name:'Overview',
+    h:'One port, every system', sub:'GC-DPS', subcolor:'#00c8ff',
+    p:'A standardized steel bulkhead that retrofits into a shipping container\u2019s factory door frame — no new opening cut. It routes power, data, fresh air, and potable water through a single mechanical interface. When a unit docks into the chain it inherits the full utility network: no trades, no separate runs, no coordination overhead.',
+    specs:[['Patent','#64/093,343 — filed June 18, 2026'],['Mounting','Retrofits 40HC factory door frame'],['Topology','Directional linear spine'],['Chain limit','2 cottages per UHC'],['Locking','Zero-power mechanical pin']],
+    svg:svgChain },
+  { id:'zones', name:'Four Zones',
+    h:'Four utility zones, one face', sub:'Interface', subcolor:'#00c8ff',
+    p:'Power and data sit on the dry side of the bulkhead; fresh air and water on the wet side, split by the 36-inch passageway door. Each zone is independently sealed and serviceable. Power is 240V single-phase end-to-end — no transformer anywhere — feeding the cottage\u2019s own 200A panel through a touch-proof RADSOK connector.',
+    specs:[['Zone 1','240V 1ph, RADSOK 250A — no transformer'],['Zone 2','Expanded-beam fiber at the dock'],['Zone 3','Twin 8in fresh-air ports, local HVAC'],['Zone 4','Potable only, dry-break + RPZ'],['Passageway','36in roll-up, 20-min fire rated']],
+    svg:svgBulkhead },
+  { id:'lock', name:'The Lock',
+    h:'Zero-power mechanical engagement', sub:'Structural lock', subcolor:'#00c8ff',
+    p:'Two double-diameter conical pins guide and lock the units. A wide cone tip catches over a forgiving approach window, then tapers to a precision seat — the geometry corrects alignment as the units close. The two pins are diagonal and deliberately unequal in length, so mating 180\u00b0 wrong is physically impossible. The moving cottage leads with pins into pockets on the fixed UHC. Spring-loaded, automatic on insertion, deliberate manual release — nothing that can fail to a powered-down state.',
+    specs:[['Geometry','Double-diameter conical, catch to seat'],['Arrangement','Two diagonal, staggered length'],['Foolproofing','Asymmetric — no 180\u00b0 mis-mate'],['Direction','Pins on cottage, pockets on UHC'],['Power','Zero — spring lock, manual release']],
+    svg:null }
+];
+
+function svgSupplyDemand(){
+  // Connected supply -> demand. UHC = one line. À-la-carte = six lines.
+  // Geometry does the persuading: one connection vs. six.
+  var w=620, h=560, out='';
+  out+='<svg class="detail-svg" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" style="max-width:620px">';
+  out+='<text x="150" y="24" fill="#8aaab8" font-size="12" font-family="sans-serif" text-anchor="middle" letter-spacing="2">SUPPLY</text>';
+  out+='<text x="500" y="24" fill="#8aaab8" font-size="12" font-family="sans-serif" text-anchor="middle" letter-spacing="2">DEMAND</text>';
+  out+='<line x1="310" y1="34" x2="310" y2="540" stroke="rgba(255,255,255,0.06)"/>';
+
+  // ---- demand cottages (right) — the junction point all supply feeds ----
+  var cots=[['Lab',60],['Grow',122],['MYCottage',184],['Office',246],['Shop',308],['AstroCottage ?',370]];
+  var demandX=440, demandW=150, junctionX=410;
+  // single junction bus on the right that supply connects into
+  out+='<line x1="'+junctionX+'" y1="78" x2="'+junctionX+'" y2="392" stroke="rgba(0,200,255,0.5)" stroke-width="2"/>';
+  for(var i=0;i<cots.length;i++){
+    var y=cots[i][1], astro=(i===5);
+    var fill=astro?'rgba(255,255,255,0.04)':'rgba(0,200,255,0.07)';
+    var stroke=astro?'rgba(255,255,255,0.25)':'rgba(0,200,255,0.45)';
+    out+='<line x1="'+junctionX+'" y1="'+(y+16)+'" x2="'+demandX+'" y2="'+(y+16)+'" stroke="rgba(0,200,255,0.4)" stroke-width="1.5"/>';
+    out+='<rect x="'+demandX+'" y="'+y+'" width="'+demandW+'" height="32" rx="5" fill="'+fill+'" stroke="'+stroke+'" '
+       + (astro?'':'style="cursor:pointer" onclick="cottDetail(\''+cots[i][0].toLowerCase()+'\')"')+'/>';
+    out+='<text x="'+(demandX+demandW/2)+'" y="'+(y+21)+'" fill="'+(astro?'#7a8a96':'#cfe0ea')+'" font-size="12" font-family="sans-serif" text-anchor="middle" pointer-events="none">'+cots[i][0]+'</text>';
+  }
+
+  // ---- SUPPLY OPTION A: UHC — ONE box, ONE line carrying everything ----
+  out+='<rect x="40" y="70" width="150" height="58" rx="6" fill="rgba(0,200,255,0.12)" stroke="#00c8ff" stroke-width="1.5"/>';
+  out+='<text x="115" y="95" fill="#00c8ff" font-size="14" font-family="sans-serif" text-anchor="middle" font-weight="bold">Utility Cottage</text>';
+  out+='<text x="115" y="113" fill="#9fc7d6" font-size="9" font-family="sans-serif" text-anchor="middle">all utilities · one unit</text>';
+  // single clean line UHC -> junction
+  out+='<path d="M190 99 C 300 99, 320 235, '+junctionX+' 235" fill="none" stroke="#00c8ff" stroke-width="3"/>';
+  out+='<text x="270" y="150" fill="#00c8ff" font-size="10" font-family="sans-serif" text-anchor="middle">one connection</text>';
+
+  // ---- divider OR ----
+  out+='<text x="115" y="168" fill="#5a6b7a" font-size="11" font-family="sans-serif" text-anchor="middle" letter-spacing="2">— or —</text>';
+
+  // ---- SUPPLY OPTION B: à-la-carte — SIX boxes, SIX lines ----
+  var srcs=[['Solar',200],['Generator',242],['Battery',284],['Grid',326],['Internet',368],['Water',410]];
+  for(var s=0;s<srcs.length;s++){
+    var sy=srcs[s][1];
+    out+='<rect x="40" y="'+sy+'" width="120" height="30" rx="4" fill="rgba(120,140,160,0.08)" stroke="rgba(150,170,190,0.4)"/>';
+    out+='<text x="100" y="'+(sy+20)+'" fill="#9fb0bf" font-size="11" font-family="sans-serif" text-anchor="middle">'+srcs[s][0]+'</text>';
+    // each its own meandering line to the junction — deliberately many
+    out+='<path d="M160 '+(sy+15)+' C 250 '+(sy+15)+', 330 '+(sy+15)+', '+junctionX+' '+(sy+15)+'" fill="none" stroke="rgba(150,170,190,0.35)" stroke-width="1"/>';
+  }
+  out+='<text x="100" y="460" fill="#7a8a96" font-size="10" font-family="sans-serif" text-anchor="middle">six separate sources</text>';
+  out+='<text x="100" y="475" fill="#5a6b7a" font-size="9" font-family="sans-serif" text-anchor="middle">each sourced, wired &amp; maintained alone</text>';
+
+  out+='<text x="'+(w/2)+'" y="520" fill="#8aaab8" font-size="11" font-family="sans-serif" text-anchor="middle">One Utility Cottage delivers every connection at once — or supply each utility separately.</text>';
+  out+='</svg>';
+  return out;
+}
+
+function cottDetail(id){
+  for(var i=0;i<COTTAGES.length;i++){ if(COTTAGES[i].id===id || COTTAGES[i].name.toLowerCase()===id){ detailIdx=i; break; } }
+  cottView='detail'; renderDetail();
+}
+function cottMap(){ cottView='map'; renderDetail(); }
+function openDetail(mode){
+  detailMode=mode; detailIdx=0; cottView='map';
+  renderDetail();
+  document.getElementById('detail-overlay').classList.add('show');
+}
+function closeDetail(){ document.getElementById('detail-overlay').classList.remove('show'); }
+function selectDetail(i){ detailIdx=i; renderDetail(); }
+
+function renderDetail(){
+  var inner=document.getElementById('detail-inner');
+  var html='';
+  if(detailMode==='cottages'){
+    if(cottView==='map'){
+      html+='<div class="detail-eyebrow" style="color:var(--amber)">Grush Cottages</div>';
+      html+='<div class="detail-title">Supply &amp; demand.</div>';
+      html+='<div class="detail-lead">A Utility Cottage supplies every connection at once — or a standalone cottage can be fed by separate utility sources. On the demand side, six cottage types (and counting). Click any cottage to see how it works.</div>';
+      html+=svgSupplyDemand();
+    } else {
+      html+='<button class="cott-tab" style="margin-bottom:1.4rem" onclick="cottMap()">&larr; Back to overview</button>';
+      html+='<div class="cott-tabs">';
+      COTTAGES.forEach(function(c,i){ html+='<button class="cott-tab'+(i===detailIdx?' active':'')+'" onclick="selectDetail('+i+')">'+c.name+'</button>'; });
+      html+='</div>';
+      var c=COTTAGES[detailIdx];
+      html+='<div class="detail-section">';
+      html+='<div class="detail-h">'+c.name+'</div>';
+      html+='<div class="detail-sub" style="color:'+c.accent+'">Cottage type</div>';
+      html+='<div class="detail-p">'+c.p+'</div>';
+      html+=c.svg();
+      html+='<div class="detail-specs">';
+      c.specs.forEach(function(s){ html+='<div class="detail-spec"><span class="l">'+s[0]+'</span><span class="v">'+s[1]+'</span></div>'; });
+      html+='</div></div>';
+    }
+  } else {
+    html+='<div class="detail-eyebrow" style="color:var(--cyan)">GC-DPS — Patent Pending</div>';
+    html+='<div class="detail-title">The docking system.</div>';
+    html+='<div class="detail-lead">A single port that carries power, data, air, and water between units — with a zero-power mechanical lock and a walk-through passageway. Pick a topic.</div>';
+    html+='<div class="cott-tabs">';
+    DPS_SECTIONS.forEach(function(s,i){ html+='<button class="cott-tab dps-tab'+(i===detailIdx?' active':'')+'" onclick="selectDetail('+i+')">'+s.name+'</button>'; });
+    html+='</div>';
+    var s=DPS_SECTIONS[detailIdx];
+    html+='<div class="detail-section">';
+    html+='<div class="detail-h">'+s.h+'</div>';
+    html+='<div class="detail-sub" style="color:'+s.subcolor+'">'+s.sub+'</div>';
+    html+='<div class="detail-p">'+s.p+'</div>';
+    if(s.svg) html+=s.svg();
+    html+='<div class="detail-specs">';
+    s.specs.forEach(function(sp){ html+='<div class="detail-spec"><span class="l">'+sp[0]+'</span><span class="v">'+sp[1]+'</span></div>'; });
+    html+='</div></div>';
+  }
+  inner.innerHTML=html;
+  inner.parentNode.scrollTop=0;
+}
 
 // ============================================================
 // INIT
