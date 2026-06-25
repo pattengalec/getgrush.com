@@ -1513,8 +1513,8 @@ function heroBuild(){
   var txt = document.createElement('div');
   txt.id = 'hero-text';
   txt.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transition:opacity 1s ease;';
-  txt.innerHTML = '<div style="font-size:clamp(40px,8vw,96px);font-weight:800;letter-spacing:-0.02em;color:#f0f4ff;line-height:1;">Grush.</div>'
-    + '<div style="font-size:clamp(18px,3vw,34px);font-weight:400;letter-spacing:0.02em;color:#00c8ff;margin-top:0.5rem;">Let\u2019s connect.</div>';
+txt.innerHTML = '<div style="font-size:clamp(40px,8vw,96px);font-weight:800;letter-spacing:-0.02em;color:#f0f4ff;line-height:1;text-shadow:0 2px 24px rgba(0,10,24,0.95),0 0 12px rgba(0,10,24,0.9);">Grush.</div>'
+    + '<div style="font-size:clamp(18px,3vw,34px);font-weight:600;letter-spacing:0.02em;color:#eaf7ff;margin-top:0.5rem;text-shadow:0 2px 20px rgba(0,10,24,0.98),0 0 10px rgba(0,10,24,0.95);">Let\u2019s connect.</div>';
   wrap.appendChild(txt);
   stageEl.appendChild(wrap);
   heroState.wrap = wrap; heroState.textEl = txt;
@@ -1792,7 +1792,7 @@ function svgSupplyDemand(){
   out+='<line x1="310" y1="34" x2="310" y2="540" stroke="rgba(255,255,255,0.06)"/>';
 
   // ---- demand cottages (right) — the junction point all supply feeds ----
-  var cots=[['Lab',60],['Grow',122],['MYCottage',184],['Office',246],['Shop',308],['AstroCottage ?',370]];
+var cots=[['Lab',60,'lab'],['Grow',122,'grow'],['MYCottage',184,'myc'],['Office',246,'office'],['Shop',308,'shop'],['AstroCottage ?',370,'astro']];
   var demandX=440, demandW=150, junctionX=410;
   // single junction bus on the right that supply connects into
   out+='<line x1="'+junctionX+'" y1="78" x2="'+junctionX+'" y2="392" stroke="rgba(0,200,255,0.5)" stroke-width="2"/>';
@@ -1802,7 +1802,7 @@ function svgSupplyDemand(){
     var stroke=astro?'rgba(255,255,255,0.25)':'rgba(0,200,255,0.45)';
     out+='<line x1="'+junctionX+'" y1="'+(y+16)+'" x2="'+demandX+'" y2="'+(y+16)+'" stroke="rgba(0,200,255,0.4)" stroke-width="1.5"/>';
     out+='<rect x="'+demandX+'" y="'+y+'" width="'+demandW+'" height="32" rx="5" fill="'+fill+'" stroke="'+stroke+'" '
-       + (astro?'':'style="cursor:pointer" onclick="cottDetail(\''+cots[i][0].toLowerCase()+'\')"')+'/>';
+   + (astro?'':'style="cursor:pointer" onclick="cottDetail(\''+cots[i][1]+'\')"')+'/>';
     out+='<text x="'+(demandX+demandW/2)+'" y="'+(y+21)+'" fill="'+(astro?'#7a8a96':'#cfe0ea')+'" font-size="12" font-family="sans-serif" text-anchor="middle" pointer-events="none">'+cots[i][0]+'</text>';
   }
 
