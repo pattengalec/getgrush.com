@@ -518,20 +518,21 @@ var zoneDetails = {
   electrical: {
     eyebrow: 'Zone 1 — Electrical',
     title: 'Power, docked and standalone',
-    body: 'Docked supply arrives at 480V three-phase through the dock connector, stepping down to 120/240V for local branch circuits. A mechanical disconnect and gate-plate interlock keep contacts physically inaccessible until power is off. When undocked, an automatic transfer switch hands off to a local generator — the two sources are never connected at the same time.',
+    body: 'Docked supply arrives at 240V single-phase through the dock connector and feeds the cottage\'s own 200A panel directly — no transformer, no voltage conversion anywhere in the chain. A mechanical disconnect and gate-plate interlock keep contacts physically inaccessible until power is off. A full 200A transfer switch selects one source at a time — the UHC dock, standalone solar, municipal grid, or an external generator — so two sources are never connected at once.',
     specs: [
-      { label: 'Docked supply', val: '480V 3-phase, 100A' },
-      { label: 'Local distribution', val: '120/240V via step-down transformer' },
-      { label: 'Standalone source', val: 'Generator via ATS' },
+      { label: 'Docked supply', val: '240V single-phase, 250A feed' },
+      { label: 'Dock connector', val: 'Amphenol RADSOK, touch-proof' },
+      { label: 'Local distribution', val: '200A panel — no transformer' },
+      { label: 'Standalone sources', val: 'Solar / grid / generator via 200A transfer switch' },
       { label: 'Safety', val: 'Mechanical disconnect + gate interlock' }
     ]
   },
   data: {
     eyebrow: 'Zone 2 — Data',
     title: 'All-fiber, no copper crossing',
-    body: 'The docked connection is entirely fiber optic — a blind-mate multi-fiber cassette with dual redundant paths over a single-mode backbone. No copper conductor crosses the interface, removing ground-loop and lightning-surge risk between two separately-grounded structures.',
+    body: 'The docked connection is entirely fiber optic — a dust-tolerant expanded-beam coupling with dual redundant paths over a single-mode backbone. No copper conductor crosses the interface, removing ground-loop and lightning-surge risk between two separately-grounded structures. Standard MPO/MTP fiber runs inside each cottage; only the dock itself uses the rugged expanded-beam lens.',
     specs: [
-      { label: 'Docked connection', val: 'Blind-mate fiber cassette (MPO/MTP)' },
+      { label: 'Docked connection', val: 'Expanded-beam fiber (Neutrik FIBERFOX / US Conec PRIZM)' },
       { label: 'Backbone', val: 'Single-mode, dual redundant' },
       { label: 'Standalone uplink', val: 'Satellite internet' },
       { label: 'Local distribution', val: 'Network switch, wired ports' }
@@ -540,18 +541,19 @@ var zoneDetails = {
   ventilation: {
     eyebrow: 'Zone 3 — Ventilation',
     title: 'Conditioned air, zero-power sealing',
-    body: 'Supply and return ducts carry conditioned air between docked units. Each port has a mechanical auto-sealing damper driven directly off the same linkage that engages the structural lock — opens and closes with docking, no motor, no power draw.',
+    body: 'Each cottage runs its own local HVAC — the ventilation zone handles fresh-air exchange between units, not central conditioning. Twin ports carry the fresh-air path, each with a mechanical auto-sealing damper driven directly off the same linkage that engages the structural lock — opens and closes with docking, no motor, no power draw. When standalone, the same ports serve as outside-air intake and exhaust.',
     specs: [
-      { label: 'Duct size', val: '12in (305mm), supply and return' },
+      { label: 'Ports', val: 'Two 8in fresh-air ports' },
+      { label: 'Role', val: 'Fresh-air exchange — local HVAC per cottage' },
       { label: 'Damper action', val: 'Mechanical, cam-linked to dock engagement' },
-      { label: 'Standalone source', val: 'Local fan + heat pump' },
+      { label: 'Standalone', val: 'Same ports = outside-air intake + exhaust' },
       { label: 'Power to seal/unseal', val: 'None' }
     ]
   },
   plumbing: {
     eyebrow: 'Zone 4 — Plumbing',
     title: 'Potable water, protected',
-    body: 'The docked connection carries potable water only — waste is handled independently per unit, outside the docking system entirely. A dry-break quick-disconnect fitting prevents drips on connect or disconnect, and a backflow preventer protects against cross-contamination.',
+    body: 'The docked connection carries potable water only — waste is handled independently per unit, outside the docking system entirely. Water arrives at supply pressure and distributes through the cottage; it is not stored or pressurized on board. A dry-break quick-disconnect fitting prevents drips on connect or disconnect, and a reduced-pressure-zone backflow preventer protects against cross-contamination.',
     specs: [
       { label: 'Scope', val: 'Potable water only — no waste' },
       { label: 'Connector', val: 'Dry-break quick-disconnect' },
@@ -562,22 +564,24 @@ var zoneDetails = {
   lock: {
     eyebrow: 'Structural Lock',
     title: 'Zero-power mechanical engagement',
-    body: 'Two diagonally-opposed alignment pins guide and lock the units together — spring-loaded, automatic on insertion, with a deliberate manual action required to release. No hydraulics, no battery, nothing that can fail to a powered-down state.',
+    body: 'Two double-diameter conical pins guide and lock the units together. A wide cone tip catches over a forgiving approach window, then tapers to a precision seat for final registration — the geometry corrects alignment as the units close. The two pins sit at opposite diagonal corners and are deliberately unequal in length: the longer engages first to stop rotation, the shorter locks vertical, and the asymmetry makes mating 180° wrong physically impossible. The moving Cottage leads with the pins into pockets on the fixed UHC. Spring-loaded and automatic on insertion, with a deliberate manual action required to release — no hydraulics, no battery, nothing that can fail to a powered-down state.',
     specs: [
-      { label: 'Pin diameter', val: '50mm' },
-      { label: 'Pin protrusion', val: '120mm' },
-      { label: 'Lead-in chamfer', val: '15°' },
-      { label: 'Pocket depth', val: '125mm' }
+      { label: 'Pin geometry', val: 'Double-diameter conical, wide catch to precision seat' },
+      { label: 'Arrangement', val: 'Two diagonal pins, staggered length' },
+      { label: 'Foolproofing', val: 'Asymmetric — cannot mate 180° wrong' },
+      { label: 'Direction', val: 'Pins on Cottage, pockets on UHC' },
+      { label: 'Engagement', val: 'Zero-power spring lock, manual release' }
     ]
   },
   structure: {
     eyebrow: 'Bulkhead Structure',
     title: 'Retrofits into the factory door frame',
-    body: 'The bulkhead installs directly into the container\'s existing door-frame opening, in place of the standard swinging doors — reusing the factory hinge ears and locking cam retainers. No new opening is cut. A 28-inch walk-through passageway opens automatically as two units dock.',
+    body: 'The bulkhead installs directly into the container\'s existing door-frame opening, in place of the standard swinging doors — reusing the factory hinge ears and locking cam retainers. No new opening is cut. A 36-inch clear roll-up passageway door, mounted in the bulkhead header, opens automatically as two units dock and seals under weather closure when undocked.',
     specs: [
       { label: 'Door opening', val: '2,340 × 2,597 mm (40HC standard)' },
       { label: 'Mounting', val: 'Reuses factory hinge + cam hardware' },
-      { label: 'Passageway', val: '28in clear width, opens on dock' },
+      { label: 'Passageway', val: '36in clear, roll-up insulated steel slat' },
+      { label: 'Fire rating', val: '20-minute, header-mounted' },
       { label: 'Material', val: '12-gauge steel bulkhead' }
     ]
   }
@@ -666,9 +670,9 @@ var scenes = [
     eyebrow: 'Four utility zones',
     headline: 'One port carries\nevery system.',
     zones: [
-      { key: 'electrical', name: 'Zone 1 — Electrical', text: '480V three-phase docked, stepped to 120/240V locally. Automatic transfer to generator when standalone.' },
+      { key: 'electrical', name: 'Zone 1 — Electrical', text: '240V single-phase end-to-end — no transformer. Feeds the cottage 200A panel direct. Solar, grid, or generator when standalone.' },
       { key: 'data',       name: 'Zone 2 — Data',       text: 'All-fiber connection. No copper crosses the interface — no ground-loop or surge risk between units.' },
-      { key: 'ventilation',name: 'Zone 3 — Ventilation',text: 'Supply and return ducts with mechanical auto-sealing dampers. No power required to open or close.' },
+      { key: 'ventilation',name: 'Zone 3 — Ventilation',text: 'Twin fresh-air ports with mechanical auto-sealing dampers. Local HVAC per cottage. No power required to open or close.' },
       { key: 'plumbing',   name: 'Zone 4 — Plumbing',  text: 'Potable water only, dry-break connector with backflow protection. Waste handled independently per unit.' }
     ],
     caption: 'Each zone is independently sealed and serviceable. Click a zone on the model for full specifications.',
@@ -682,7 +686,7 @@ var scenes = [
     bg: '#0a0d14',
     eyebrow: 'Linear chain deployment',
     headline: 'The cost of adding\none unit is the same\nas adding twenty.',
-    body: 'A single Cottage operates fully standalone. Dock a Utility-Supply Cottage inline and it shares every utility along the chain. Each additional Cottage connects to the previous one using the same port, the same spec, the same single action. No new trade callouts. No compounding coordination cost.',
+    body: 'A single Cottage operates fully standalone. Dock it to a Utility Cottage and it draws every utility through one port — while passing that same utility network through to the next Cottage in line. The chain is a directional spine: each unit is both a user and a relay, connecting to the one before it with the same port, the same spec, the same single action. No new trade callouts. No compounding coordination cost.',
     accent: true,
     caption: 'Growth is additive and predictable. Every new unit docks in and inherits the full network.',
     autoAdvance: true, advanceDelay: 12000,
@@ -700,7 +704,7 @@ var scenes = [
       { label: 'Mounting', val: 'Retrofits 40HC factory door frame' },
       { label: 'Bulkhead material', val: '12 ga. steel plate' },
       { label: 'Frame hardware', val: 'Reuses factory hinge + cam retainers' },
-      { label: 'Passageway clear width', val: '28in (711mm)' },
+      { label: 'Passageway clear width', val: '36in (914mm) roll-up' },
       { label: 'Locking system', val: 'Zero-power mechanical pin lock' },
       { label: 'Weather resistance', val: 'IP54 assembled' }
     ],
