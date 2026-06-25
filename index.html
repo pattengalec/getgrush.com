@@ -537,9 +537,285 @@ html, body {
 #vol-wrap:hover { opacity: 1; }
 #vol-wrap label { font-size: 9px; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; }
 #vol { width: 55px; accent-color: var(--cyan); }
+
+/* ===== INTRO SPLASH + POWER-ON GATE (injected) ===== */
+
+#gate, #splash {
+
+  --sp-navy:#0a1531;          /* lifted ~30% from #050a18 for the splash background */
+  --cyan:#00c8ff;
+  --chart:#c8ff00;
+  --amber:#ffb830;
+  --white:#eef2f4;
+
+  /* live tile colors */
+  --grow:#2f7d52;     /* plant — green */
+  --myc:#7f97a3;      /* mushroom — sage/steel */
+  --shop:#e8702a;     /* hammer — orange */
+  --office:#27485c;   /* computer — navy/blue */
+
+  /* dead (de-energized) — distinctly darker/flatter so dead->alive POPS */
+  --dead:#131a24;
+  --dead-bdr:#171f28;
+  --dead-icon:#2e3846;
+
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+
+
+
+
+#splash{
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background:var(--sp-navy); z-index:25;
+}
+/* dimensional lift to match the site */
+#splash::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 44%, rgba(60,90,130,0.45) 0%, rgba(30,48,78,0.18) 48%, rgba(0,0,0,0) 76%);
+}
+
+/* stage holds the assembling logo, centered */
+#logo-stage{
+  position:relative; width:340px; height:430px;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* the 2x2 grid target */
+#grid{
+  position:relative; width:300px; height:300px;
+}
+
+/* each tile */
+.tile{
+  position:absolute; width:140px; height:140px;
+  display:flex; align-items:center; justify-content:center;
+  /* octagon */
+  clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
+  background:var(--dead);
+  border:0; /* color via bg */
+  /* start state set by JS via transform */
+  opacity:0;
+  transition:none;
+  will-change:transform,opacity;
+}
+.tile .ring{ /* inner ring to read as the octagon outline */
+  position:absolute; inset:0;
+  clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
+  box-shadow:inset 0 0 0 3px var(--dead-bdr);
+  transition:box-shadow .45s ease;
+}
+.tile svg{ width:74px; height:74px; position:relative; z-index:2; display:block; }
+.tile .icon-path{ fill:var(--dead-icon); transition:fill .5s ease; }
+
+/* tile glow layer (cyan energization halo) */
+.tile .glow{
+  position:absolute; inset:-6px;
+  clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
+  opacity:0; background:radial-gradient(circle at 50% 50%, rgba(0,200,255,0.55), rgba(0,200,255,0) 68%);
+  transition:opacity .5s ease;
+}
+
+/* grid placement */
+#tile-grow  { top:0;   left:0;   }   /* TL */
+#tile-myc   { top:0;   left:160px; } /* TR */
+#tile-office{ top:160px; left:0;   } /* BL */
+#tile-shop  { top:160px; left:160px; } /* BR */
+
+/* LIVE state — color floods in */
+.tile.live#tile-grow   { background:var(--grow); }
+.tile.live#tile-myc    { background:var(--myc); }
+.tile.live#tile-office { background:var(--office); }
+.tile.live#tile-shop   { background:var(--shop); }
+.tile.live .ring       { box-shadow:inset 0 0 0 3px rgba(255,255,255,0.18); }
+.tile.live .icon-path  { fill:#f4f8fa; }
+.tile.live .glow       { opacity:1; }
+.tile.lit .glow        { opacity:1; }
+
+/* cyan core (the Grush energy) */
+#core{
+  position:absolute; top:150px; left:50%; transform:translate(-50%,-50%) scale(0);
+  width:60px; height:60px; border-radius:50%;
+  background:radial-gradient(circle, rgba(180,240,255,1) 0%, rgba(0,200,255,0.9) 30%, rgba(0,200,255,0) 70%);
+  opacity:0; z-index:5; pointer-events:none;
+  filter:blur(1px);
+}
+
+/* shockwave ring from center seam */
+#shock{
+  position:absolute; top:150px; left:150px; transform:translate(-50%,-50%) scale(0.2);
+  width:300px; height:300px; border-radius:50%;
+  border:2px solid rgba(0,200,255,0.9);
+  opacity:0; z-index:4; pointer-events:none;
+}
+
+/* seam cross-pulse */
+#seam-v,#seam-h{
+  position:absolute; background:var(--cyan); opacity:0; z-index:3;
+  box-shadow:0 0 12px 2px rgba(0,200,255,0.8);
+}
+#seam-v{ top:0; left:149px; width:2px; height:300px; }
+#seam-h{ top:149px; left:0; width:300px; height:2px; }
+
+/* wordmark */
+#wordmark{
+  position:absolute; bottom:-6px; left:50%; transform:translateX(-50%) translateY(14px);
+  text-align:center; opacity:0; transition:opacity .7s ease, transform .7s ease;
+  white-space:nowrap;
+}
+#wordmark .wm-main{ font-size:34px; font-weight:800; letter-spacing:0.08em; color:var(--white); }
+#wordmark .wm-sub{ font-size:13px; letter-spacing:0.04em; color:var(--myc); margin-top:2px; }
+#wordmark .wm-sub b{ color:var(--cyan); font-weight:700; }
+#wordmark.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* skip control */
+#skip{
+  position:fixed; bottom:22px; right:24px; z-index:20;
+  font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#4a5a6a;
+  background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.12);
+  border-radius:5px; padding:7px 16px; cursor:pointer; transition:.2s;
+}
+#skip:hover{ color:var(--white); border-color:rgba(255,255,255,0.4); }
+
+/* replay (prototype only) */
+#replay{
+  position:fixed; bottom:22px; left:24px; z-index:20;
+  font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cyan);
+  background:rgba(0,200,255,0.08); border:1px solid rgba(0,200,255,0.4);
+  border-radius:5px; padding:7px 16px; cursor:pointer;
+}
+
+
+#splash.gone{ opacity:0; pointer-events:none; transition:opacity .7s ease; }
+
+/* ---- POWER-ON GATE (title page / audio unlock) ---- */
+#gate{
+  position:fixed; inset:0; z-index:30; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+  background:var(--sp-navy);
+  transition:opacity .6s ease;
+}
+#gate::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 70% 55% at 50% 46%, rgba(60,90,130,0.40) 0%, rgba(30,48,78,0.15) 48%, rgba(0,0,0,0) 76%);
+}
+#gate.gone{ opacity:0; pointer-events:none; }
+#gate .gate-brand{
+  position:relative; z-index:2; font-size:13px; letter-spacing:0.34em; text-transform:uppercase;
+  color:var(--myc); margin-bottom:2.4rem; font-weight:600;
+}
+#gate .gate-brand b{ color:var(--white); font-weight:700; }
+#power-btn{
+  position:relative; z-index:2; cursor:pointer;
+  display:inline-flex; align-items:center; gap:12px;
+  padding:16px 40px; border-radius:8px;
+  background:rgba(0,200,255,0.08); border:1px solid rgba(0,200,255,0.45);
+  color:var(--cyan); font-size:15px; letter-spacing:0.18em; text-transform:uppercase; font-weight:600;
+  transition:background .25s ease, border-color .25s ease, box-shadow .25s ease, transform .15s ease;
+}
+#power-btn:hover{
+  background:rgba(0,200,255,0.18); border-color:var(--cyan);
+  box-shadow:0 0 30px rgba(0,200,255,0.25);
+}
+#power-btn:active{ transform:scale(0.97); }
+#power-btn .pwr-icon{
+  width:18px; height:18px; display:inline-block;
+  border:2px solid var(--cyan); border-radius:50%; position:relative;
+}
+#power-btn .pwr-icon::after{
+  content:''; position:absolute; top:-4px; left:50%; transform:translateX(-50%);
+  width:2px; height:9px; background:var(--cyan);
+}
+#gate .gate-hint{
+  position:relative; z-index:2; margin-top:2rem; font-size:10.5px; letter-spacing:0.14em;
+  text-transform:uppercase; color:#3a4a5a;
+}
+/* subtle breathing pulse on the button to invite the click */
+@keyframes pwrPulse{ 0%,100%{ box-shadow:0 0 0 rgba(0,200,255,0); } 50%{ box-shadow:0 0 22px rgba(0,200,255,0.18); } }
+#power-btn{ animation:pwrPulse 2.6s ease-in-out infinite; }
+
+
+
+/* ===== END INTRO SPLASH ===== */
 </style>
 </head>
 <body>
+
+<!-- ===== INTRO SPLASH + POWER-ON GATE (injected) ===== -->
+<!-- POWER-ON GATE — title page + audio unlock -->
+<div id="gate">
+  <div class="gate-brand">Grush <b>Cottages</b></div>
+  <div id="power-btn">
+    <span class="pwr-icon"></span>
+    Power on
+  </div>
+  <div class="gate-hint">Click to bring the system online</div>
+</div>
+
+<!-- splash -->
+<div id="splash">
+  <div id="logo-stage">
+    <div id="grid">
+      <div id="shock"></div>
+      <div id="seam-v"></div>
+      <div id="seam-h"></div>
+
+      <!-- GROW — plant -->
+      <div class="tile" id="tile-grow">
+        <div class="glow"></div><div class="ring"></div>
+        <svg viewBox="0 0 100 100" aria-label="Grow">
+          <path class="icon-path" d="M50 84 L50 46 M50 60 C 50 60 38 58 32 48 C 26 38 30 26 30 26 C 30 26 44 30 48 42 C 50 48 50 54 50 54 M50 56 C 50 56 62 52 68 42 C 74 32 70 20 70 20 C 70 20 56 26 52 38 C 50 44 50 50 50 50" fill="none" stroke="currentColor" stroke-width="0"/>
+          <path class="icon-path" d="M48 86 h4 v-30 h-4 z"/>
+          <path class="icon-path" d="M50 58 C40 56 30 48 28 34 C42 36 50 46 50 58 Z"/>
+          <path class="icon-path" d="M50 54 C58 50 66 40 66 26 C54 30 48 42 50 54 Z"/>
+          <path class="icon-path" d="M50 70 C42 70 34 64 32 54 C44 54 50 62 50 70 Z"/>
+          <path class="icon-path" d="M50 68 C56 66 64 60 66 50 C54 50 50 60 50 68 Z"/>
+        </svg>
+      </div>
+
+      <!-- MYCOTTAGE — mushroom -->
+      <div class="tile" id="tile-myc">
+        <div class="glow"></div><div class="ring"></div>
+        <svg viewBox="0 0 100 100" aria-label="MYCottage">
+          <path class="icon-path" d="M50 30 C30 30 20 46 20 54 C20 58 24 58 30 58 L70 58 C76 58 80 58 80 54 C80 46 70 30 50 30 Z"/>
+          <path class="icon-path" d="M44 58 L44 74 C44 80 40 82 36 84 L64 84 C60 82 56 80 56 74 L56 58 Z"/>
+        </svg>
+      </div>
+
+      <!-- OFFICE — computer -->
+      <div class="tile" id="tile-office">
+        <div class="glow"></div><div class="ring"></div>
+        <svg viewBox="0 0 100 100" aria-label="Office">
+          <path class="icon-path" d="M24 28 h52 a4 4 0 0 1 4 4 v30 a4 4 0 0 1 -4 4 h-52 a4 4 0 0 1 -4 -4 v-30 a4 4 0 0 1 4 -4 Z M26 34 v26 h48 v-26 Z"/>
+          <path class="icon-path" d="M40 70 h20 l4 10 h-28 z"/>
+          <path class="icon-path" d="M30 78 h40 v4 h-40 z"/>
+        </svg>
+      </div>
+
+      <!-- SHOP — hammer -->
+      <div class="tile" id="tile-shop">
+        <div class="glow"></div><div class="ring"></div>
+        <svg viewBox="0 0 100 100" aria-label="Shop">
+          <path class="icon-path" d="M30 24 C40 20 54 22 62 32 L54 40 C48 32 38 30 32 34 Z"/>
+          <path class="icon-path" d="M54 36 l10 -10 8 8 -10 10 z"/>
+          <path class="icon-path" d="M58 44 L42 60 L32 78 a4 4 0 0 1 -7 -7 L43 51 L59 35 Z" transform="rotate(8 50 55)"/>
+        </svg>
+      </div>
+
+      <div id="core"></div>
+    </div>
+
+    <div id="wordmark">
+      <div class="wm-main">COTTAGES</div>
+      <div class="wm-sub">Custom Modular <b>Facilities</b></div>
+    </div>
+  </div>
+</div>
+<!-- ===== END INTRO SPLASH ===== -->
+
 
 <div id="brand">Grush Cottages</div>
 <div id="model-label"></div>
@@ -1897,6 +2173,266 @@ function renderDetail(){
 // INIT
 // ============================================================
 renderScene(0);
+</script>
+
+<script>
+/* ===== INTRO SPLASH + POWER-ON GATE (injected, isolated scope) ===== */
+(function(){
+  // If already entered this session, skip the gate+splash entirely.
+  var entered=false; try{ entered=sessionStorage.getItem('grushEntered')==='1'; }catch(e){}
+  var gateEl=document.getElementById('gate');
+  var splashEl=document.getElementById('splash');
+  if(entered){
+    if(gateEl) gateEl.parentNode.removeChild(gateEl);
+    if(splashEl) splashEl.parentNode.removeChild(splashEl);
+    return; // site shows immediately, no gate
+  }
+
+// ---------- AUDIO: reuse the connector-snap character from the site ----------
+var ctx=null, masterGain=null;
+function initAudio(){
+  if(ctx) return;
+  try{
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    masterGain=ctx.createGain(); masterGain.gain.value=0.18; masterGain.connect(ctx.destination);
+  }catch(e){}
+}
+function snap(loud){
+  if(navigator.vibrate) navigator.vibrate(loud?[26]:[14]);
+  if(!ctx) return;
+  var t=ctx.currentTime, vol=loud?1.15:0.7;
+
+  // 1) Body thud — tight, punchy low (the "weight" of the lock)
+  var thud=ctx.createOscillator(), tg=ctx.createGain();
+  thud.type='sine'; thud.frequency.setValueAtTime(150,t); thud.frequency.exponentialRampToValueAtTime(50,t+0.028);
+  tg.gain.setValueAtTime(0,t); tg.gain.linearRampToValueAtTime(1.5*vol,t+0.002); tg.gain.exponentialRampToValueAtTime(0.0008,t+0.04);
+  thud.connect(tg); tg.connect(masterGain); thud.start(t); thud.stop(t+0.045);
+
+  // 2) Crisp CLACK transient — bright high-passed noise burst, very short = "crisp"
+  var bs=Math.floor(ctx.sampleRate*0.014), buf=ctx.createBuffer(1,bs,ctx.sampleRate), d=buf.getChannelData(0);
+  for(var i=0;i<bs;i++){ d[i]=(Math.random()*2-1)*(1-i/bs); } // decaying noise = sharper edge
+  var n=ctx.createBufferSource(); n.buffer=buf;
+  var hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=4200; hp.Q.value=0.9;
+  var ng=ctx.createGain(); ng.gain.setValueAtTime(1.5*vol,t); ng.gain.exponentialRampToValueAtTime(0.0008,t+0.014);
+  n.connect(hp); hp.connect(ng); ng.connect(masterGain); n.start(t); n.stop(t+0.016);
+
+  // 3) Metallic CLICK — short bright tone for the "connector" snap character
+  var r=ctx.createOscillator(), rg=ctx.createGain();
+  r.type='square'; r.frequency.setValueAtTime(880,t+0.001); r.frequency.exponentialRampToValueAtTime(470,t+0.02);
+  rg.gain.setValueAtTime(0,t+0.001); rg.gain.linearRampToValueAtTime(0.42*vol,t+0.004); rg.gain.exponentialRampToValueAtTime(0.0008,t+0.03);
+  var bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=900; bp.Q.value=1.6;
+  r.connect(bp); bp.connect(rg); rg.connect(masterGain); r.start(t+0.001); r.stop(t+0.032);
+
+  // 4) High tick on top — adds the "crisp" sparkle edge, loud snaps only
+  if(loud){
+    var k=ctx.createOscillator(), kg=ctx.createGain();
+    k.type='triangle'; k.frequency.setValueAtTime(2400,t); k.frequency.exponentialRampToValueAtTime(1600,t+0.012);
+    kg.gain.setValueAtTime(0,t); kg.gain.linearRampToValueAtTime(0.28*vol,t+0.002); kg.gain.exponentialRampToValueAtTime(0.0008,t+0.02);
+    k.connect(kg); kg.connect(masterGain); k.start(t); k.stop(t+0.022);
+  }
+}
+// soft rising hum for the magnet ignition (charging up)
+function hum(){
+  if(!ctx) return;
+  var t=ctx.currentTime;
+  var o=ctx.createOscillator(), g=ctx.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(180,t); o.frequency.exponentialRampToValueAtTime(560,t+0.55);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.55,t+0.28); g.gain.exponentialRampToValueAtTime(0.0008,t+0.65);
+  o.connect(g); g.connect(masterGain); o.start(t); o.stop(t+0.7);
+}
+
+// connection ping — a clean rising note per cottage as it powers on.
+// step 0..3 climbs a pentatonic-ish run so you HEAR energy ripple tile->tile.
+function ping(step){
+  if(!ctx) return;
+  var freqs=[523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6 — bright, ascending
+  var f=freqs[step]||freqs[0];
+  var t=ctx.currentTime;
+  var o=ctx.createOscillator(), g=ctx.createGain();
+  o.type='triangle'; o.frequency.setValueAtTime(f,t);
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(0.32,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0008,t+0.5);
+  // a touch of shimmer
+  var o2=ctx.createOscillator(), g2=ctx.createGain();
+  o2.type='sine'; o2.frequency.setValueAtTime(f*2,t);
+  g2.gain.setValueAtTime(0,t); g2.gain.linearRampToValueAtTime(0.10,t+0.012); g2.gain.exponentialRampToValueAtTime(0.0008,t+0.32);
+  o.connect(g); g.connect(masterGain); o.start(t); o.stop(t+0.55);
+  o2.connect(g2); g2.connect(masterGain); o2.start(t); o2.stop(t+0.4);
+}
+
+// sustained POWERED-UP hum — starts when the system goes live, holds underneath.
+// two slightly-detuned low oscillators for a warm living drone, low volume.
+var humNodes=null;
+function powerHum(){
+  if(!ctx) return;
+  stopHum(); // safety
+  var t=ctx.currentTime;
+  var bus=ctx.createGain(); bus.gain.setValueAtTime(0,t);
+  bus.gain.linearRampToValueAtTime(0.22,t+0.9); // fade in over ~0.9s
+  bus.connect(masterGain);
+  // gentle lowpass so it's warm, not buzzy
+  var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=420; lp.Q.value=0.4;
+  lp.connect(bus);
+  var a=ctx.createOscillator(); a.type='sine'; a.frequency.value=72;
+  var b=ctx.createOscillator(); b.type='sine'; b.frequency.value=72.4; // detune -> slow beat
+  var c=ctx.createOscillator(); c.type='triangle'; c.frequency.value=144; // soft harmonic
+  var cg=ctx.createGain(); cg.gain.value=0.18; c.connect(cg); cg.connect(lp);
+  a.connect(lp); b.connect(lp);
+  // slow LFO shimmer on the filter for a "living" feel
+  var lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.12;
+  var lfoG=ctx.createGain(); lfoG.gain.value=60; lfo.connect(lfoG); lfoG.connect(lp.frequency);
+  a.start(t); b.start(t); c.start(t); lfo.start(t);
+  humNodes={bus:bus, oscs:[a,b,c,lfo]};
+}
+function stopHum(){
+  if(!ctx||!humNodes) return;
+  var t=ctx.currentTime, n=humNodes; humNodes=null;
+  try{
+    n.bus.gain.cancelScheduledValues(t);
+    n.bus.gain.setValueAtTime(n.bus.gain.value,t);
+    n.bus.gain.linearRampToValueAtTime(0.0001,t+0.6); // fade out on dissolve
+    n.oscs.forEach(function(o){ try{o.stop(t+0.65);}catch(e){} });
+  }catch(e){}
+}
+
+// ---------- SEQUENCE ----------
+var tiles={
+  grow:   document.getElementById('tile-grow'),
+  myc:    document.getElementById('tile-myc'),
+  office: document.getElementById('tile-office'),
+  shop:   document.getElementById('tile-shop')
+};
+// scattered start offsets (where each drifts in from) — px from final seat
+var startPos={
+  grow:   {x:-260, y:-200, r:-14},
+  myc:    {x: 280, y:-170, r: 12},
+  office: {x:-300, y: 190, r: 10},
+  shop:   {x: 250, y: 230, r:-12}
+};
+var core=document.getElementById('core');
+var shock=document.getElementById('shock');
+var seamV=document.getElementById('seam-v');
+var seamH=document.getElementById('seam-h');
+var wordmark=document.getElementById('wordmark');
+var splash=document.getElementById('splash');
+
+var timers=[];
+function after(ms,fn){ timers.push(setTimeout(fn,ms)); }
+function clearAll(){ timers.forEach(clearTimeout); timers=[]; }
+
+function setStart(){
+  Object.keys(tiles).forEach(function(k){
+    var p=startPos[k], el=tiles[k];
+    el.style.transition='none';
+    el.style.opacity='0';
+    el.style.transform='translate('+p.x+'px,'+p.y+'px) rotate('+p.r+'deg) scale(0.7)';
+    el.classList.remove('live','lit');
+    var g=el.querySelector('.glow'); if(g) g.style.opacity='0';
+  });
+  core.style.transition='none'; core.style.opacity='0'; core.style.transform='translate(-50%,-50%) scale(0)';
+  shock.style.transition='none'; shock.style.opacity='0'; shock.style.transform='translate(-50%,-50%) scale(0.2)';
+  seamV.style.transition='none'; seamV.style.opacity='0';
+  seamH.style.transition='none'; seamH.style.opacity='0';
+  wordmark.classList.remove('show');
+  splash.classList.remove('gone'); 
+  // force reflow
+  void splash.offsetWidth;
+}
+
+function run(){
+  clearAll(); stopHum(); setStart();
+
+  // PHASE 1 — drift in, scattered, dead/gray, loose hover (0–1100ms)
+  Object.keys(tiles).forEach(function(k,i){
+    var p=startPos[k], el=tiles[k];
+    after(120+i*90,function(){
+      el.style.transition='transform 0.85s cubic-bezier(.22,.9,.3,1), opacity 0.5s ease';
+      el.style.opacity='1';
+      // settle near-but-not-quite into a loose grid (slight offset + jitter)
+      var jx=(p.x>0?1:-1)*14, jy=(p.y>0?1:-1)*12;
+      el.style.transform='translate('+jx+'px,'+jy+'px) rotate('+(p.r*0.3)+'deg) scale(1)';
+    });
+  });
+
+  // PHASE 2 — ignition: cyan core flares at center (1150ms)
+  after(1150,function(){
+    hum();
+    core.style.transition='opacity .25s ease, transform .35s cubic-bezier(.3,1.4,.5,1)';
+    core.style.opacity='1';
+    core.style.transform='translate(-50%,-50%) scale(1.3)';
+  });
+
+  // PHASE 3 — THE SNAP: magnet yanks all four into perfect 2x2 (1400ms)
+  after(1400,function(){
+    snap(true);
+    Object.keys(tiles).forEach(function(k){
+      var el=tiles[k];
+      el.style.transition='transform 0.34s cubic-bezier(.5,-0.4,.3,1.5)'; // overshoot+settle
+      el.style.transform='translate(0,0) rotate(0deg) scale(1)';
+    });
+    // core blooms then fades as energy disperses into tiles
+    core.style.transition='opacity .4s ease, transform .4s ease';
+    core.style.transform='translate(-50%,-50%) scale(2.4)';
+    core.style.opacity='0';
+    // shockwave ring
+    shock.style.transition='transform .55s cubic-bezier(.2,.7,.3,1), opacity .55s ease';
+    shock.style.opacity='1'; shock.style.transform='translate(-50%,-50%) scale(1.05)';
+    after(120,function(){ shock.style.opacity='0'; });
+    // seam cross pulse
+    seamV.style.transition='opacity .12s ease'; seamH.style.transition='opacity .12s ease';
+    seamV.style.opacity='1'; seamH.style.opacity='1';
+    after(260,function(){ seamV.style.opacity='0'; seamH.style.opacity='0'; });
+  });
+
+  // PHASE 4 — power-on cascade: color + icons light up, rippling from center (1620ms+)
+  var liveOrder=['grow','myc','office','shop']; // ripple outward
+  liveOrder.forEach(function(k,i){
+    after(1620+i*90,function(){
+      tiles[k].classList.add('live');
+      snap(false);
+      ping(i); // rising connection note per cottage — energy ripples tile to tile
+    });
+  });
+
+  // system is now LIVE — sustained powered-up hum fades in under everything
+  after(1620+3*90+120,function(){ powerHum(); });
+
+  // PHASE 5 — wordmark + settle (2150ms)
+  after(2150,function(){ wordmark.classList.add('show'); });
+
+  // PHASE 6 — dissolve into site (2900ms)
+  after(2900,function(){
+    splash.classList.add('gone');
+    /* real site already rendered underneath */
+    stopHum(); // powered-up hum fades out as the splash hands off to the site
+  });
+}
+
+
+// ---------- POWER-ON GATE ----------
+// The click is the user gesture that unlocks browser audio, so the FIRST
+// play of the animation has full sound. Gate dissolves, then the splash runs.
+var gate=document.getElementById('gate');
+function powerOn(){
+  initAudio();
+  if(ctx&&ctx.state==='suspended') ctx.resume();
+  // a confirming snap on the button press itself
+  after(0,function(){ snap(true); });
+  gate.classList.add('gone');
+  // start the animation as the gate fades out
+  after(450,function(){ run(); });
+  try{ sessionStorage.setItem('grushEntered','1'); }catch(e){}
+}
+var powerBtn_=document.getElementById('power-btn');
+if(powerBtn_){
+  powerBtn_.addEventListener('click',function(e){ e.stopPropagation(); powerOn(); });
+  powerBtn_.setAttribute('tabindex','0');
+  powerBtn_.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); powerOn(); } });
+}
+
+})();
+/* ===== END INTRO SPLASH ===== */
 </script>
 </body>
 </html>
