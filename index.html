@@ -501,7 +501,7 @@ html, body {
 
 <div id="ui">
   <div id="prog-wrap"><div id="prog-bar"></div></div>
-  <div id="scene-num">1 / 8</div>
+  <div id="scene-num">1 / 9</div>
 </div>
 
 <div id="vol-wrap">
@@ -713,7 +713,15 @@ var scenes = [
     model: 'dps', modelMode: 'docked', modelBg: false, clickable: true,
     modelLabel: 'GC-DPS — click a zone'
   },
-  // 7 — Two-card split
+  // 7 — Transition: Grush. Let's connect.
+  {
+    id: 'connect',
+    bg: '#050a18',
+    transition: true,
+    caption: '',
+    model: false
+  },
+  // 8 — Two-card split
   {
     id: 'cards',
     bg: '#050a18',
@@ -1213,6 +1221,30 @@ function renderScene(idx) {
   stageEl.style.background=s.bg;
   stageEl.style.transition='background 1.2s ease';
 
+  // Transition scene — Grush. Let's connect. (hero dock animation)
+  if (s.transition) {
+    clearTimeout(modelTimer);
+    contentEl.style.display = 'none';
+    showModel(null);
+    zoneHintEl.classList.remove('show');
+    closeZoneDetail();
+    modelLblEl.style.opacity = '0';
+    var cwT = document.getElementById('cards-wrap');
+    if (cwT) cwT.style.display = 'none';
+    captionEl.textContent = '';
+    sceneNumEl.textContent = (idx+1) + ' / ' + scenes.length;
+    var npT = document.getElementById('nav-prev');
+    var nnT = document.getElementById('nav-next');
+    npT.classList.remove('hidden');
+    nnT.classList.remove('hidden'); nnT.style.display='';
+    progBar.style.width = ((idx / (scenes.length - 1)) * 100) + '%';
+    heroStart();
+    return;
+  }
+
+  // Any non-transition scene: make sure the hero is stopped.
+  if (typeof heroStop === 'function') heroStop();
+
   // Cards scene — full two-card split layout
   if (s.cards) {
     clearTimeout(modelTimer);
@@ -1261,7 +1293,7 @@ function renderScene(idx) {
       cw.querySelectorAll('.grush-card').forEach(function(c){ c.classList.add('show'); });
     }, 60);
     captionEl.textContent = '';
-    sceneNumEl.textContent = '8 / 8';
+    sceneNumEl.textContent = (idx+1) + ' / ' + scenes.length;
     var navPrev = document.getElementById('nav-prev');
     var navNext = document.getElementById('nav-next');
     navPrev.classList.remove('hidden');
@@ -1374,6 +1406,154 @@ function goToScene(idx) {
 
 function nextScene() { initAudio(); if(ctx&&ctx.state==='suspended')ctx.resume(); navTick(); goToScene(current+1); }
 function prevScene() { initAudio(); if(ctx&&ctx.state==='suspended')ctx.resume(); navTick(); goToScene(current-1); }
+
+// ============================================================
+// TRANSITION HERO — "Grush. Let's connect." (scene id 'connect')
+// Self-contained: own canvas, own THREE scene, own RAF loop.
+// Re-runs fully every time the scene is entered. Auto-advances.
+// ============================================================
+var heroState = { active:false, raf:null, t0:0, advanceTimer:null, built:false,
+  renderer:null, scene:null, cam:null, cottage:null, uhc:null, bolts:[], boltGroup:null,
+  coreMat:null, ring:null, wrap:null, textEl:null };
+
+function heroBuild(){
+  if (heroState.built) return;
+  var wrap = document.createElement('div');
+  wrap.id = 'hero-wrap';
+  wrap.style.cssText = 'position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .8s ease;pointer-events:none;';
+  var canvasHost = document.createElement('div');
+  canvasHost.id = 'hero-canvas'; canvasHost.style.cssText='position:absolute;inset:0;';
+  wrap.appendChild(canvasHost);
+  var txt = document.createElement('div');
+  txt.id = 'hero-text';
+  txt.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transition:opacity 1s ease;';
+  txt.innerHTML = '<div style="font-size:clamp(40px,8vw,96px);font-weight:800;letter-spacing:-0.02em;color:#f0f4ff;line-height:1;">Grush.</div>'
+    + '<div style="font-size:clamp(18px,3vw,34px);font-weight:400;letter-spacing:0.02em;color:#00c8ff;margin-top:0.5rem;">Let\u2019s connect.</div>';
+  wrap.appendChild(txt);
+  stageEl.appendChild(wrap);
+  heroState.wrap = wrap; heroState.textEl = txt;
+
+  var CYAN=0x00c8ff, CHARTREUSE=0xc8ff00, ELECTRIC=0x4dd2ff, STEEL=0x3a4654, STEEL_LT=0x556070;
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(38,1,1,8000);
+  var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  canvasHost.appendChild(renderer.domElement);
+  scene.add(new THREE.AmbientLight(0x1a2636,0.5));
+  var key=new THREE.DirectionalLight(0x5577aa,0.4); key.position.set(800,1400,1200); scene.add(key);
+
+  function makeUnit(opts){
+    var g=new THREE.Group(), W=opts.w||720,H=opts.h||320,D=opts.d||300;
+    var bodyMat=new THREE.MeshStandardMaterial({color:opts.color||STEEL,roughness:0.75,metalness:0.2});
+    var body=new THREE.Mesh(new THREE.BoxGeometry(W,H,D),bodyMat);
+    body.add(new THREE.LineSegments(new THREE.EdgesGeometry(body.geometry),new THREE.LineBasicMaterial({color:0x0a0f1a,transparent:true,opacity:0.5})));
+    g.add(body);
+    var ribMat=new THREE.MeshStandardMaterial({color:opts.color||STEEL,roughness:0.8,metalness:0.15});
+    for(var i=-3;i<=3;i++){var rib=new THREE.Mesh(new THREE.BoxGeometry(6,H*0.9,8),ribMat);rib.position.set(i*W/7,0,D/2+2);g.add(rib);}
+    var winMat=new THREE.MeshStandardMaterial({color:0x0c1420,emissive:new THREE.Color(CYAN),emissiveIntensity:0,roughness:0.4});
+    var wins=[],nWin=opts.windows!==undefined?opts.windows:4;
+    for(var w=0;w<nWin;w++){var win=new THREE.Mesh(new THREE.BoxGeometry(W*0.13,H*0.34,6),winMat.clone());var span=nWin>1?(w/(nWin-1)-0.5):0;win.position.set(span*W*0.62,H*0.04,D/2+6);g.add(win);wins.push(win);}
+    var portMat=new THREE.MeshStandardMaterial({color:0x2a323c,roughness:0.5,metalness:0.5});
+    var port=new THREE.Mesh(new THREE.BoxGeometry(24,H*0.7,D*0.7),portMat);port.position.set(opts.portSide*(W/2+12),0,0);g.add(port);
+    var plC=new THREE.PointLight(CYAN,0,1500,2);plC.position.set(0,0,D*0.2);g.add(plC);
+    var plG=new THREE.PointLight(CHARTREUSE,0,900,2);plG.position.set(0,H*0.2,D*0.1);g.add(plG);
+    function setLit(v){wins.forEach(function(win){win.material.emissiveIntensity=v*2.0;});plC.intensity=v*1.4;plG.intensity=v*0.5;bodyMat.emissive=new THREE.Color(CYAN);bodyMat.emissiveIntensity=v*0.05;}
+    setLit(0);
+    return {group:g,setLit:setLit,W:W};
+  }
+  var cottage=makeUnit({color:STEEL,w:720,windows:4,portSide:+1});
+  var uhc=makeUnit({color:STEEL_LT,w:560,windows:2,portSide:-1});
+  scene.add(cottage.group); scene.add(uhc.group);
+
+  var boltGroup=new THREE.Group(); scene.add(boltGroup); var bolts=[];
+  for(var b=0;b<5;b++){
+    var pts=[]; for(var p=0;p<24;p++) pts.push(new THREE.Vector3());
+    var geo=new THREE.BufferGeometry().setFromPoints(pts);
+    var mat=new THREE.LineBasicMaterial({color:ELECTRIC,transparent:true,opacity:0,blending:THREE.AdditiveBlending});
+    var line=new THREE.Line(geo,mat); boltGroup.add(line);
+    bolts.push({geo:geo,mat:mat,phase:Math.random()*Math.PI*2,speed:0.6+Math.random()*0.8,tilt:Math.random()*Math.PI});
+  }
+  var coreMat=new THREE.SpriteMaterial({color:ELECTRIC,transparent:true,opacity:0,blending:THREE.AdditiveBlending});
+  var core=new THREE.Sprite(coreMat); core.scale.set(420,420,1); scene.add(core);
+  var ring=new THREE.Mesh(new THREE.RingGeometry(40,54,48),new THREE.MeshBasicMaterial({color:CYAN,transparent:true,opacity:0,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));
+  ring.rotation.y=Math.PI/2; scene.add(ring);
+  cam.position.set(380,360,1500); cam.lookAt(0,-10,0);
+
+  heroState.renderer=renderer; heroState.scene=scene; heroState.cam=cam;
+  heroState.cottage=cottage; heroState.uhc=uhc; heroState.bolts=bolts; heroState.boltGroup=boltGroup;
+  heroState.coreMat=coreMat; heroState.ring=ring; heroState.canvasHost=canvasHost;
+  heroState.built=true;
+  heroResize();
+}
+
+function heroResize(){
+  if(!heroState.built) return;
+  var w=stageEl.clientWidth, h=stageEl.clientHeight;
+  heroState.renderer.setSize(w,h); heroState.cam.aspect=w/h; heroState.cam.updateProjectionMatrix();
+}
+
+var HT={ approachEnd:3500, settleEnd:4200, bloomEnd:5400, holdEnd:9800 };
+function heroEase(t){ return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+function heroClamp(v){ return v<0?0:v>1?1:v; }
+
+function heroFrame(now){
+  if(!heroState.active) return;
+  var t=now-heroState.t0, tsec=now*0.001;
+  var c=heroState.cottage, u=heroState.uhc;
+  var cottageHome=-(c.W/2+12), uhcHome=(u.W/2+12), startGap=1700;
+  var ap=heroClamp(t/HT.approachEnd), e=heroEase(ap);
+  c.group.position.x=cottageHome-(1-e)*startGap;
+  u.group.position.x=uhcHome+(1-e)*startGap;
+  if(t>HT.approachEnd && t<HT.settleEnd){var st=(t-HT.approachEnd)/(HT.settleEnd-HT.approachEnd),nudge=Math.sin(st*Math.PI)*6;c.group.position.x=cottageHome+nudge;u.group.position.x=uhcHome-nudge;}
+  else if(t>=HT.settleEnd){c.group.position.x=cottageHome;u.group.position.x=uhcHome;}
+  var lit=0,energy=0,ringO=0,ringS=1,coreO=0;
+  if(t>HT.settleEnd){
+    if(t<HT.bloomEnd){var bb=(t-HT.settleEnd)/(HT.bloomEnd-HT.settleEnd);lit=heroEase(bb);energy=Math.sin(bb*Math.PI)*1.0+0.15;ringO=Math.sin(bb*Math.PI)*0.9;ringS=1+bb*2.4;coreO=Math.sin(bb*Math.PI)*0.85;}
+    else {lit=1;energy=0.18+Math.sin(tsec*2.0)*0.06;coreO=0.14;ringO=0;}
+  }
+  c.setLit(lit); u.setLit(lit*0.55);
+  heroState.boltGroup.visible=energy>0.01;
+  heroState.bolts.forEach(function(bolt){
+    if(energy>0.01){
+      var pos=bolt.geo.attributes.position,N=pos.count,a0=bolt.phase+tsec*bolt.speed,sweep=Math.PI*1.1,tilt=bolt.tilt+Math.sin(tsec*0.3)*0.4;
+      for(var i=0;i<N;i++){var f=i/(N-1),ang=a0+f*sweep;var ox=Math.cos(ang)*760;var oy=Math.sin(ang)*300*Math.cos(tilt);var oz=Math.sin(ang)*320*Math.sin(tilt)+Math.cos(ang)*320*0.3;var j=energy*(60+Math.random()*120);ox+=(Math.random()-0.5)*j;oy+=(Math.random()-0.5)*j;oz+=(Math.random()-0.5)*j;pos.setXYZ(i,ox,oy,oz);}
+      pos.needsUpdate=true;
+    }
+    bolt.mat.opacity=energy>0.01?energy*(0.5+Math.random()*0.5):0;
+  });
+  heroState.coreMat.opacity=coreO; heroState.ring.material.opacity=ringO; heroState.ring.scale.set(ringS,ringS,1);
+  heroState.cam.position.x=380+Math.sin(now*0.00018)*60; heroState.cam.lookAt(0,-10,0);
+
+  // text lands on the illumination beat
+  if(t>HT.settleEnd+200){ heroState.textEl.style.opacity='1'; }
+
+  heroState.renderer.render(heroState.scene, heroState.cam);
+  heroState.raf=requestAnimationFrame(heroFrame);
+}
+
+function heroStart(){
+  heroBuild();
+  heroResize();
+  heroState.active=true;
+  heroState.t0=performance.now();
+  heroState.textEl.style.opacity='0';
+  heroState.wrap.style.opacity='1';
+  cancelAnimationFrame(heroState.raf);
+  heroState.raf=requestAnimationFrame(heroFrame);
+  clearTimeout(heroState.advanceTimer);
+  // auto-advance ~2s after the line lands (line lands ~settleEnd+200; hold then go)
+  heroState.advanceTimer=setTimeout(function(){ if(heroState.active){ nextScene(); } }, HT.bloomEnd + 2200);
+}
+
+function heroStop(){
+  heroState.active=false;
+  cancelAnimationFrame(heroState.raf);
+  clearTimeout(heroState.advanceTimer);
+  if(heroState.wrap){ heroState.wrap.style.opacity='0'; }
+  if(heroState.textEl){ heroState.textEl.style.opacity='0'; }
+}
+
+window.addEventListener('resize', heroResize);
 
 // ============================================================
 // INIT
