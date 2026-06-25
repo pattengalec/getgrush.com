@@ -475,21 +475,39 @@ html, body {
 #nav-prev.hidden { opacity: 0; pointer-events: none; }
 
 /* ---- ZONE CLICK HINT ---- */
-#zone-hint {
+/* ===== PER-SLIDE ACTION CUE (amber, pulse-on-load then settle) ===== */
+#action-cue {
   position: fixed;
-  bottom: 110px; left: 50%;
+  bottom: 104px; left: 50%;
   transform: translateX(-50%);
   z-index: 20;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: var(--dim);
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 16px;
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+  color: var(--amber);
+  background: rgba(255,184,48,0.07);
+  border: 1px solid rgba(255,184,48,0.32);
+  border-radius: 999px;
   opacity: 0;
-  transition: opacity 0.8s ease;
   pointer-events: none;
-  text-align: center;
-  white-space: nowrap;
+  text-align: center; white-space: nowrap;
+  transition: opacity 0.5s ease;
 }
-#zone-hint.show { opacity: 0.8; }
+#action-cue.show { opacity: 0.62; }              /* quiet resting state */
+/* the attention grab: a quick bloom that plays once each time a slide loads */
+#action-cue.pulse {
+  animation: cuePulse 0.9s ease-out 1;
+}
+@keyframes cuePulse {
+  0%   { opacity: 0;    transform: translateX(-50%) scale(0.92); box-shadow: 0 0 0 rgba(255,184,48,0); }
+  35%  { opacity: 1;    transform: translateX(-50%) scale(1.08); box-shadow: 0 0 26px rgba(255,184,48,0.55); border-color: rgba(255,184,48,0.9); background: rgba(255,184,48,0.18); }
+  100% { opacity: 0.62; transform: translateX(-50%) scale(1);    box-shadow: 0 0 0 rgba(255,184,48,0); }
+}
+/* daylight: amber already reads on light; nudge for contrast */
+body.daylight #action-cue { color: #9a5a00; border-color: rgba(154,90,0,0.4); background: rgba(154,90,0,0.06); }
+body.daylight #action-cue.show { opacity: 0.78; }
+/* hide cue during immersive hero slide */
+body.hero-immersive #action-cue { opacity: 0 !important; }
 
 /* ---- ZONE DETAIL PANEL ---- */
 #zone-detail {
@@ -767,9 +785,141 @@ html, body {
   .card-headline { font-size: 22px; }
   .card-body { font-size: 13.5px; }
 }
+
+/* ===== SLIDE 8 IMMERSIVE: hide all chrome during the hero dock ===== */
+#brand, #nav-prev, #nav-next, #ui, #vol-wrap, #caption-bar {
+  transition: opacity 0.4s ease;
+}
+body.hero-immersive #brand,
+body.hero-immersive #nav-prev,
+body.hero-immersive #nav-next,
+body.hero-immersive #ui,
+body.hero-immersive #vol-wrap,
+body.hero-immersive #caption-bar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ===== DAYLIGHT (high-visibility) THEME — for bright/outdoor conditions ===== */
+body.daylight {
+  --navy:    #eef1f5;   /* page bg -> bright */
+  --white:   #0b1622;   /* primary text -> near-black */
+  --steel:   #2a3a47;   /* body text -> dark, high contrast */
+  --dim:     #5a6b78;   /* muted text still readable on light */
+  --dimmer:  #c2ccd5;
+  --card-bg: rgba(255,255,255,0.92);   /* SOLID light cards (glass dies in glare) */
+  --card-bdr: rgba(10,22,34,0.16);
+  /* accents darkened so they read on white (cyan/amber on white fail contrast) */
+  --cyan:    #0086b3;
+  --amber:   #b56b00;
+}
+/* solidify translucent surfaces in daylight so glare can't wash them out */
+body.daylight .grush-card { background: var(--card-bg); border-color: var(--card-bdr); }
+body.daylight .grush-card:hover { background: #ffffff; border-color: rgba(0,134,179,0.4); }
+body.daylight .grush-card.card-dps  { border-top: 2px solid var(--cyan); }
+body.daylight .grush-card.card-cott { border-top: 2px solid var(--amber); }
+body.daylight .card-cta,
+body.daylight .card-explore { border-color: rgba(10,22,34,0.25); color: var(--steel); }
+body.daylight .ui-btn { background: rgba(10,22,34,0.06); border-color: rgba(10,22,34,0.2); color: var(--steel); }
+body.daylight .ui-btn:hover { background: rgba(10,22,34,0.12); color: #000; }
+body.daylight #brand { color: var(--steel); }
+body.daylight #caption-text { color: var(--steel); }
+body.daylight #nav-prev, body.daylight #nav-next { color: var(--steel); }
+body.daylight .card-spec-row,
+body.daylight .card-specs { border-color: rgba(10,22,34,0.12); }
+
+/* theme chooser button */
+#theme-toggle {
+  position: fixed; top: 18px; right: 20px; z-index: 50;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer; transition: background .2s, border-color .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+#theme-toggle:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.4); }
+#theme-toggle:active { transform: scale(0.92); }
+body.daylight #theme-toggle { background: rgba(10,22,34,0.06); border-color: rgba(10,22,34,0.2); }
+body.daylight #theme-toggle:hover { background: rgba(10,22,34,0.12); border-color: rgba(10,22,34,0.4); }
+#theme-toggle svg { width: 19px; height: 19px; display: block; }
+#theme-toggle .icon-sun { display: none; }
+#theme-toggle .icon-moon { display: block; stroke: var(--steel); }
+body.daylight #theme-toggle .icon-sun { display: block; stroke: var(--steel); }
+body.daylight #theme-toggle .icon-moon { display: none; }
+/* hide toggle during the immersive hero slide + during the splash gate */
+body.hero-immersive #theme-toggle { opacity: 0; pointer-events: none; }
+
+/* ===== SHARE / COPY-LINK button on cards ===== */
+.card-share {
+  display:block; width:100%; margin:0 0 1.2rem 0; padding:0.7rem 1rem;
+  background:transparent; border:1px solid rgba(255,255,255,0.18); border-radius:6px;
+  color:var(--steel); font:inherit; font-size:12px; letter-spacing:0.06em; cursor:pointer;
+  transition:background .2s, border-color .2s, color .2s;
+}
+.card-share:hover { background:rgba(0,200,255,0.1); border-color:rgba(0,200,255,0.4); color:var(--cyan); }
+.card-share.copied { border-color:rgba(200,255,0,0.6); color:var(--chart); background:rgba(200,255,0,0.08); }
+body.daylight .card-share { border-color:rgba(10,22,34,0.25); color:var(--steel); }
+body.daylight .card-share:hover { background:rgba(0,134,179,0.08); border-color:rgba(0,134,179,0.45); color:#0086b3; }
+body.daylight .card-share.copied { border-color:rgba(90,120,0,0.6); color:#5a7800; background:rgba(90,120,0,0.08); }
+
+/* ===== INQUIRE / SHARE MENU ===== */
+#inq-menu {
+  position: fixed; z-index: 70;
+  min-width: 220px;
+  background: #0c1626; border: 1px solid rgba(0,200,255,0.3); border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+  padding: 6px; opacity: 0; transform: translateY(6px) scale(0.98);
+  pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+}
+#inq-menu.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+body.daylight #inq-menu { background: #ffffff; border-color: rgba(10,22,34,0.18); box-shadow: 0 12px 40px rgba(0,0,0,0.18); }
+.inq-item {
+  display: flex; align-items: center; gap: 11px;
+  width: 100%; padding: 11px 14px; border-radius: 7px;
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--white); font: inherit; font-size: 14px; text-align: left;
+  transition: background .15s ease;
+}
+.inq-item:hover { background: rgba(0,200,255,0.1); }
+body.daylight .inq-item { color: #0b1622; }
+body.daylight .inq-item:hover { background: rgba(0,134,179,0.1); }
+.inq-item .inq-ic { width: 17px; height: 17px; flex: 0 0 17px; opacity: 0.85; }
+.inq-item .inq-ic svg { width: 17px; height: 17px; display: block; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.inq-sep { height: 1px; background: rgba(255,255,255,0.08); margin: 4px 8px; }
+body.daylight .inq-sep { background: rgba(10,22,34,0.1); }
+#inq-menu.copied-flash .inq-copy-label::after { content: ' \2713'; color: var(--chart); }
+/* backdrop to catch outside taps */
+#inq-backdrop { position: fixed; inset: 0; z-index: 69; background: transparent; display: none; }
+#inq-backdrop.show { display: block; }
 </style>
 </head>
 <body>
+<!-- INQUIRE / SHARE popup menu (shared) -->
+<div id="inq-backdrop"></div>
+<div id="inq-menu" role="menu" aria-label="Inquire or share">
+  <button class="inq-item" data-act="email" role="menuitem">
+    <span class="inq-ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+    <span>Email an inquiry</span>
+  </button>
+  <button class="inq-item" data-act="text" role="menuitem">
+    <span class="inq-ic"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg></span>
+    <span>Text the link</span>
+  </button>
+  <button class="inq-item" data-act="copy" role="menuitem">
+    <span class="inq-ic"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span>
+    <span class="inq-copy-label">Copy link</span>
+  </button>
+  <div class="inq-sep" data-more="1"></div>
+  <button class="inq-item" data-act="more" role="menuitem" data-more="1">
+    <span class="inq-ic"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></span>
+    <span>More&hellip;</span>
+  </button>
+</div>
+<!-- THEME CHOOSER (sun/moon) -->
+<div id="theme-toggle" role="button" tabindex="0" aria-label="Toggle day/night theme" title="Toggle day/night">
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+</div>
 
 <!-- ===== INTRO SPLASH + POWER-ON GATE (injected) ===== -->
 <!-- POWER-ON GATE — title page + audio unlock -->
@@ -864,7 +1014,7 @@ html, body {
 <div id="nav-prev" class="hidden" onclick="prevScene()">&#8592; Back</div>
 <div id="nav-next" onclick="nextScene()">Next &#8594;</div>
 
-<div id="zone-hint">Click a zone on the model for full specifications</div>
+<div id="action-cue"></div>
 
 <div id="detail-overlay">
   <button id="detail-close" onclick="closeDetail()">&times;</button>
@@ -985,6 +1135,7 @@ var scenes = [
   // 0 — Hook
   {
     id: 'hook',
+    cue: 'Next →',
     bg: '#050a18',
     eyebrow: 'Grush Cottages',
     headline: 'People go places\nand do things.',
@@ -997,6 +1148,7 @@ var scenes = [
   // 1 — The problem: improvised utilities
   {
     id: 'problem',
+    cue: 'Next →',
     bg: '#060a10',
     eyebrow: 'The problem',
     headline: 'Containers are already everywhere.\nThe missing piece is how they connect.',
@@ -1009,6 +1161,7 @@ var scenes = [
   // 2 — Cost problem
   {
     id: 'cost',
+    cue: 'Next →',
     bg: '#060a10',
     eyebrow: 'The cost of scale',
     headline: 'Every unit you add\ncurrently costs more than the last.',
@@ -1025,6 +1178,7 @@ var scenes = [
   // 3 — GC-DPS reveal
   {
     id: 'reveal',
+    cue: 'Next →',
     bg: '#060608',
     eyebrow: 'GC-DPS — Patent Pending',
     headline: 'One port.\nEvery system.',
@@ -1039,6 +1193,7 @@ var scenes = [
   // 4 — Four zones
   {
     id: 'zones',
+    cue: 'Tap any zone for full specs',
     bg: '#060608',
     eyebrow: 'Four utility zones',
     headline: 'One port carries\nevery system.',
@@ -1056,6 +1211,7 @@ var scenes = [
   // 5 — Linear chain / scale
   {
     id: 'scale',
+    cue: 'Next →',
     bg: '#0a0d14',
     eyebrow: 'Linear chain deployment',
     headline: 'The cost of adding\none unit is the same\nas adding twenty.',
@@ -1068,6 +1224,7 @@ var scenes = [
   // 6 — Technical spec
   {
     id: 'spec',
+    cue: 'Next →',
     bg: '#060608',
     eyebrow: 'Technical specification',
     headline: 'Fabrication-ready.\nCAD-documented.\nProvisional patent filed.',
@@ -1089,6 +1246,7 @@ var scenes = [
   // 7 — Transition: Grush. Let's connect.
   {
     id: 'connect',
+    cue: '',
     bg: '#050a18',
     transition: true,
     caption: '',
@@ -1097,6 +1255,7 @@ var scenes = [
   // 8 — Two-card split
   {
     id: 'cards',
+    cue: '',
     bg: '#050a18',
     cards: true,
     caption: '',
@@ -1115,7 +1274,7 @@ var progBar      = document.getElementById('prog-bar');
 var sceneNumEl   = document.getElementById('scene-num');
 var threeWrap    = document.getElementById('three-canvas');
 var modelLblEl   = document.getElementById('model-label');
-var zoneHintEl   = document.getElementById('zone-hint');
+var zoneHintEl   = document.getElementById('action-cue');
 
 // ============================================================
 // PLAYBACK STATE
@@ -1537,7 +1696,6 @@ function setModelMode(mode,isClickable){
   gapTarget = mode==='separated' ? SEP_GAP : 0;
   clickEnabled=!!isClickable;
   threeWrap.classList.toggle('clickable',clickEnabled);
-  zoneHintEl.classList.toggle('show',clickEnabled);
   closeZoneDetail(); applyZoneIsolation(null);
 }
 
@@ -1590,8 +1748,11 @@ function showModel(which) {
 function renderScene(idx) {
   var s = scenes[idx];
 
+  // Chrome returns by default; the hero transition re-enables immersive mode below
+  document.body.classList.remove('hero-immersive');
+
   // Background
-  stageEl.style.background=s.bg;
+  stageEl.style.background = document.body.classList.contains('daylight') ? '#eef1f5' : s.bg;
   stageEl.style.transition='background 1.2s ease';
 
   // Transition scene — Grush. Let's connect. (hero dock animation)
@@ -1606,10 +1767,8 @@ function renderScene(idx) {
     if (cwT) cwT.style.display = 'none';
     captionEl.textContent = '';
     sceneNumEl.textContent = (idx+1) + ' / ' + scenes.length;
-    var npT = document.getElementById('nav-prev');
-    var nnT = document.getElementById('nav-next');
-    npT.classList.remove('hidden');
-    nnT.classList.remove('hidden'); nnT.style.display='';
+    // Immersive: hide all chrome for the full-bleed hero dock
+    document.body.classList.add('hero-immersive');
     progBar.style.width = ((idx / (scenes.length - 1)) * 100) + '%';
     heroStart();
     return;
@@ -1623,7 +1782,16 @@ function renderScene(idx) {
     clearTimeout(modelTimer);
     contentEl.style.display = 'none';
     showModel(null);
-    zoneHintEl.classList.remove('show');
+    // show the cards action cue with a pulse
+    (function(){
+      var cueEl=document.getElementById('action-cue');
+      if(cueEl){
+        var txt=(typeof s.cue==='string')?s.cue:'';
+        if(txt){ cueEl.textContent=txt; cueEl.classList.remove('pulse','show'); void cueEl.offsetWidth; cueEl.classList.add('show','pulse');
+          cueEl.addEventListener('animationend',function h(){ cueEl.classList.remove('pulse'); cueEl.removeEventListener('animationend',h); }); }
+        else { cueEl.classList.remove('show','pulse'); cueEl.textContent=''; }
+      }
+    })();
     closeZoneDetail();
     modelLblEl.style.opacity = '0';
     var cw = document.getElementById('cards-wrap');
@@ -1646,8 +1814,8 @@ function renderScene(idx) {
           <div class="card-spec-row"><span class="card-spec-label">Utility zones</span><span class="card-spec-val">Power · Data · Air · Water</span></div>
         </div>
         <button class="card-explore" onclick="openDetail('dps')">Explore the system &rarr;</button>
-        <a class="card-cta" href="mailto:chad@getgrush.com?subject=GC-DPS Inquiry">Inquire about GC-DPS &rarr;</a>
-        <div class="card-contact">Seeking fabricators, pilot sites &amp; investors<br><a href="mailto:chad@getgrush.com">chad@getgrush.com</a> &nbsp;·&nbsp; <a href="https://getgrush.com" target="_blank">getgrush.com</a></div>
+        <button class="card-cta" onclick="openInquireMenu(this,'dps',event)">Inquire / Share &rarr;</button>
+        <div class="card-contact">Seeking fabricators, pilot sites &amp; investors<br><a href="mailto:chad@getgrush.com">chad@getgrush.com</a></div>
       </div>
       <div class="grush-card card-cott">
         <div class="card-eyebrow">Grush Cottages</div>
@@ -1661,8 +1829,8 @@ function renderScene(idx) {
           <div class="card-spec-row"><span class="card-spec-label">Status</span><span class="card-spec-val">Seeking pilot deployment</span></div>
         </div>
         <button class="card-explore" onclick="openDetail('cottages')">Explore the cottages &rarr;</button>
-        <a class="card-cta" href="mailto:chad@getgrush.com?subject=Cottages Inquiry">Inquire about Cottages &rarr;</a>
-        <div class="card-contact">Seeking pilot sites, operators &amp; investors<br><a href="mailto:chad@getgrush.com">chad@getgrush.com</a> &nbsp;·&nbsp; <a href="https://getgrush.com" target="_blank">getgrush.com</a></div>
+        <button class="card-cta" onclick="openInquireMenu(this,'cottages',event)">Inquire / Share &rarr;</button>
+        <div class="card-contact">Seeking pilot sites, operators &amp; investors<br><a href="mailto:chad@getgrush.com">chad@getgrush.com</a></div>
       </div>`;
     setTimeout(function(){
       cw.querySelectorAll('.grush-card').forEach(function(c){ c.classList.add('show'); });
@@ -1762,6 +1930,22 @@ function renderScene(idx) {
   // Progress bar — shows position only, no timer
   progBar.style.width = ((idx / (scenes.length - 1)) * 100) + '%';
 
+  // Per-slide action cue: set accurate text, replay the attention pulse once
+  (function(){
+    var cueEl = document.getElementById('action-cue');
+    if (!cueEl) return;
+    var txt = (typeof s.cue === 'string') ? s.cue : '';
+    if (!txt) { cueEl.classList.remove('show','pulse'); cueEl.textContent=''; return; }
+    cueEl.textContent = txt;
+    cueEl.classList.remove('pulse','show');
+    void cueEl.offsetWidth;              // reflow so the animation can replay
+    cueEl.classList.add('show','pulse');
+    cueEl.addEventListener('animationend', function handler(){
+      cueEl.classList.remove('pulse');
+      cueEl.removeEventListener('animationend', handler);
+    });
+  })();
+
   // Nav button visibility
   var navPrev = document.getElementById('nav-prev');
   var navNext = document.getElementById('nav-next');
@@ -1782,6 +1966,43 @@ function goToScene(idx) {
 function nextScene() { initAudio(); if(ctx&&ctx.state==='suspended')ctx.resume(); navTick(); goToScene(current+1); }
 function prevScene() { initAudio(); if(ctx&&ctx.state==='suspended')ctx.resume(); navTick(); goToScene(current-1); }
 
+/* ===== KEYBOARD NAVIGATION (desktop) ===== */
+(function(){
+  function detailOpen(){
+    var d=document.getElementById('detail-overlay');
+    return d && d.classList.contains('show');
+  }
+  function zoneOpen(){
+    var z=document.getElementById('zone-detail');
+    return z && z.classList.contains('show');
+  }
+  function gateUp(){
+    var g=document.getElementById('gate');
+    return g && !g.classList.contains('gone');
+  }
+  document.addEventListener('keydown', function(e){
+    // ignore when typing in an input/textarea/contenteditable
+    var t=e.target;
+    if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+
+    if(e.key==='Escape'){
+      if(detailOpen()){ closeDetail(); e.preventDefault(); return; }
+      if(zoneOpen()){ closeZoneDetail(); e.preventDefault(); return; }
+      return;
+    }
+
+    // Arrow navigation: only when nothing is overlaying the deck
+    if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
+      if(gateUp()) return;                 // splash gate still showing
+      if(detailOpen() || zoneOpen()) return; // an overlay owns the view
+      if(typeof heroState!=='undefined' && heroState.active) return; // immersive hero auto-advances
+      if(e.key==='ArrowRight'){ nextScene(); }
+      else { prevScene(); }
+      e.preventDefault();
+    }
+  });
+})();
+
 // ============================================================
 // TRANSITION HERO — "Grush. Let's connect." (scene id 'connect')
 // Self-contained: own canvas, own THREE scene, own RAF loop.
@@ -1795,7 +2016,7 @@ function heroBuild(){
   if (heroState.built) return;
   var wrap = document.createElement('div');
   wrap.id = 'hero-wrap';
-  wrap.style.cssText = 'position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .8s ease;pointer-events:none;';
+  wrap.style.cssText = 'position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .35s ease;pointer-events:none;';
   // Twilight sky layer — cool blue-hour with faint warm horizon. Fades in on connection.
   var sky = document.createElement('div');
   sky.id = 'hero-sky';
@@ -1824,7 +2045,7 @@ txt.innerHTML = '<div style="font-size:clamp(40px,8vw,96px);font-weight:800;lett
 
   var CYAN=0x00c8ff, CHARTREUSE=0xc8ff00, ELECTRIC=0x4dd2ff, STEEL=0x3a4654, STEEL_LT=0x556070;
   var scene = new THREE.Scene();
-  var cam = new THREE.PerspectiveCamera(38,1,1,8000);
+  var cam = new THREE.PerspectiveCamera(44,1,1,8000);
   var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   canvasHost.appendChild(renderer.domElement);
@@ -1872,7 +2093,7 @@ txt.innerHTML = '<div style="font-size:clamp(40px,8vw,96px);font-weight:800;lett
   var core=new THREE.Sprite(coreMat); core.scale.set(420,420,1); scene.add(core);
   var ring=new THREE.Mesh(new THREE.RingGeometry(40,54,48),new THREE.MeshBasicMaterial({color:CYAN,transparent:true,opacity:0,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));
   ring.rotation.y=Math.PI/2; scene.add(ring);
-  cam.position.set(380,360,1500); cam.lookAt(0,-10,0);
+  cam.position.set(300,230,1050); cam.lookAt(0,-10,0);
 
   heroState.renderer=renderer; heroState.scene=scene; heroState.cam=cam;
   heroState.cottage=cottage; heroState.uhc=uhc; heroState.bolts=bolts; heroState.boltGroup=boltGroup;
@@ -1887,15 +2108,15 @@ function heroResize(){
   heroState.renderer.setSize(w,h); heroState.cam.aspect=w/h; heroState.cam.updateProjectionMatrix();
 }
 
-var HT={ approachEnd:3500, settleEnd:4200, bloomEnd:5400, holdEnd:9800 };
-function heroEase(t){ return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+var HT={ approachEnd:2600, settleEnd:3300, bloomEnd:4500, holdEnd:8900 };
+function heroEase(t){ return 1-Math.pow(1-t,3); } // ease-out cubic: quick entrance, decelerate into the dock
 function heroClamp(v){ return v<0?0:v>1?1:v; }
 
 function heroFrame(now){
   if(!heroState.active) return;
   var t=now-heroState.t0, tsec=now*0.001;
   var c=heroState.cottage, u=heroState.uhc;
-  var cottageHome=-(c.W/2+12), uhcHome=(u.W/2+12), startGap=1700;
+  var cottageHome=-(c.W/2+12), uhcHome=(u.W/2+12), startGap=950;
   var ap=heroClamp(t/HT.approachEnd), e=heroEase(ap);
   c.group.position.x=cottageHome-(1-e)*startGap;
   u.group.position.x=uhcHome+(1-e)*startGap;
@@ -1917,7 +2138,7 @@ function heroFrame(now){
     bolt.mat.opacity=energy>0.01?energy*(0.5+Math.random()*0.5):0;
   });
   heroState.coreMat.opacity=coreO; heroState.ring.material.opacity=ringO; heroState.ring.scale.set(ringS,ringS,1);
-  heroState.cam.position.x=380+Math.sin(now*0.00018)*60; heroState.cam.lookAt(0,-10,0);
+  heroState.cam.position.x=300+Math.sin(now*0.00018)*55; heroState.cam.lookAt(0,-10,0);
 
   // text lands on the illumination beat
   if(t>HT.settleEnd+200){ heroState.textEl.style.opacity='1'; }
@@ -2460,6 +2681,153 @@ if(powerBtn_){
 
 })();
 /* ===== END INTRO SPLASH ===== */
+</script>
+
+<script>
+/* ===== DAY/NIGHT THEME CONTROLLER ===== */
+(function(){
+  var KEY='grushTheme';
+  var toggle=document.getElementById('theme-toggle');
+  function apply(mode){
+    if(mode==='day'){ document.body.classList.add('daylight'); }
+    else { document.body.classList.remove('daylight'); }
+  }
+  // initial: saved choice wins; else auto-seed from device preference
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+  var mode;
+  if(saved==='day'||saved==='night'){ mode=saved; }
+  else { mode = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'day' : 'night'; }
+  apply(mode);
+  function setMode(m){ mode=m; apply(m); try{ localStorage.setItem(KEY,m); }catch(e){}
+    // repaint stage bg immediately for the current scene
+    try{ if(typeof stageEl!=='undefined' && stageEl){
+      var cur = (typeof current!=='undefined') ? current : 0;
+      if(typeof scenes!=='undefined' && scenes[cur]){
+        stageEl.style.background = (m==='day') ? '#eef1f5' : scenes[cur].bg;
+      }
+    }}catch(e){}
+  }
+  function flip(){ setMode(mode==='day'?'night':'day'); }
+  if(toggle){
+    toggle.addEventListener('click',flip);
+    toggle.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); flip(); } });
+  }
+  // follow live OS changes only if the user hasn't made an explicit choice
+  if(window.matchMedia){
+    try{
+      window.matchMedia('(prefers-color-scheme: light)').addEventListener('change',function(ev){
+        var s2=null; try{ s2=localStorage.getItem(KEY); }catch(e){}
+        if(s2!=='day' && s2!=='night'){ setMode(ev.matches?'day':'night'); }
+      });
+    }catch(e){}
+  }
+})();
+</script>
+
+<script>
+/* ===== SHARE LINK (native share sheet -> clipboard fallback) ===== */
+function shareLink(btn){
+  var url='https://getgrush.com';
+  var orig = btn ? btn.innerHTML : '';
+  function flash(msg){
+    if(!btn) return;
+    btn.innerHTML = msg;
+    btn.classList.add('copied');
+    setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('copied'); }, 1800);
+  }
+  // Prefer the native share sheet on devices that support it
+  if (navigator.share) {
+    navigator.share({ title:'Grush Cottages', text:'Custom modular facilities — GC-DPS', url:url })
+      .then(function(){ /* shared */ })
+      .catch(function(){ /* user cancelled or failed -> fall back to copy */ copy(); });
+    return;
+  }
+  copy();
+  function copy(){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function(){ flash('Link copied &#10003;'); })
+        .catch(function(){ legacy(); });
+    } else { legacy(); }
+  }
+  function legacy(){
+    try{
+      var ta=document.createElement('textarea'); ta.value=url;
+      ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+      ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      flash('Link copied &#10003;');
+    }catch(e){ flash('Copy: getgrush.com'); }
+  }
+}
+</script>
+
+<script>
+/* ===== INQUIRE / SHARE MENU CONTROLLER ===== */
+(function(){
+  var URL_='https://www.getgrush.com';
+  var menu=document.getElementById('inq-menu');
+  var backdrop=document.getElementById('inq-backdrop');
+  if(!menu||!backdrop) return;
+  var ctx={subject:'Inquiry'};
+
+  // hide "More" if native share is unavailable (desktop without it)
+  if(!navigator.share){
+    menu.querySelectorAll('[data-more]').forEach(function(el){ el.style.display='none'; });
+  }
+
+  window.openInquireMenu=function(btn,which,ev){
+    if(ev){ ev.stopPropagation(); }
+    ctx.subject = (which==='dps') ? 'GC-DPS Inquiry' : 'Cottages Inquiry';
+    // position the menu above the button, centered, clamped to viewport
+    var r=btn.getBoundingClientRect();
+    menu.classList.add('show'); backdrop.classList.add('show');
+    var mw=menu.offsetWidth, mh=menu.offsetHeight;
+    var left=r.left + r.width/2 - mw/2;
+    left=Math.max(12, Math.min(left, window.innerWidth-mw-12));
+    var top=r.top - mh - 10;
+    if(top<12){ top=r.bottom+10; } // flip below if no room above
+    menu.style.left=left+'px';
+    menu.style.top=top+'px';
+  };
+  function closeMenu(){ menu.classList.remove('show'); backdrop.classList.remove('show'); }
+  backdrop.addEventListener('click',closeMenu);
+  window.addEventListener('resize',closeMenu);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && menu.classList.contains('show')){ closeMenu(); } });
+
+  function flashCopied(){
+    menu.classList.add('copied-flash');
+    setTimeout(function(){ menu.classList.remove('copied-flash'); closeMenu(); }, 900);
+  }
+  function doCopy(){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(URL_).then(flashCopied).catch(legacyCopy);
+    } else legacyCopy();
+  }
+  function legacyCopy(){
+    try{ var ta=document.createElement('textarea'); ta.value=URL_; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); flashCopied();
+    }catch(e){ closeMenu(); }
+  }
+
+  menu.addEventListener('click',function(e){
+    var item=e.target.closest('.inq-item'); if(!item) return;
+    var act=item.getAttribute('data-act');
+    if(act==='email'){
+      window.location.href='mailto:chad@getgrush.com?subject='+encodeURIComponent(ctx.subject);
+      closeMenu();
+    } else if(act==='text'){
+      // sms: link prefilled with the URL (works on phones)
+      window.location.href='sms:?&body='+encodeURIComponent('Check out Grush Cottages: '+URL_);
+      closeMenu();
+    } else if(act==='copy'){
+      doCopy();
+    } else if(act==='more'){
+      if(navigator.share){
+        navigator.share({title:'Grush Cottages',text:'Custom modular facilities — GC-DPS',url:URL_}).catch(function(){});
+      }
+      closeMenu();
+    }
+  });
+})();
 </script>
 </body>
 </html>
