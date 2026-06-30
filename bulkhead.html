@@ -2393,11 +2393,11 @@ function showCaption(text,accent){
 
 // ---- audio (external files, getgrush unlock pattern) ----
 var LANG='en';
+const CLIP_KEYS=['cluemein','theyleadwiththepins','eachzonefindsitself','thenitlocks','onebecomestwo'];
 function audioFile(key){ return LANG==='en' ? key+'.mp3' : key+'_'+LANG+'.mp3'; }
-const NARRATION_AUDIO=new Proxy({},{ get:function(_,key){ return typeof key==='string' ? audioFile(key) : undefined; } });
 let audioUnlocked=false, htmlAudio=null;
 const AUDIO_POOL={};
-function preloadAudio(){ if(Object.keys(AUDIO_POOL).length)return; for(const k in NARRATION_AUDIO){const a=new Audio(NARRATION_AUDIO[k]);a.preload="auto";a.volume=1;AUDIO_POOL[k]=a;} }
+function preloadAudio(){ for(const k in AUDIO_POOL){ try{ AUDIO_POOL[k].pause(); }catch(e){} delete AUDIO_POOL[k]; } for(const k of CLIP_KEYS){ const a=new Audio(audioFile(k)); a.preload="auto"; a.volume=1; AUDIO_POOL[k]=a; } }
 function unlockAudio(){
   if(audioUnlocked)return; audioUnlocked=true;
   for(const k in AUDIO_POOL){
@@ -2807,6 +2807,8 @@ var gate=document.getElementById('gate');
 function powerOn(lang){
   if(lang){ LANG=lang; }
   initAudio();
+  preloadAudio();                          // build the pool for the chosen language
+  audioUnlocked=false; unlockAudio();      // re-arm unlock for the new audio elements
   if(ctx&&ctx.state==='suspended') ctx.resume();
   // a confirming snap on the button press itself
   after(0,function(){ snap(true); });
