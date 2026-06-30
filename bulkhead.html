@@ -195,6 +195,23 @@
   #gate .gate-hint{position:relative;z-index:2;margin-top:2rem;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#3a4a5a;}
   @keyframes pwrPulse{0%,100%{box-shadow:0 0 0 rgba(0,200,255,0);}50%{box-shadow:0 0 22px rgba(0,200,255,0.18);}}
   #power-btn{animation:pwrPulse 2.6s ease-in-out infinite;}
+  #gate .gate-langs{position:relative;z-index:2;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+  #gate .lang-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:22px 26px;min-width:128px;border-radius:14px;
+    background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);
+    transition:transform .15s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;}
+  #gate .lang-btn:hover{background:rgba(0,200,255,0.18);border-color:var(--cyan);box-shadow:0 0 30px rgba(0,200,255,0.25);transform:translateY(-3px);}
+  #gate .lang-btn:active{transform:scale(0.97);}
+  #gate .lang-btn .pwr-icon{width:22px;height:22px;}
+  #gate .lang-btn .lang-label{font-size:15px;font-weight:700;color:#eef2f4;letter-spacing:0.02em;}
+  #gate .lang-btn .lang-sub{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--myc);}
+  /* escape / change-language control, shown during playback */
+  #lang-escape{position:fixed;top:16px;right:16px;z-index:40;cursor:pointer;display:none;
+    align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+    background:rgba(10,21,49,0.7);border:1px solid rgba(255,255,255,0.16);
+    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);transition:.2s;}
+  #lang-escape:hover{color:var(--cyan);border-color:var(--cyan);}
+  #lang-escape.show{display:inline-flex;}
   /* BEGIN button — appears after the intro animation completes */
   #splash-begin{position:absolute;bottom:64px;left:50%;transform:translateX(-50%) translateY(10px);
     z-index:8;opacity:0;pointer-events:none;cursor:pointer;
@@ -263,9 +280,14 @@
 <!-- POWER-ON GATE — audio unlock -->
 <div id="gate">
   <div class="gate-brand">Grush <b>Cottages</b></div>
-  <div id="power-btn"><span class="pwr-icon"></span>Power on</div>
-  <div class="gate-hint">Click to bring the system online</div>
+  <div class="gate-langs">
+    <div class="lang-btn" data-lang="en"><span class="pwr-icon"></span><span class="lang-label">Power on</span><span class="lang-sub">English</span></div>
+    <div class="lang-btn" data-lang="es"><span class="pwr-icon"></span><span class="lang-label">Encender</span><span class="lang-sub">Español</span></div>
+    <div class="lang-btn" data-lang="pt"><span class="pwr-icon"></span><span class="lang-label">Ligar</span><span class="lang-sub">Português</span></div>
+  </div>
+  <div class="gate-hint">Choose a language to begin · Elige un idioma · Escolha um idioma</div>
 </div>
+<div id="lang-escape"><span>⇆</span><span>Language</span></div>
 
 <!-- MAGNET-SNAP SPLASH -->
 <div id="splash">
@@ -1488,7 +1510,7 @@ const CONES=[{u:-0.864,h:2.285},{u:0.864,h:0.300}];  // v034 SCAD: pins at TL/BR
 // Keys map 1:1 to the five approved narration clips. When real audio loads,
 // playClip() reads the actual <audio>.duration and overrides these, so these
 // only matter for the caption-only (no-audio) timing fallback.
-const CLIP_DUR={cluemein:9, theyleadwiththepins:13, eachzonefindsitself:17, thenitlocks:13, onebecomestwo:15};
+const CLIP_DUR={cluemein:11.46, theyleadwiththepins:27.73, eachzonefindsitself:32.62, thenitlocks:20.39, onebecomestwo:24.83};
 
 let scene,camera,renderer,controls,clock;
 let chassisGroup,fitoutGroup;
@@ -2370,7 +2392,9 @@ function showCaption(text,accent){
 }
 
 // ---- audio (external files, getgrush unlock pattern) ----
-const NARRATION_AUDIO={cluemein:"cluemein.mp3", theyleadwiththepins:"theyleadwiththepins.mp3", eachzonefindsitself:"eachzonefindsitself.mp3", thenitlocks:"thenitlocks.mp3", onebecomestwo:"onebecomestwo.mp3"};
+var LANG='en';
+function audioFile(key){ return LANG==='en' ? key+'.mp3' : key+'_'+LANG+'.mp3'; }
+const NARRATION_AUDIO=new Proxy({},{ get:function(_,key){ return typeof key==='string' ? audioFile(key) : undefined; } });
 let audioUnlocked=false, htmlAudio=null;
 const AUDIO_POOL={};
 function preloadAudio(){ if(Object.keys(AUDIO_POOL).length)return; for(const k in NARRATION_AUDIO){const a=new Audio(NARRATION_AUDIO[k]);a.preload="auto";a.volume=1;AUDIO_POOL[k]=a;} }
@@ -2780,20 +2804,37 @@ function run(){
 // The click is the user gesture that unlocks browser audio, so the FIRST
 // play of the animation has full sound. Gate dissolves, then the splash runs.
 var gate=document.getElementById('gate');
-function powerOn(){
+function powerOn(lang){
+  if(lang){ LANG=lang; }
   initAudio();
   if(ctx&&ctx.state==='suspended') ctx.resume();
   // a confirming snap on the button press itself
   after(0,function(){ snap(true); });
   gate.classList.add('gone');
+  var esc=document.getElementById('lang-escape');
+  if(esc) esc.classList.add('show');
   // start the animation as the gate fades out
   after(450,function(){ run(); });
 }
-var powerBtn_=document.getElementById('power-btn');
-if(powerBtn_){
-  powerBtn_.addEventListener('click',function(e){ e.stopPropagation(); powerOn(); });
-  powerBtn_.setAttribute('tabindex','0');
-  powerBtn_.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); powerOn(); } });
+function backToGate(){
+  try{ stopClip(); }catch(e){}
+  try{ stopSpeak(); }catch(e){}
+  try{ stopAuto(); }catch(e){}
+  var esc=document.getElementById('lang-escape');
+  if(esc) esc.classList.remove('show');
+  gate.classList.remove('gone');
+}
+Array.prototype.forEach.call(document.querySelectorAll('#gate .lang-btn'),function(btn){
+  var lang=btn.getAttribute('data-lang');
+  btn.addEventListener('click',function(e){ e.stopPropagation(); powerOn(lang); });
+  btn.setAttribute('tabindex','0');
+  btn.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); powerOn(lang); } });
+});
+var langEsc_=document.getElementById('lang-escape');
+if(langEsc_){
+  langEsc_.addEventListener('click',function(e){ e.stopPropagation(); backToGate(); });
+  langEsc_.setAttribute('tabindex','0');
+  langEsc_.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); backToGate(); } });
 }
 
 
