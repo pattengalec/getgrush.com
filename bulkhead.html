@@ -1626,6 +1626,67 @@ const BEATS = [
 // working unchanged. From here down, COTTAGES === BEATS.
 const COTTAGES = BEATS;
 
+// ---- Localization: ES/PT panel + caption text, keyed by beat key ----
+// Captions (narration) are verbatim from the ElevenLabs scripts so the on-screen
+// line matches the spoken audio. Panel fields (name/sub/desc/feats) translated to
+// match the same terminology. English lives in BEATS; this table overrides it when LANG!=='en'.
+const TXT = {
+  es: {
+    theyleadwiththepins: {
+      name:'Alineación inicial', sub:'Los pernos cónicos guían el acople',
+      desc:'Dos pernos cónicos en diagonal guían el acercamiento. Las puntas estrechas entran primero y alinean todo el edificio antes de que algo delicado tenga que tocarse.',
+      feats:['Pernos cónicos en diagonal (sup. izq. / inf. der.)','La punta estrecha guía y se ensancha al asentar','Captura inicial → autocentrado'],
+      narration:"Cuando dos edificios se unen, nada tiene que ser perfecto. Cada cara lleva dos pernos cónicos en diagonal, y las puntas estrechas entran primero. Al asentarse, alinean todo el edificio. ¿Desviado cuatro centímetros? Los conos igual encuentran el centro. Esa es la alineación inicial, lista antes de que algo delicado tenga que tocarse."
+    },
+    eachzonefindsitself: {
+      name:'Alineación por servicio', sub:'Cada servicio se autoguía',
+      desc:'Cuando los conos asientan, cada servicio ya está alineado, y cada uno tiene su propia guía final: aire, energía, datos y agua se autoasientan por mecanismos distintos.',
+      feats:['Aire: boquilla en casquillo biselado','Energía: lecho de contactos de resorte','Datos: haz expandido tras tapa antipolvo','Agua: cierre seco sobre portador flotante'],
+      narration:"Cuando los conos asientan, cada servicio ya está alineado, y cada uno tiene su propia guía final. El aire desliza una boquilla en un casquillo biselado. La energía cierra sobre un lecho de contactos de resorte. Los datos se conectan por óptica de haz expandido, tras una tapa antipolvo. El agua asienta un acople de cierre seco sobre un portador flotante. Cuatro servicios, cuatro conexiones autoguiadas, sin herramientas, sin ajustes."
+    },
+    thenitlocks: {
+      name:'Sujeción física', sub:'Cierre sin energía',
+      desc:'Un pestillo de resorte cae en su ranura y junta las dos caras con fuerza, sin energía ni motor. Dos contenedores separados se vuelven una sola estructura sellada por la que se puede caminar.',
+      feats:['Pestillo de resorte en la ranura de captura','Las levas lo fijan en su sitio','Las caras se juntan → una estructura'],
+      narration:"Ahora se cierran. Un pestillo de resorte cae en su ranura y junta las dos caras con fuerza, sin energía, sin motor. Las levas lo fijan en su sitio. Lo que eran dos contenedores separados ahora es una sola estructura sellada por la que se puede caminar."
+    },
+    onebecomestwo: {
+      name:'Cadena en serie', sub:'Los servicios pasan de lado a lado',
+      desc:'La energía y el agua entran en la primera unidad, recorren todo el cuerpo y llegan a la cara opuesta, donde los pernos del siguiente edificio ya esperan. Uno se vuelve dos. Una cabaña de servicios dedicada está en camino.',
+      feats:['El suministro entra por el lado de los pernos','Paso directo hasta el mamparo opuesto','Los pernos de la próxima unidad ya esperan','Cabaña de servicios — muy pronto'],
+      narration:"Y no se detiene en dos. La energía y el agua entran en la primera unidad, recorren todo el cuerpo, y llegan a la cara opuesta, donde los pernos del siguiente edificio ya esperan. Uno se vuelve dos. Y una cabaña de servicios dedicada está en camino, diseñada para alimentar toda la cadena desde un extremo."
+    }
+  },
+  pt: {
+    theyleadwiththepins: {
+      name:'Alinhamento inicial', sub:'Os pinos cônicos guiam o encaixe',
+      desc:'Dois pinos cônicos na diagonal guiam a aproximação. As pontas estreitas entram primeiro e alinham o edifício inteiro antes que algo delicado precise se tocar.',
+      feats:['Pinos cônicos na diagonal (sup. esq. / inf. dir.)','A ponta estreita guia e alarga ao assentar','Captura inicial → autocentragem'],
+      narration:"Quando dois edifícios se encontram, nada precisa estar perfeito. Cada face traz dois pinos cônicos na diagonal, e as pontas estreitas entram primeiro. Ao se encaixarem, alinham o edifício inteiro. Fora por quatro centímetros? Os cones ainda encontram o centro. Esse é o alinhamento inicial, feito antes que algo delicado precise se tocar."
+    },
+    eachzonefindsitself: {
+      name:'Alinhamento por utilidade', sub:'Cada utilidade se autoguia',
+      desc:'Quando os cones assentam, cada utilidade já está alinhada, e cada uma tem sua própria guia final: ar, energia, dados e água se autoassentam por mecanismos distintos.',
+      feats:['Ar: bico em encaixe chanfrado','Energia: leito de contatos de mola','Dados: feixe expandido atrás de tampa','Água: ruptura seca sobre suporte flutuante'],
+      narration:"Quando os cones assentam, cada utilidade já está alinhada, e cada uma tem sua própria guia final. O ar desliza um bico num encaixe chanfrado. A energia fecha sobre um leito de contatos de mola. Os dados se conectam por ótica de feixe expandido, atrás de uma tampa contra poeira. A água assenta um acoplador de ruptura seca sobre um suporte flutuante. Quatro utilidades, quatro conexões autoguiadas, sem ferramentas, sem ajustes."
+    },
+    thenitlocks: {
+      name:'Fixação física', sub:'Travamento sem energia',
+      desc:'Um trinco de mola cai na ranhura e une as duas faces com firmeza, sem energia nem motor. Dois contêineres separados se tornam uma única estrutura selada por onde se pode caminhar.',
+      feats:['Trinco de mola na ranhura de captura','Os cames o fixam no lugar','As faces se unem → uma estrutura'],
+      narration:"Agora eles travam. Um trinco de mola cai na ranhura e une as duas faces com firmeza, sem energia, sem motor. Os cames o fixam no lugar. O que eram dois contêineres separados agora é uma única estrutura selada por onde se pode caminhar."
+    },
+    onebecomestwo: {
+      name:'Encadeamento', sub:'As utilidades passam de ponta a ponta',
+      desc:'A energia e a água entram na primeira unidade, percorrem todo o corpo e chegam à face oposta, onde os pinos do próximo edifício já esperam. Um se torna dois. Uma cabana de utilidades dedicada está a caminho.',
+      feats:['O fornecimento entra pelo lado dos pinos','Passagem direta até o mamparo oposto','Os pinos da próxima unidade já esperam','Cabana de utilidades — em breve'],
+      narration:"E não para em dois. A energia e a água entram na primeira unidade, percorrem todo o corpo, e chegam à face oposta, onde os pinos do próximo edifício já esperam. Um se torna dois. E uma cabana de utilidades dedicada está a caminho, feita para alimentar toda a cadeia a partir de uma ponta."
+    }
+  }
+};
+// Return a beat's field in the current language, falling back to English (the BEATS value).
+function TL(c, field){ try{ if(LANG!=='en' && TXT[LANG] && TXT[LANG][c.key] && TXT[LANG][c.key][field]!=null) return TXT[LANG][c.key][field]; }catch(e){} return c[field]; }
+
 // ---- Geometry stage hooks ----
 // 2b: build the two free-standing bulkheads (poster frame). 2c animates them.
 // All four beats currently show the same parked poster frame; the mate motion
@@ -2364,14 +2425,14 @@ function selectCottage(i,{speak=true}={}){
   updateRail(i);
   const panel=document.getElementById('panel');
   panel.style.setProperty('--accent',c.accent);
-  panel.innerHTML=`<div class="eyebrow">Beat ${String(i+1).padStart(2,'0')} / 0${COTTAGES.length} &middot; ${c.sub}</div>
-    <h2>${c.name}</h2><p class="desc">${c.desc}</p>
-    <ul>${c.feats.map(f=>`<li>${f}</li>`).join('')}</ul>`;
+  panel.innerHTML=`<div class="eyebrow">Beat ${String(i+1).padStart(2,'0')} / 0${COTTAGES.length} &middot; ${TL(c,'sub')}</div>
+    <h2>${TL(c,'name')}</h2><p class="desc">${TL(c,'desc')}</p>
+    <ul>${TL(c,'feats').map(f=>`<li>${f}</li>`).join('')}</ul>`;
   panel.classList.add('show');
   // DEMO FIRST: cottage on screen, drone demo + narration start together (in sync — no bleed).
   // When narration ENDS, the dock plays (orbit resumes, second unit slides in → pauses → seats),
   // and only after the dock seats do we advance to the next cottage.
-  showCaption(c.narration,c.accent);
+  showCaption(TL(c,'narration'),c.accent);
   startCameraTrack(c);
   const afterNarration=()=>{
     // 2b: the two-bulkhead poster frame is static — no old cottage dock here.
@@ -2381,7 +2442,7 @@ function selectCottage(i,{speak=true}={}){
   };
   if(speak && audioOn){
     const ok=playClip(c.key,afterNarration);
-    if(!ok) speak_(c.narration,afterNarration);
+    if(!ok) speak_(TL(c,'narration'),afterNarration);
   } else { afterNarration(); }
 }
 
@@ -2425,7 +2486,7 @@ let synth=window.speechSynthesis;
 function pickVoice(){ const vs=synth.getVoices(); return vs.find(v=>/Google US English|Samantha|Daniel|Aria/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs[0]; }
 function speak_(text,onend){ if(!synth){if(onend)setTimeout(onend,6000);return;} synth.cancel(); const u=new SpeechSynthesisUtterance(text); const v=pickVoice(); if(v)u.voice=v; u.rate=0.98; u.onend=()=>{if(onend)onend();}; synth.speak(u); }
 function stopSpeak(){ if(synth)synth.cancel(); }
-window.__spk=function(key,onend){ const m={cluemein:"You've seen what a Grush cottage can do. Here's the part that makes it real — the docking port. This is how two buildings actually become one.", theyleadwiththepins:BEATS[0].narration, eachzonefindsitself:BEATS[1].narration, thenitlocks:BEATS[2].narration, onebecomestwo:BEATS[3].narration}; speak_(m[key]||"",onend); };
+window.__spk=function(key,onend){ const cm={en:"You've seen what a Grush cottage can do. Here's the part that makes it real — the docking port. This is how two buildings actually become one.", es:"Ya viste lo que puede hacer una cabaña Grush. Esta es la parte que lo hace real: el puerto de acople. Así es como dos edificios se vuelven uno.", pt:"Você já viu o que uma cabana Grush pode fazer. Esta é a parte que torna tudo real: a porta de acoplamento. É assim que dois edifícios se tornam um."}; if(key==='cluemein'){ speak_(cm[LANG]||cm.en,onend); return; } const b=BEATS.find(x=>x.key===key); speak_(b?TL(b,'narration'):"",onend); };
 
 function scheduleNext(){ clearTimeout(autoTimer); autoTimer=setTimeout(()=>{ if(!autoPlay)return; const n=(currentIndex+1)%COTTAGES.length; if(n===0){ stopAuto(); if(typeof window.__playOutro==='function') setTimeout(window.__playOutro,800); return; } selectCottage(n); },150); }
 function startAuto(){ autoPlay=true; const b=document.getElementById('autoBtn'); b.classList.add('on'); b.textContent='⏸'; if(currentIndex<0)selectCottage(0); else selectCottage(currentIndex); }
