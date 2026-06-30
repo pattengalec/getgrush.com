@@ -1452,7 +1452,7 @@ const ZONES = [
 const CONES=[{u:-0.864,h:2.285},{u:0.864,h:0.300}];  // v034 SCAD: pins at TL/BR diagonal corners (inset 300mm)
 
 // Clip durations (s) — measured from the real audio
-const CLIP_DUR={intro:22.2,grow:32.304,myco:25.248,shop:24.336,lab:30.792,dr:30.408};
+const CLIP_DUR={intro:22.2,office:28,grow:32.304,myco:25.248,shop:24.336,lab:30.792,dr:30.408};
 
 let scene,camera,renderer,controls,clock;
 let chassisGroup,fitoutGroup;
@@ -1468,6 +1468,22 @@ const DOCK_CAM_DUR=2.4;
 //  The diorama OPEN FACE is +Z (we look from +Z into the box).
 // ============================================================
 const COTTAGES = [
+  {
+    key:'office', name:'Office Cottage', icon:'🏢', accent:'#9fb4cc', accentHex:0x9fb4cc,
+    sub:'Workspace & administration',
+    desc:'The simplest fit-out — desks, task seating, monitors, and storage turn the chassis into a clean, quiet workspace. Power and data arrive through the docking interface; drop it anywhere you need an office.',
+    feats:['Desks + task seating','Monitors + data through the bulkhead','Low-storage credenza, open floor'],
+    narration:"We start with the simplest build — the Office Cottage. The same docking chassis becomes a clean, quiet workspace: desks along one wall, task chairs, monitors fed by the data zone, and storage tucked to the side. Power and data arrive through the standardized bulkhead, so it drops anywhere you need an office and connects in minutes. From here, every cottage we'll see adds more inside the very same shell.",
+    build:buildOffice,
+    cam:[
+      {t:0.00, pos:[7.5,3.2,9.5],  look:[0,0.2,0]},     // establish — look into the open box
+      {t:0.20, pos:[-4.5,1.2,5.2], look:[-4.5,1.0,-1.5]},// first desk + monitor
+      {t:0.40, pos:[0,1.4,5.0],    look:[0,0.9,-2.0]},  // across the desks, monitor glow
+      {t:0.58, pos:[-5.0,1.0,2.5], look:[-6.0,0.8,0]},  // credenza along the side wall
+      {t:0.80, pos:[10,4.5,12],    look:[0,0,0]},       // pullback — wide
+      {t:0.96, pos:[8,3.0,10],     look:[0,0.3,0]},     // hero
+    ]
+  },
   {
     key:'grow', name:'Grow Cottage', icon:'🌱', accent:'#c8ff00', accentHex:0xc8ff00,
     sub:'Controlled-environment agriculture',
@@ -1549,6 +1565,12 @@ const COTTAGES = [
     ]
   },
 ];
+
+// Tour order: simple -> complex build-out (office, lab, grow, myco, shop, dr).
+(function(){
+  var ORDER=['office','lab','grow','myco','shop','dr'];
+  COTTAGES.sort(function(a,b){ return ORDER.indexOf(a.key)-ORDER.indexOf(b.key); });
+})();
 
 // ============================================================
 //  THREE setup
@@ -2033,6 +2055,55 @@ function buildLab(g){
   const up=B(iL-2.4,0.7,0.4,0xe6ecf2,{r:0.4}); up.position.set(0,FLOORY+1.9,-(iW/2-0.3)); g.add(up);
   g.add(new THREE.HemisphereLight(0xffffff,0x223040,0.5));
 }
+function makeChair(){
+  const m=new THREE.Group();
+  const fab=new THREE.MeshStandardMaterial({color:0x2b3340,roughness:0.8,metalness:0.05});
+  const steel=new THREE.MeshStandardMaterial({color:0x6b7480,roughness:0.4,metalness:0.7});
+  // seat
+  const seat=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.08,0.5),fab); seat.position.y=0.5; seat.castShadow=true; m.add(seat);
+  // backrest
+  const back=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.6,0.08),fab); back.position.set(0,0.82,-0.22); back.castShadow=true; m.add(back);
+  // gas post
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.46,12),steel); post.position.y=0.25; m.add(post);
+  // 5-star base (legs)
+  for(let i=0;i<5;i++){
+    const a=i*(Math.PI*2/5);
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.34,0.04,0.06),steel);
+    leg.position.set(Math.cos(a)*0.16,0.04,Math.sin(a)*0.16); leg.rotation.y=-a; m.add(leg);
+  }
+  return m;
+}
+function makeMonitor(){
+  const m=new THREE.Group();
+  const dark=new THREE.MeshStandardMaterial({color:0x14181f,roughness:0.4,metalness:0.3});
+  const screen=new THREE.MeshStandardMaterial({color:0x0a1530,roughness:0.2,metalness:0.1,emissive:0x123a66,emissiveIntensity:0.6});
+  // panel
+  const panel=new THREE.Mesh(new THREE.BoxGeometry(0.62,0.36,0.03),dark); panel.position.y=0.55; panel.castShadow=true; m.add(panel);
+  // glowing screen face (toward open viewing side, +Z)
+  const face=new THREE.Mesh(new THREE.PlaneGeometry(0.56,0.30),screen); face.position.set(0,0.55,0.018); m.add(face);
+  // stand neck + foot
+  const neck=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.22,0.05),dark); neck.position.y=0.32; m.add(neck);
+  const foot=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.03,0.18),dark); foot.position.y=0.2; foot.castShadow=true; m.add(foot);
+  return m;
+}
+function buildOffice(g){
+  const zc=-(iW/2-0.45);                 // back wall (-Z); open face (+Z) stays clear
+  const deskTop=0x3a4250, deskBody=0xd8dde4;
+  // two desks along the back wall
+  const spots=[-iL/4, iL/4];
+  spots.forEach(function(x){
+    const body=B(2.0,0.74,0.7,deskBody,{r:0.6,m:0.05}); body.position.set(x,FLOORY+0.37,zc); g.add(body);
+    const top=B(2.1,0.06,0.76,deskTop,{r:0.4,m:0.2});  top.position.set(x,FLOORY+0.75,zc); g.add(top);
+    const mon=makeMonitor(); mon.position.set(x,FLOORY+0.78,zc+0.05); g.add(mon);
+    const ch=makeChair();    ch.position.set(x,FLOORY,zc+0.9);  ch.rotation.y=Math.PI; g.add(ch); // face the desk
+  });
+  // credenza / low storage along one side wall (-X), running in Z
+  const cred=B(0.55,0.8,2.4,0xc7ccd4,{r:0.6,m:0.05}); cred.position.set(-iL/2+0.5,FLOORY+0.4,0); g.add(cred);
+  const credTop=B(0.6,0.05,2.5,deskTop,{r:0.4,m:0.2}); credTop.position.set(-iL/2+0.5,FLOORY+0.82,0); g.add(credTop);
+  // cool neutral office fill
+  g.add(new THREE.HemisphereLight(0xeef4ff,0x223040,0.55));
+  g.add(new THREE.PointLight(0xcfe0ff,0.3,12));
+}
 function buildResponse(g){
   // cots along the BACK wall only; front open face clear
   const zc=-(iW/2-0.5);
@@ -2181,7 +2252,7 @@ function selectCottage(i,{speak=true}={}){
   document.querySelectorAll('.card').forEach((el,idx)=>el.classList.toggle('active',idx===i));
   const panel=document.getElementById('panel');
   panel.style.setProperty('--accent',c.accent);
-  panel.innerHTML=`<div class="eyebrow">Use case ${String(i+1).padStart(2,'0')} / 05</div>
+  panel.innerHTML=`<div class="eyebrow">Use case ${String(i+1).padStart(2,'0')} / ${String(COTTAGES.length).padStart(2,'0')}</div>
     <h2>${c.name}</h2><p class="desc">${c.desc}</p>
     <ul>${c.feats.map(f=>`<li>${f}</li>`).join('')}</ul>`;
   panel.classList.add('show');
@@ -2215,7 +2286,7 @@ function showCaption(text,accent){
 }
 
 // ---- audio (external files, getgrush unlock pattern) ----
-const NARRATION_AUDIO={intro:"intro.mp3",grow:"grow.mp3",myco:"myco.mp3",shop:"shop.mp3",lab:"lab.mp3",dr:"dr.mp3"};
+const NARRATION_AUDIO={intro:"intro.mp3",office:"office.mp3",grow:"grow.mp3",myco:"myco.mp3",shop:"shop.mp3",lab:"lab.mp3",dr:"dr.mp3"};
 let audioUnlocked=false, htmlAudio=null;
 const AUDIO_POOL={};
 function preloadAudio(){ if(Object.keys(AUDIO_POOL).length)return; for(const k in NARRATION_AUDIO){const a=new Audio(NARRATION_AUDIO[k]);a.preload="auto";a.volume=1;AUDIO_POOL[k]=a;} }
