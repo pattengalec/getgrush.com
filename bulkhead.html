@@ -2476,7 +2476,12 @@ function playClip(key,onend){
   let done=false; const adv=()=>{ if(done)return; done=true; if(onend)onend(); };
   a.onended=adv;
   a.play().then(()=>{ const d=(isFinite(a.duration)&&a.duration>0)?a.duration:28; clearTimeout(a.__s); a.__s=setTimeout(adv,(d+0.3)*1000); })
-   .catch(()=>{ htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv(); });
+   .catch(function(err){
+     // An interrupted play (e.g. a rapid stop/restart or language switch) rejects
+     // the promise even though audio is fine — do NOT speak over it.
+     if((err&&err.name==='AbortError') || (a && !a.paused)) return;
+     htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv();
+   });
   return true;
 }
 function stopAllClips(){ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; try{ a.pause(); a.currentTime=0; clearTimeout(a.__s); a.onended=null; }catch(e){} } htmlAudio=null; }
@@ -2484,7 +2489,10 @@ function stopClip(){ stopAllClips(); }
 
 let synth=window.speechSynthesis;
 function pickVoice(){ const vs=synth.getVoices(); return vs.find(v=>/Google US English|Samantha|Daniel|Aria/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs[0]; }
-function speak_(text,onend){ if(!synth){if(onend)setTimeout(onend,6000);return;} synth.cancel(); const u=new SpeechSynthesisUtterance(text); const v=pickVoice(); if(v)u.voice=v; u.rate=0.98; u.onend=()=>{if(onend)onend();}; synth.speak(u); }
+function speak_(text,onend){
+  // Never speak over a clip that's actually playing (prevents TTS + MP3 doubling).
+  try{ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; if(a && !a.paused && !a.ended){ if(onend){ const d=(isFinite(a.duration)&&a.duration>0)?a.duration:28; setTimeout(onend,(d+0.3)*1000); } return; } } }catch(e){}
+  if(!synth){if(onend)setTimeout(onend,6000);return;} synth.cancel(); const u=new SpeechSynthesisUtterance(text); const v=pickVoice(); if(v)u.voice=v; u.rate=0.98; u.onend=()=>{if(onend)onend();}; synth.speak(u); }
 function stopSpeak(){ if(synth)synth.cancel(); }
 window.__spk=function(key,onend){ const cm={en:"You've seen what a Grush cottage can do. Here's the part that makes it real — the docking port. This is how two buildings actually become one.", es:"Ya viste lo que puede hacer una cabaña Grush. Esta es la parte que lo hace real: el puerto de acople. Así es como dos edificios se vuelven uno.", pt:"Você já viu o que uma cabana Grush pode fazer. Esta é a parte que torna tudo real: a porta de acoplamento. É assim que dois edifícios se tornam um."}; if(key==='cluemein'){ speak_(cm[LANG]||cm.en,onend); return; } const b=BEATS.find(x=>x.key===key); speak_(b?TL(b,'narration'):"",onend); };
 
