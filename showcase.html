@@ -170,6 +170,17 @@
   #power-btn .pwr-icon{width:18px;height:18px;display:inline-block;border:2px solid var(--cyan);border-radius:50%;position:relative;}
   #power-btn .pwr-icon::after{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:var(--cyan);}
   #gate .gate-hint{position:relative;z-index:2;margin-top:2rem;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#3a4a5a;}
+  #gate .gate-langs{position:relative;z-index:2;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+  #gate .lang-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:22px 26px;min-width:128px;border-radius:14px;
+    background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);
+    transition:transform .15s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;}
+  #gate .lang-btn:hover{background:rgba(0,200,255,0.18);border-color:var(--cyan);box-shadow:0 0 30px rgba(0,200,255,0.25);transform:translateY(-3px);}
+  #gate .lang-btn:active{transform:scale(0.97);}
+  #gate .lang-btn .pwr-icon{width:22px;height:22px;display:inline-block;border:2px solid var(--cyan);border-radius:50%;position:relative;}
+  #gate .lang-btn .pwr-icon::after{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:2px;height:11px;background:var(--cyan);}
+  #gate .lang-btn .lang-label{font-size:15px;font-weight:700;color:#eef2f4;letter-spacing:0.02em;}
+  #gate .lang-btn .lang-sub{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--myc);}
   @keyframes pwrPulse{0%,100%{box-shadow:0 0 0 rgba(0,200,255,0);}50%{box-shadow:0 0 22px rgba(0,200,255,0.18);}}
   #power-btn{animation:pwrPulse 2.6s ease-in-out infinite;}
   /* BEGIN button — appears after the intro animation completes */
@@ -242,11 +253,15 @@
 </style>
 </head>
 <body>
-<!-- POWER-ON GATE — audio unlock -->
+<!-- THREE-LANGUAGE GATE — language + audio unlock -->
 <div id="gate">
   <div class="gate-brand">Grush <b>Cottages</b></div>
-  <div id="power-btn"><span class="pwr-icon"></span>Power on</div>
-  <div class="gate-hint">Click to bring the system online</div>
+  <div class="gate-langs">
+    <div class="lang-btn" data-lang="en"><span class="pwr-icon"></span><span class="lang-label">Power on</span><span class="lang-sub">English</span></div>
+    <div class="lang-btn" data-lang="es"><span class="pwr-icon"></span><span class="lang-label">Encender</span><span class="lang-sub">Español</span></div>
+    <div class="lang-btn" data-lang="pt"><span class="pwr-icon"></span><span class="lang-label">Ligar</span><span class="lang-sub">Português</span></div>
+  </div>
+  <div class="gate-hint">Choose a language to begin · Elige un idioma · Escolha um idioma</div>
 </div>
 
 <!-- MAGNET-SNAP SPLASH -->
@@ -2778,7 +2793,9 @@ function run(){
 // The click is the user gesture that unlocks browser audio, so the FIRST
 // play of the animation has full sound. Gate dissolves, then the splash runs.
 var gate=document.getElementById('gate');
-function powerOn(){
+function powerOn(lang){
+  if(lang){ setLang(lang); }
+  applyHeroLang();                 // hero + buttons in the chosen language before reveal
   initAudio();
   if(ctx&&ctx.state==='suspended') ctx.resume();
   // a confirming snap on the button press itself
@@ -2787,12 +2804,23 @@ function powerOn(){
   // start the animation as the gate fades out
   after(450,function(){ run(); });
 }
-var powerBtn_=document.getElementById('power-btn');
-if(powerBtn_){
-  powerBtn_.addEventListener('click',function(e){ e.stopPropagation(); powerOn(); });
-  powerBtn_.setAttribute('tabindex','0');
-  powerBtn_.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); powerOn(); } });
-}
+// Skip-if-chosen: if a language was already picked (hub or prior visit), bypass the
+// gate and go straight into the localized experience. Otherwise show the three-way gate.
+(function(){
+  var pre=getLang();
+  if(pre){
+    applyHeroLang();
+    if(gate){ gate.classList.add('gone'); gate.style.display='none'; }
+    after(150,function(){ try{ run(); }catch(e){} });
+  } else {
+    Array.prototype.forEach.call(document.querySelectorAll('#gate .lang-btn'), function(btn){
+      var lang=btn.getAttribute('data-lang');
+      btn.addEventListener('click', function(e){ e.stopPropagation(); powerOn(lang); });
+      btn.setAttribute('tabindex','0');
+      btn.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); powerOn(lang); } });
+    });
+  }
+})();
 
 
 // ---------- BEGIN BUTTON -> hand off to the Showcase narrated tour ----------
