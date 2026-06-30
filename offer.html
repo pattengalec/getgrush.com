@@ -89,6 +89,22 @@
   .foot .f-line a{color:var(--cyan);}
   .foot .f-line a:hover{text-decoration:underline;}
   .foot .f-sub{font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#3a4a5a;margin-top:8px;}
+  #lang-control{position:fixed;top:16px;right:16px;z-index:40;cursor:pointer;display:inline-flex;
+    align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+    background:rgba(10,21,49,0.7);border:1px solid rgba(255,255,255,0.16);
+    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);transition:.2s;}
+  #lang-control:hover{color:var(--cyan);border-color:var(--cyan);}
+  /* mini language chooser (re-pick on this page) */
+  #lang-pop{position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;
+    background:rgba(5,10,24,0.92);}
+  #lang-pop.show{display:flex;}
+  #lang-pop .lp-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+  #lang-pop .lp-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:20px 24px;min-width:116px;border-radius:14px;
+    background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);transition:.2s;}
+  #lang-pop .lp-btn:hover{background:rgba(0,200,255,0.18);border-color:var(--cyan);transform:translateY(-3px);}
+  #lang-pop .lp-label{font-size:15px;font-weight:700;color:#eef2f4;}
+  #lang-pop .lp-sub{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mute);}
 </style>
 </head>
 <body>
@@ -183,5 +199,127 @@
   <div class="f-line">Grush Ventures · <a href="mailto:chad@getgrush.com">chad@getgrush.com</a></div>
   <div class="f-sub">Patent Pending · GC-DPS Docking Port System</div>
 </footer>
+<div id="lang-control"><span>⇆</span><span>Language</span></div>
+<div id="lang-pop"><div class="lp-row">
+  <div class="lp-btn" data-lang="en"><span class="lp-label">English</span><span class="lp-sub">EN</span></div>
+  <div class="lp-btn" data-lang="es"><span class="lp-label">Español</span><span class="lp-sub">ES</span></div>
+  <div class="lp-btn" data-lang="pt"><span class="lp-label">Português</span><span class="lp-sub">PT</span></div>
+</div></div>
+
+<script>
+/* ===== Site-wide language (shared pattern) ===== */
+var GRUSH_LANG_KEY='grush_lang';
+function getLang(){ try{ var v=localStorage.getItem(GRUSH_LANG_KEY); return (v==='es'||v==='pt'||v==='en')?v:null; }catch(e){ return null; } }
+function setLang(v){ try{ localStorage.setItem(GRUSH_LANG_KEY,v); }catch(e){} LANG=v; }
+var LANG=getLang()||'en';
+
+/* ===== Offer text (EN/ES/PT) ===== */
+var OFFER_TXT={
+  en:{ nav:['Showcase','Connect','Build'],
+    eyebrow:'The Offer · Three ways in',
+    h1:'How do you want to <span class="hl">build</span>?',
+    sub:'Every path starts with the same thing — the GC-DPS chassis and its universal docking connector. What changes is how much of the rest you want us to carry.',
+    tiers:[
+      {step:'Tier 1', name:'Buy Chassis', sub:'You design and build the inside.',
+       desc:'We manufacture and ship the chassis — walls, structure, and the docking hardware. You take it from there: design your own interior and build it out however you need.',
+       list:['Manufactured walls + chassis structure','GC-DPS docking connector hardware','Stand alone, or dock to add more later','Full freedom over the interior'],
+       provide:'You provide: <b>the build-out</b>', cta:'Get a chassis quote →'},
+      {step:'Tier 2', name:'Chassis + Plans', sub:'Self-build to a proven design.',
+       desc:'The chassis hardware plus the complete as-built design package for one of our models — Lab, Grow, MYCottage, Shop, and more. You self-build to spec, with the engineering already done.',
+       list:['Everything in Tier 1','As-built plans for a chosen model','Build it yourself, to a tested spec','The fastest path to a known result'],
+       provide:'You provide: <b>the labor</b>', cta:'Ask about plans →'},
+      {step:'Tier 3', name:'Complete Build', sub:'We build it. You receive it.',
+       desc:'Turnkey. We manufacture the chassis, build out the interior to a finished model, and deliver the completed facility to your site. The whole thing, done.',
+       list:['Everything in Tier 2','Full interior build-out','Delivered finished to your site','Nothing for you to assemble'],
+       provide:'You provide: <b>the site</b>', cta:'Start a complete build →'}
+    ],
+    parkedTag:'Tier 4 · Future', parkedH:'UHC-Integrated System',
+    parkedP:'A dedicated Utility Hub Cottage that powers, supplies, and coordinates a whole chain of docked units — off-grid capable. In development; returns as a higher tier when it\u2019s ready.',
+    parkedBadge:'Coming Later',
+    moat:'<b>One thing worth knowing:</b> the plans always travel with the chassis — we don\u2019t sell designs on their own. The hardware is what makes the design buildable, and the design is what makes the hardware worth more.',
+    saq:'Not sure yet?', saLinks:['▶ See what you can build','▶ See how they connect'] },
+  es:{ nav:['Showcase','Conectar','Construir'],
+    eyebrow:'La Oferta · Tres formas de entrar',
+    h1:'¿Cómo quieres <span class="hl">construir</span>?',
+    sub:'Cada camino empieza con lo mismo — el chasis GC-DPS y su conector de acople universal. Lo que cambia es cuánto del resto quieres que llevemos nosotros.',
+    tiers:[
+      {step:'Nivel 1', name:'Comprar el chasis', sub:'Tú diseñas y construyes el interior.',
+       desc:'Fabricamos y enviamos el chasis — paredes, estructura y el sistema de acople. Tú sigues desde ahí: diseña tu propio interior y constrúyelo como lo necesites.',
+       list:['Paredes y estructura del chasis fabricadas','Sistema de acople GC-DPS','Úsalo solo, o acóplalo para crecer después','Libertad total sobre el interior'],
+       provide:'Tú aportas: <b>la construcción interior</b>', cta:'Pedir cotización del chasis →'},
+      {step:'Nivel 2', name:'Chasis + Planos', sub:'Autoconstruye con un diseño probado.',
+       desc:'El chasis más el paquete completo de diseño as-built de uno de nuestros modelos — Laboratorio, Cultivo, MYCottage, Taller y más. Lo construyes tú mismo a especificación, con la ingeniería ya resuelta.',
+       list:['Todo lo del Nivel 1','Planos as-built de un modelo elegido','Constrúyelo tú mismo, a una especificación probada','La ruta más rápida a un resultado conocido'],
+       provide:'Tú aportas: <b>la mano de obra</b>', cta:'Preguntar por los planos →'},
+      {step:'Nivel 3', name:'Construcción completa', sub:'Nosotros lo construimos. Tú lo recibes.',
+       desc:'Llave en mano. Fabricamos el chasis, terminamos el interior a un modelo acabado y entregamos la instalación completa en tu sitio. Todo, listo.',
+       list:['Todo lo del Nivel 2','Interior totalmente terminado','Entregado terminado en tu sitio','Nada que ensamblar'],
+       provide:'Tú aportas: <b>el sitio</b>', cta:'Iniciar una construcción completa →'}
+    ],
+    parkedTag:'Nivel 4 · Futuro', parkedH:'Sistema integrado UHC',
+    parkedP:'Una Cabaña Central de Servicios dedicada que alimenta, abastece y coordina toda una cadena de unidades acopladas — capaz de operar fuera de la red. En desarrollo; vuelve como un nivel superior cuando esté lista.',
+    parkedBadge:'Muy pronto',
+    moat:'<b>Algo que vale la pena saber:</b> los planos siempre van con el chasis — no vendemos diseños por separado. El hardware es lo que hace el diseño construible, y el diseño es lo que hace el hardware más valioso.',
+    saq:'¿Aún no estás seguro?', saLinks:['▶ Mira lo que puedes construir','▶ Mira cómo se conectan'] },
+  pt:{ nav:['Showcase','Conectar','Construir'],
+    eyebrow:'A Oferta · Três formas de entrar',
+    h1:'Como você quer <span class="hl">construir</span>?',
+    sub:'Cada caminho começa com a mesma coisa — o chassi GC-DPS e seu conector de acoplamento universal. O que muda é quanto do resto você quer que a gente carregue.',
+    tiers:[
+      {step:'Nível 1', name:'Comprar o chassi', sub:'Você projeta e constrói o interior.',
+       desc:'Fabricamos e enviamos o chassi — paredes, estrutura e o sistema de acoplamento. Você segue daí: projete seu próprio interior e construa do jeito que precisar.',
+       list:['Paredes e estrutura do chassi fabricadas','Sistema de acoplamento GC-DPS','Use sozinho, ou acople para crescer depois','Liberdade total sobre o interior'],
+       provide:'Você fornece: <b>a construção interna</b>', cta:'Pedir orçamento do chassi →'},
+      {step:'Nível 2', name:'Chassi + Plantas', sub:'Autoconstrua com um projeto comprovado.',
+       desc:'O chassi mais o pacote completo de projeto as-built de um dos nossos modelos — Laboratório, Cultivo, MYCottage, Oficina e mais. Você mesmo constrói conforme a especificação, com a engenharia já pronta.',
+       list:['Tudo do Nível 1','Plantas as-built de um modelo escolhido','Construa você mesmo, a uma especificação testada','O caminho mais rápido a um resultado conhecido'],
+       provide:'Você fornece: <b>a mão de obra</b>', cta:'Perguntar sobre as plantas →'},
+      {step:'Nível 3', name:'Construção completa', sub:'Nós construímos. Você recebe.',
+       desc:'Chave na mão. Fabricamos o chassi, terminamos o interior em um modelo acabado e entregamos a instalação completa no seu site. Tudo, pronto.',
+       list:['Tudo do Nível 2','Interior totalmente acabado','Entregue pronto no seu site','Nada para você montar'],
+       provide:'Você fornece: <b>o terreno</b>', cta:'Iniciar uma construção completa →'}
+    ],
+    parkedTag:'Nível 4 · Futuro', parkedH:'Sistema integrado UHC',
+    parkedP:'Uma Cabana Central de Utilidades dedicada que alimenta, abastece e coordena toda uma cadeia de unidades acopladas — capaz de operar fora da rede. Em desenvolvimento; volta como um nível superior quando estiver pronta.',
+    parkedBadge:'Em breve',
+    moat:'<b>Algo que vale a pena saber:</b> as plantas sempre acompanham o chassi — não vendemos projetos separadamente. O hardware é o que torna o projeto construível, e o projeto é o que torna o hardware mais valioso.',
+    saq:'Ainda não tem certeza?', saLinks:['▶ Veja o que você pode construir','▶ Veja como elas se conectam'] }
+};
+function applyOfferLang(){
+  var t=OFFER_TXT[LANG]||OFFER_TXT.en;
+  var nav=document.querySelectorAll('.nav a'); if(nav[0])nav[0].textContent=t.nav[0]; if(nav[1])nav[1].textContent=t.nav[1]; if(nav[2])nav[2].textContent=t.nav[2];
+  var eb=document.querySelector('.hero .eyebrow'); if(eb)eb.textContent=t.eyebrow;
+  var h1=document.querySelector('.hero h1'); if(h1)h1.innerHTML=t.h1;
+  var sb=document.querySelector('.hero p'); if(sb)sb.textContent=t.sub;
+  var tiers=document.querySelectorAll('.tier');
+  tiers.forEach(function(tier,i){ var d=t.tiers[i]; if(!d)return;
+    var step=tier.querySelector('.t-step'); if(step)step.textContent=d.step;
+    var h=tier.querySelector('h2'); if(h)h.textContent=d.name;
+    var s=tier.querySelector('.t-sub'); if(s)s.textContent=d.sub;
+    var ds=tier.querySelector('.t-desc'); if(ds)ds.textContent=d.desc;
+    var lis=tier.querySelectorAll('.t-list li'); lis.forEach(function(li,j){ if(d.list[j]!=null)li.textContent=d.list[j]; });
+    var pr=tier.querySelector('.t-provide'); if(pr)pr.innerHTML=d.provide;
+    var cta=tier.querySelector('.t-cta'); if(cta)cta.textContent=d.cta;
+  });
+  var ptag=document.querySelector('.parked .p-tag'); if(ptag)ptag.textContent=t.parkedTag;
+  var ph=document.querySelector('.parked h3'); if(ph)ph.textContent=t.parkedH;
+  var pp=document.querySelector('.parked p'); if(pp)pp.textContent=t.parkedP;
+  var pb=document.querySelector('.parked .p-badge'); if(pb)pb.textContent=t.parkedBadge;
+  var moat=document.querySelector('.moat p'); if(moat)moat.innerHTML=t.moat;
+  var saq=document.querySelector('.sa-q'); if(saq)saq.textContent=t.saq;
+  var sal=document.querySelectorAll('.sa-links a'); if(sal[0])sal[0].textContent=t.saLinks[0]; if(sal[1])sal[1].textContent=t.saLinks[1];
+}
+document.addEventListener('DOMContentLoaded', function(){
+  applyOfferLang();
+  var lc=document.getElementById('lang-control'), pop=document.getElementById('lang-pop');
+  if(lc&&pop){ lc.addEventListener('click', function(){ pop.classList.add('show'); }); }
+  if(pop){
+    Array.prototype.forEach.call(pop.querySelectorAll('.lp-btn'), function(btn){
+      btn.addEventListener('click', function(){ setLang(btn.getAttribute('data-lang')); applyOfferLang(); pop.classList.remove('show'); });
+    });
+    pop.addEventListener('click', function(e){ if(e.target===pop) pop.classList.remove('show'); });
+  }
+});
+</script>
 </body>
 </html>
