@@ -1687,6 +1687,14 @@ const TXT = {
 // Return a beat's field in the current language, falling back to English (the BEATS value).
 function TL(c, field){ try{ if(LANG!=='en' && TXT[LANG] && TXT[LANG][c.key] && TXT[LANG][c.key][field]!=null) return TXT[LANG][c.key][field]; }catch(e){} return c[field]; }
 
+// Localized intro caption (cluemein isn't a beat, so TL() can't reach it).
+function cluemeinCaption(){
+  var m={en:"You've seen what a Grush cottage can do. Here's the part that makes it real.",
+         es:"Ya viste lo que puede hacer una cabaña Grush. Esta es la parte que lo hace real.",
+         pt:"Você já viu o que uma cabana Grush pode fazer. Esta é a parte que torna tudo real."};
+  return m[LANG]||m.en;
+}
+
 // ---- Hero (intro screen) localization ----
 const HERO_TXT = {
   en: { title:'How two buildings<br><span class="hl">become one</span>.', sub:'A look inside the Grush docking port — the bulkhead that guides two units into alignment, locks them together, and chains utilities down the line.', begin:'▶ Begin', explore:'Explore on my own' },
@@ -2582,7 +2590,7 @@ addEventListener('DOMContentLoaded',()=>{
     // start the narrated tour exactly like the hero "Play narrated tour" button
     document.getElementById('hero').classList.add('hidden');
     document.getElementById('controls').classList.add('show');
-    showCaption("You've seen what a Grush cottage can do. Here's the part that makes it real.",'#00c8ff');
+    showCaption(cluemeinCaption(),'#00c8ff');
     _showBulkheadDiorama();  // 2b: parked two-bulkhead poster frame during intro (mate motion is 2c)
     const ok=playClip('cluemein',()=>{ const he=document.getElementById('hero'); if(he)he.style.display='none'; enterShowcase(true); });
     if(!ok){ document.getElementById('hero').style.display='none'; enterShowcase(true); }
@@ -2597,7 +2605,7 @@ addEventListener('DOMContentLoaded',()=>{
     audioOn=true; updA(); preloadAudio(); unlockAudio();
     document.getElementById('hero').classList.add('hidden');
     document.getElementById('controls').classList.add('show');
-    showCaption("You've seen what a Grush cottage can do. Here's the part that makes it real.",'#00c8ff');
+    showCaption(cluemeinCaption(),'#00c8ff');
     _showBulkheadDiorama();  // 2b: parked two-bulkhead poster frame during intro (mate motion is 2c)
     const ok=playClip('cluemein',()=>{ const he=document.getElementById('hero'); if(he)he.style.display='none'; enterShowcase(true); });
     if(!ok){ document.getElementById('hero').style.display='none'; enterShowcase(true); }
