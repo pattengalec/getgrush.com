@@ -225,6 +225,20 @@
     padding:8px 18px;cursor:pointer;transition:.2s;}
   .cc-replay:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
 
+  #lang-control{position:fixed;top:16px;right:16px;z-index:40;cursor:pointer;display:inline-flex;
+    align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+    background:rgba(10,21,49,0.7);border:1px solid rgba(255,255,255,0.16);
+    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);transition:.2s;}
+  #lang-control:hover{color:var(--cyan);border-color:var(--cyan);}
+  #lang-pop{position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;background:rgba(5,10,24,0.92);}
+  #lang-pop.show{display:flex;}
+  #lang-pop .lp-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+  #lang-pop .lp-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:20px 24px;min-width:116px;border-radius:14px;
+    background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);transition:.2s;}
+  #lang-pop .lp-btn:hover{background:rgba(0,200,255,0.18);border-color:var(--cyan);transform:translateY(-3px);}
+  #lang-pop .lp-label{font-size:15px;font-weight:700;color:#eef2f4;}
+  #lang-pop .lp-sub{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mute);}
 </style>
 </head>
 <body>
@@ -1572,6 +1586,67 @@ const COTTAGES = [
   COTTAGES.sort(function(a,b){ return ORDER.indexOf(a.key)-ORDER.indexOf(b.key); });
 })();
 
+// ---- Localization: ES/PT panel + caption text, keyed by cottage key ----
+// Panel fields (name/sub/desc/feats) and captions (narration) translated to match.
+// English lives in COTTAGES; this table overrides it when LANG!=='en'.
+const TXT={
+  es:{
+    office:{ name:'Cabaña Oficina', sub:'Espacio de trabajo y administración',
+      desc:'El acabado más sencillo — escritorios, sillas de trabajo, monitores y almacenamiento convierten el chasis en un espacio limpio y tranquilo. La energía y los datos llegan por la interfaz de acople; colócala donde necesites una oficina.',
+      feats:['Escritorios + sillas de trabajo','Monitores + datos por el mamparo','Mueble bajo de almacenaje, piso abierto'],
+      narration:"Empezamos con el acabado más sencillo: la Cabaña Oficina. El mismo chasis de acople se convierte en un espacio limpio y tranquilo: escritorios a lo largo de una pared, sillas de trabajo, monitores alimentados por la zona de datos y almacenamiento a un lado. La energía y los datos llegan por el mamparo estandarizado, así que se coloca donde necesites una oficina y se conecta en minutos. A partir de aquí, cada cabaña que veremos añade más dentro del mismo casco." },
+    lab:{ name:'Cabaña Laboratorio', sub:'Investigación y pruebas en ambiente limpio',
+      desc:'Un acondicionamiento de laboratorio controlado: mobiliario técnico, captura de humos y energía y datos estables para instrumentos — limpio, sellado y acoplable.',
+      feats:['Mobiliario técnico + mesas de instrumentos','Datos por fibra a través del mamparo','Aire filtrado + energía estable'],
+      narration:"La Cabaña Laboratorio convierte el chasis en un espacio de investigación limpio y controlado. El mobiliario técnico recorre las paredes, los instrumentos descansan sobre mesas estables, y la zona de datos lleva la fibra directamente por el mamparo para el equipo conectado. El aire filtrado y la energía acondicionada lo hacen un laboratorio sellado que puedes colocar en cualquier sitio, y acoplar a una instalación mayor cuando el trabajo crece." },
+    grow:{ name:'Cabaña de Cultivo', sub:'Agricultura de ambiente controlado',
+      desc:'Estanterías verticales, LED de espectro completo y control climático convierten el chasis en un cuarto de cultivo todo el año — alimentado y regado por la interfaz de acople.',
+      feats:['Estanterías verticales de varios niveles','Dosel LED de espectro completo','Clima + riego desde el mamparo'],
+      narration:"Esta es la Cabaña de Cultivo. Dentro del mismo chasis de acople, estanterías verticales trepan por ambas paredes bajo un dosel LED de espectro completo. La energía, el agua y la ventilación llegan todas por el mamparo estandarizado. Un cultivador coloca la unidad, conecta cuatro servicios y empieza a producir. Y cuando necesita más espacio, simplemente encadena una segunda cabaña. Mismo casco. Mismo conector. Más rendimiento." },
+    myco:{ name:'MYCottage', sub:'Cultivo de hongos especiales',
+      desc:'Un ambiente de fructificación sellado con humedad, intercambio de aire fresco y bloques de sustrato en estantes — hecho a medida para hongos gourmet y funcionales.',
+      feats:['Humedad + intercambio de aire fresco','Estantes de fructificación escalonados','Interior FRP lavable'],
+      narration:"La MYCottage está hecha para hongos. La zona de ventilación impulsa el intercambio de aire fresco mientras la humedad se mantiene estable, y estantes escalonados llevan el sustrato de fructificación por ambas paredes. El interior es lavable a chorro. Para una empresa de micología, es un cuarto de fructificación completo que llega en un camión y se acopla a la energía y el agua en una sola tarde." },
+    shop:{ name:'Cabaña Taller', sub:'Espacio de fabricación y creación',
+      desc:'Un taller completo — bancos, pared de herramientas y extracción de polvo — alimentado por la zona de energía del chasis. Acceso enrollable en la cara de acople para trabajos grandes.',
+      feats:['Bancos pesados + pared de herramientas','200A de energía por el mamparo','Extracción de polvo por la zona de ventilación'],
+      narration:"La Cabaña Taller es un espacio de fabricación de verdad. Un banco pesado recorre una pared, una pared de herramientas la enfrenta, y la extracción de polvo se conecta a la zona de ventilación. La interfaz de energía lleva un servicio completo de doscientos amperios. Así que el mismo conector que alimenta un cuarto de cultivo puede mover sierras, soldadoras y compresores. Un chasis, dimensionado para trabajo real." },
+    dr:{ name:'Cabaña de Respuesta', sub:'Despliegue ante desastres',
+      desc:'Una unidad de mando y atención de despliegue rápido — catres, comunicaciones, suministros y servicios autónomos para el campo cuando la infraestructura no está.',
+      feats:['Catres + disposición de triaje / mando','Comunicaciones + datos listos','Funciona con un solo generador'],
+      narration:"Y esta es la Cabaña de Respuesta. Cuando la infraestructura no está, el chasis se convierte en una unidad de mando y atención — catres, suministros y comunicaciones dentro de un casco reforzado. Funciona con un solo generador en la cabaña principal. Y como la interfaz de acople es estándar, una segunda unidad se encadena para duplicar el espacio. Colócala con grúa donde los camiones no llegan, conecta la energía, y queda operativa." }
+  },
+  pt:{
+    office:{ name:'Cabana Escritório', sub:'Espaço de trabalho e administração',
+      desc:'O acabamento mais simples — mesas, cadeiras de trabalho, monitores e armazenamento transformam o chassi num espaço limpo e tranquilo. Energia e dados chegam pela interface de acoplamento; coloque onde precisar de um escritório.',
+      feats:['Mesas + cadeiras de trabalho','Monitores + dados pelo mamparo','Armário baixo, piso aberto'],
+      narration:"Começamos com o acabamento mais simples: a Cabana Escritório. O mesmo chassi de acoplamento se torna um espaço limpo e tranquilo: mesas ao longo de uma parede, cadeiras de trabalho, monitores alimentados pela zona de dados e armazenamento ao lado. Energia e dados chegam pelo mamparo padronizado, então ela é colocada onde você precisar de um escritório e conecta em minutos. A partir daqui, cada cabana que veremos adiciona mais dentro do mesmo casco." },
+    lab:{ name:'Cabana Laboratório', sub:'Pesquisa e testes em ambiente limpo',
+      desc:'Um acabamento de laboratório controlado: bancadas técnicas, captura de fumos e energia e dados estáveis para instrumentos — limpo, selado e acoplável.',
+      feats:['Bancadas técnicas + mesas de instrumentos','Dados por fibra através do mamparo','Ar filtrado + energia estável'],
+      narration:"A Cabana Laboratório transforma o chassi num espaço de pesquisa limpo e controlado. As bancadas técnicas revestem as paredes, os instrumentos ficam sobre mesas estáveis, e a zona de dados leva a fibra direto pelo mamparo para o equipamento conectado. O ar filtrado e a energia condicionada fazem dele um laboratório selado que você pode colocar em qualquer lugar, e acoplar a uma instalação maior quando o trabalho cresce." },
+    grow:{ name:'Cabana de Cultivo', sub:'Agricultura de ambiente controlado',
+      desc:'Prateleiras verticais, LED de espectro completo e controle de clima transformam o chassi numa sala de cultivo o ano todo — alimentada e irrigada pela interface de acoplamento.',
+      feats:['Prateleiras verticais de vários níveis','Dossel LED de espectro completo','Clima + irrigação a partir do mamparo'],
+      narration:"Esta é a Cabana de Cultivo. Dentro do mesmo chassi de acoplamento, prateleiras verticais sobem por ambas as paredes sob um dossel LED de espectro completo. Energia, água e ventilação chegam todas pelo mamparo padronizado. Um produtor coloca a unidade, conecta quatro utilidades e começa a produzir. E quando precisa de mais espaço, simplesmente encadeia uma segunda cabana. Mesmo casco. Mesmo conector. Mais rendimento." },
+    myco:{ name:'MYCottage', sub:'Cultivo de cogumelos especiais',
+      desc:'Um ambiente de frutificação selado com umidade, troca de ar fresco e blocos de substrato em prateleiras — feito sob medida para cogumelos gourmet e funcionais.',
+      feats:['Umidade + troca de ar fresco','Prateleiras de frutificação escalonadas','Interior FRP lavável'],
+      narration:"A MYCottage é feita para cogumelos. A zona de ventilação impulsiona a troca de ar fresco enquanto a umidade se mantém estável, e prateleiras escalonadas levam o substrato de frutificação por ambas as paredes. O interior é lavável. Para um empreendimento de micologia, é uma sala de frutificação completa que chega num caminhão e se acopla à energia e à água numa única tarde." },
+    shop:{ name:'Cabana Oficina', sub:'Espaço de fabricação e criação',
+      desc:'Uma oficina completa — bancadas, parede de ferramentas e extração de pó — alimentada pela zona de energia do chassi. Acesso de enrolar na face de acoplamento para trabalhos grandes.',
+      feats:['Bancadas pesadas + parede de ferramentas','200A de energia pelo mamparo','Extração de pó pela zona de ventilação'],
+      narration:"A Cabana Oficina é um espaço de fabricação de verdade. Uma bancada pesada percorre uma parede, uma parede de ferramentas a enfrenta, e a extração de pó se conecta à zona de ventilação. A interface de energia leva um serviço completo de duzentos ampères. Então o mesmo conector que alimenta uma sala de cultivo pode mover serras, soldadoras e compressores. Um chassi, dimensionado para trabalho real." },
+    dr:{ name:'Cabana de Resposta', sub:'Implantação em desastres',
+      desc:'Uma unidade de comando e cuidado de implantação rápida — macas, comunicações, suprimentos e utilidades autônomas para o campo quando a infraestrutura se foi.',
+      feats:['Macas + layout de triagem / comando','Comunicações + dados prontos','Funciona com um único gerador'],
+      narration:"E esta é a Cabana de Resposta. Quando a infraestrutura se foi, o chassi se torna uma unidade de comando e cuidado — macas, suprimentos e comunicações dentro de um casco reforçado. Funciona com um único gerador na cabana principal. E como a interface de acoplamento é padrão, uma segunda unidade se encadeia para dobrar o espaço. Coloque-a com guindaste onde os caminhões não chegam, conecte a energia, e está operacional." }
+  }
+};
+function TL(c, field){ try{ if(LANG!=='en' && TXT[LANG] && TXT[LANG][c.key] && TXT[LANG][c.key][field]!=null) return TXT[LANG][c.key][field]; }catch(e){} return c[field]; }
+// Intro caption (not a cottage, so TL can't reach it)
+function introCaption(){ var m={en:"One docking chassis. Infinite ways to use it.", es:"Un solo chasis de acople. Infinitas formas de usarlo.", pt:"Um chassi de acoplamento. Infinitas formas de usar."}; return m[LANG]||m.en; }
+
 // ============================================================
 //  THREE setup
 // ============================================================
@@ -2253,13 +2328,13 @@ function selectCottage(i,{speak=true}={}){
   const panel=document.getElementById('panel');
   panel.style.setProperty('--accent',c.accent);
   panel.innerHTML=`<div class="eyebrow">Use case ${String(i+1).padStart(2,'0')} / ${String(COTTAGES.length).padStart(2,'0')}</div>
-    <h2>${c.name}</h2><p class="desc">${c.desc}</p>
-    <ul>${c.feats.map(f=>`<li>${f}</li>`).join('')}</ul>`;
+    <h2>${TL(c,'name')}</h2><p class="desc">${TL(c,'desc')}</p>
+    <ul>${TL(c,'feats').map(f=>`<li>${f}</li>`).join('')}</ul>`;
   panel.classList.add('show');
   // DEMO FIRST: cottage on screen, drone demo + narration start together (in sync — no bleed).
   // When narration ENDS, the dock plays (orbit resumes, second unit slides in → pauses → seats),
   // and only after the dock seats do we advance to the next cottage.
-  showCaption(c.narration,c.accent);
+  showCaption(TL(c,'narration'),c.accent);
   startCameraTrack(c);
   const afterNarration=()=>{
     if(clock && !manualControl){
@@ -2275,7 +2350,7 @@ function selectCottage(i,{speak=true}={}){
   };
   if(speak && audioOn){
     const ok=playClip(c.key,afterNarration);
-    if(!ok) speak_(c.narration,afterNarration);
+    if(!ok) speak_(TL(c,'narration'),afterNarration);
   } else { afterNarration(); }
 }
 
@@ -2287,9 +2362,20 @@ function showCaption(text,accent){
 
 // ---- audio (external files, getgrush unlock pattern) ----
 const NARRATION_AUDIO={intro:"intro.mp3",office:"office.mp3",grow:"grow.mp3",myco:"myco.mp3",shop:"shop.mp3",lab:"lab.mp3",dr:"dr.mp3"};
-let audioUnlocked=false, htmlAudio=null;
+
+/* ===== Site-wide language (shared pattern across pages) ===== */
+var GRUSH_LANG_KEY='grush_lang';
+function getLang(){ try{ var v=localStorage.getItem(GRUSH_LANG_KEY); return (v==='es'||v==='pt'||v==='en')?v:null; }catch(e){ return null; } }
+function setLang(v){ try{ localStorage.setItem(GRUSH_LANG_KEY,v); }catch(e){} LANG=v; }
+var LANG=getLang()||'en';
+// MP3 filename per language: english uses base name, es/pt append a suffix (e.g. grow_es.mp3)
+const CLIP_KEYS=['intro','office','grow','myco','shop','lab','dr'];
+function audioFile(key){ var base=(NARRATION_AUDIO[key]||(key+'.mp3')).replace(/\.mp3$/,''); return LANG==='en'?base+'.mp3':base+'_'+LANG+'.mp3'; }
+
+let audioUnlocked=false, htmlAudio=null, clipActive=false;
 const AUDIO_POOL={};
-function preloadAudio(){ if(Object.keys(AUDIO_POOL).length)return; for(const k in NARRATION_AUDIO){const a=new Audio(NARRATION_AUDIO[k]);a.preload="auto";a.volume=1;AUDIO_POOL[k]=a;} }
+var POOL_LANG=null;
+function preloadAudio(){ if(POOL_LANG===LANG && Object.keys(AUDIO_POOL).length) return; POOL_LANG=LANG; for(const k in AUDIO_POOL){ try{ AUDIO_POOL[k].pause(); }catch(e){} delete AUDIO_POOL[k]; } for(const k of CLIP_KEYS){ const a=new Audio(audioFile(k)); a.preload="auto"; a.volume=1; AUDIO_POOL[k]=a; } }
 function unlockAudio(){
   if(audioUnlocked)return; audioUnlocked=true;
   for(const k in AUDIO_POOL){
@@ -2303,21 +2389,35 @@ function unlockAudio(){
 function playClip(key,onend){
   stopClip(); if(synth)synth.cancel();
   const a=AUDIO_POOL[key]; if(!a){ if(window.__spk)window.__spk(key,onend); return true; }
+  clipActive=true;                                  // a real MP3 is committed — block TTS
   htmlAudio=a; a.currentTime=0; a.volume=1; a.muted=false;
-  let done=false; const adv=()=>{ if(done)return; done=true; if(onend)onend(); };
+  let done=false; const adv=()=>{ if(done)return; done=true; clipActive=false; if(onend)onend(); };
   a.onended=adv;
   a.play().then(()=>{ const d=(isFinite(a.duration)&&a.duration>0)?a.duration:28; clearTimeout(a.__s); a.__s=setTimeout(adv,(d+0.3)*1000); })
-   .catch(()=>{ htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv(); });
+   .catch(function(err){
+     // Interrupted play (rapid stop/restart or language switch) rejects even though
+     // audio is fine — do NOT speak over it.
+     if((err&&err.name==='AbortError') || (a && !a.paused)) return;
+     clipActive=false; htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv();
+   });
   return true;
 }
-function stopAllClips(){ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; try{ a.pause(); a.currentTime=0; clearTimeout(a.__s); a.onended=null; }catch(e){} } htmlAudio=null; }
+function stopAllClips(){ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; try{ a.pause(); a.currentTime=0; clearTimeout(a.__s); a.onended=null; }catch(e){} } htmlAudio=null; clipActive=false; }
 function stopClip(){ stopAllClips(); }
 
 let synth=window.speechSynthesis;
 function pickVoice(){ const vs=synth.getVoices(); return vs.find(v=>/Google US English|Samantha|Daniel|Aria/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs[0]; }
-function speak_(text,onend){ if(!synth){if(onend)setTimeout(onend,6000);return;} synth.cancel(); const u=new SpeechSynthesisUtterance(text); const v=pickVoice(); if(v)u.voice=v; u.rate=0.98; u.onend=()=>{if(onend)onend();}; synth.speak(u); }
+function speak_(text,onend){
+  // Never speak over a clip that's committed or actually playing (prevents TTS + MP3 doubling).
+  if(clipActive){ if(onend) setTimeout(onend,1000); return; }
+  try{ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; if(a && !a.paused && !a.ended){ if(onend){ const d=(isFinite(a.duration)&&a.duration>0)?a.duration:28; setTimeout(onend,(d+0.3)*1000); } return; } } }catch(e){}
+  if(!synth){if(onend)setTimeout(onend,6000);return;} synth.cancel(); const u=new SpeechSynthesisUtterance(text); const v=pickVoice(); if(v)u.voice=v; u.rate=0.98; u.onend=()=>{if(onend)onend();}; synth.speak(u); }
 function stopSpeak(){ if(synth)synth.cancel(); }
-window.__spk=function(key,onend){ const m={intro:"One docking chassis. Infinite ways to use it.",grow:COTTAGES[0].narration,myco:COTTAGES[1].narration,shop:COTTAGES[2].narration,lab:COTTAGES[3].narration,dr:COTTAGES[4].narration}; speak_(m[key]||"",onend); };
+window.__spk=function(key,onend){
+  if(key==='intro'){ speak_(introCaption(),onend); return; }
+  var c=COTTAGES.find(x=>x.key===key);
+  speak_(c?TL(c,'narration'):"",onend);
+};
 
 function scheduleNext(){ clearTimeout(autoTimer); autoTimer=setTimeout(()=>{ if(!autoPlay)return; const n=(currentIndex+1)%COTTAGES.length; if(n===0){ stopAuto(); if(typeof window.__playOutro==='function') setTimeout(window.__playOutro,800); return; } selectCottage(n); },150); }
 function startAuto(){ autoPlay=true; const b=document.getElementById('autoBtn'); b.classList.add('on'); b.textContent='⏸'; if(currentIndex<0)selectCottage(0); else selectCottage(currentIndex); }
@@ -2355,7 +2455,7 @@ addEventListener('DOMContentLoaded',()=>{
     // start the narrated tour exactly like the hero "Play narrated tour" button
     document.getElementById('hero').classList.add('hidden');
     document.getElementById('controls').classList.add('show');
-    showCaption("One docking chassis. Infinite ways to use it.",'#00c8ff');
+    showCaption(introCaption(),'#00c8ff');
     startDock('full');   // full teaching dock plays over the intro narration
     const ok=playClip('intro',()=>{ const he=document.getElementById('hero'); if(he)he.style.display='none'; enterShowcase(true); });
     if(!ok){ document.getElementById('hero').style.display='none'; enterShowcase(true); }
@@ -2370,7 +2470,7 @@ addEventListener('DOMContentLoaded',()=>{
     audioOn=true; updA(); preloadAudio(); unlockAudio();
     document.getElementById('hero').classList.add('hidden');
     document.getElementById('controls').classList.add('show');
-    showCaption("One docking chassis. Infinite ways to use it.",'#00c8ff');
+    showCaption(introCaption(),'#00c8ff');
     startDock('full');   // full teaching dock plays over the intro narration
     const ok=playClip('intro',()=>{ const he=document.getElementById('hero'); if(he)he.style.display='none'; enterShowcase(true); });
     if(!ok){ document.getElementById('hero').style.display='none'; enterShowcase(true); }
@@ -2830,6 +2930,30 @@ if(beginBtn_){
   window.__playOutro=function(){ if(window.__outroPlayed)return; window.__outroPlayed=true; play(); };
 })();
 /* ===== END OUTRO ===== */
+</script>
+<div id="lang-control"><span>⇆</span><span>Language</span></div>
+<div id="lang-pop"><div class="lp-row">
+  <div class="lp-btn" data-lang="en"><span class="lp-label">English</span><span class="lp-sub">EN</span></div>
+  <div class="lp-btn" data-lang="es"><span class="lp-label">Español</span><span class="lp-sub">ES</span></div>
+  <div class="lp-btn" data-lang="pt"><span class="lp-label">Português</span><span class="lp-sub">PT</span></div>
+</div></div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var lc=document.getElementById('lang-control'), pop=document.getElementById('lang-pop');
+  if(lc&&pop){ lc.addEventListener('click', function(){ pop.classList.add('show'); }); }
+  if(pop){
+    Array.prototype.forEach.call(pop.querySelectorAll('.lp-btn'), function(btn){
+      btn.addEventListener('click', function(){
+        var prev=LANG; setLang(btn.getAttribute('data-lang')); pop.classList.remove('show');
+        if(prev!==LANG){
+          try{ preloadAudio(); }catch(e){}                 // rebuild MP3 pool for the new language
+          try{ if(typeof currentIndex!=='undefined' && currentIndex>=0 && typeof selectCottage==='function'){ stopClip&&stopClip(); stopSpeak&&stopSpeak(); selectCottage(currentIndex); } }catch(e){}
+        }
+      });
+    });
+    pop.addEventListener('click', function(e){ if(e.target===pop) pop.classList.remove('show'); });
+  }
+});
 </script>
 </body>
 </html>
