@@ -2150,7 +2150,8 @@ const ZONE_ORDER=['Z3','Z1','Z2','Z4'];   // push-in order: air (hero) first
 
 // parked + seated X for the pin unit (pocket stays put)
 const PIN_PARKED_X = -(BULK_SEP + BULK_GAP_POSTER/2);
-const PIN_SEATED_X = -(BULK_SEP - 0.05);   // faces just kiss (small overlap reads as "tight")
+const PIN_CONTACT_OFFSET = 0.10;          // plate-to-plate contact gap at seat (reads as "tight")
+const PIN_SEATED_X = (BULK_SEP + BULK_GAP_POSTER/2) - PIN_CONTACT_OFFSET;  // travel the FULL gap to meet the fixed pocket face
 
 // map a beat's stage -> the mateProgress it should drive toward
 function stageTarget(stage){
@@ -2332,6 +2333,10 @@ function selectCottage(i,{speak=true}={}){
   document.documentElement.style.setProperty('--accent',c.accent);
  while(fitoutGroup.children.length) fitoutGroup.remove(fitoutGroup.children[0]);
   const fg=new THREE.Group(); c.build(fg); fitoutGroup.add(fg);
+  // 2c WIRE-UP: drive the real per-beat mate animation (was dead code in 2b).
+  // Map this beat's hash -> its stage builder so the diorama shows + mateStage advances.
+  { const _stage={cones:buildStageApproach, zones:buildStageZones, lock:buildStageLock, chain:buildStageChain}[c.hash];
+    if(_stage) _stage(); }
  // clean slate: hide any previously-docked unit — host shows its capped standalone pocket end
   if(dockUnit){ dockUnit.visible=false; docking=false; dockSeated=false; }
   updateRail(i);
