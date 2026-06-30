@@ -120,6 +120,32 @@
   .hub-foot .f-line a{color:var(--cyan);text-decoration:none;}
   .hub-foot .f-line a:hover{text-decoration:underline;}
   .hub-foot .f-sub{font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#3a4a5a;margin-top:8px;}
+  /* ===== LANGUAGE GATE ===== */
+  #gate{position:fixed;inset:0;z-index:65;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--navy);}
+  #gate.show{display:flex;}
+  #gate.gone{opacity:0;pointer-events:none;transition:opacity .6s ease;}
+  #gate::before{content:'';position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(circle at 50% 42%, rgba(0,200,255,0.10), transparent 60%);}
+  #gate .gate-brand{position:relative;z-index:2;font-size:13px;letter-spacing:0.34em;text-transform:uppercase;color:var(--myc);margin-bottom:2.4rem;font-weight:600;}
+  #gate .gate-brand b{color:#eef2f4;font-weight:700;}
+  #gate .gate-langs{position:relative;z-index:2;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+  #gate .lang-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:22px 26px;min-width:128px;border-radius:14px;
+    background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);
+    transition:transform .15s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;}
+  #gate .lang-btn:hover{background:rgba(0,200,255,0.18);border-color:var(--cyan);box-shadow:0 0 30px rgba(0,200,255,0.25);transform:translateY(-3px);}
+  #gate .lang-btn:active{transform:scale(0.97);}
+  #gate .lang-btn .pwr-icon{width:22px;height:22px;display:inline-block;border:2px solid var(--cyan);border-radius:50%;position:relative;}
+  #gate .lang-btn .pwr-icon::after{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:2px;height:11px;background:var(--cyan);}
+  #gate .lang-btn .lang-label{font-size:15px;font-weight:700;color:#eef2f4;letter-spacing:0.02em;}
+  #gate .lang-btn .lang-sub{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--myc);}
+  #gate .gate-hint{position:relative;z-index:2;margin-top:2rem;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#3a4a5a;}
+  #lang-control{position:fixed;top:16px;right:16px;z-index:40;cursor:pointer;display:none;
+    align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+    background:rgba(10,21,49,0.7);border:1px solid rgba(255,255,255,0.16);
+    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);transition:.2s;}
+  #lang-control:hover{color:var(--cyan);border-color:var(--cyan);}
+  #lang-control.show{display:inline-flex;}
 </style>
 </head>
 <body>
@@ -172,6 +198,18 @@
     </div>
   </div>
 </div>
+
+<!-- ===== LANGUAGE GATE (front door — sets language site-wide) ===== -->
+<div id="gate">
+  <div class="gate-brand">Grush <b>Cottages</b></div>
+  <div class="gate-langs">
+    <div class="lang-btn" data-lang="en"><span class="pwr-icon"></span><span class="lang-label">Power on</span><span class="lang-sub">English</span></div>
+    <div class="lang-btn" data-lang="es"><span class="pwr-icon"></span><span class="lang-label">Encender</span><span class="lang-sub">Español</span></div>
+    <div class="lang-btn" data-lang="pt"><span class="pwr-icon"></span><span class="lang-label">Ligar</span><span class="lang-sub">Português</span></div>
+  </div>
+  <div class="gate-hint">Choose a language to begin · Elige un idioma · Escolha um idioma</div>
+</div>
+<div id="lang-control"><span>⇆</span><span>Language</span></div>
 
 <!-- ===== HUB ===== -->
 <div class="hub-bg"></div>
@@ -229,6 +267,82 @@
 </div>
 
 <script>
+/* ===== Site-wide language (shared pattern across all pages) ===== */
+var GRUSH_LANG_KEY='grush_lang';
+function getLang(){ try{ var v=localStorage.getItem(GRUSH_LANG_KEY); return (v==='es'||v==='pt'||v==='en')?v:null; }catch(e){ return null; } }
+function setLang(v){ try{ localStorage.setItem(GRUSH_LANG_KEY,v); }catch(e){} LANG=v; }
+var LANG=getLang()||'en';
+
+/* ===== Hub text (EN/ES/PT) ===== */
+var HUB_TXT={
+  en:{ nav:['Showcase','Connect','Build'],
+    eyebrow:'GC-DPS · Grush Cottages Docking Port System',
+    h1:'One docking chassis.<br><span class="hl">Infinite</span> facilities.',
+    sub:'A standardized container chassis with a universal docking connector — build a lab, a grow room, a workshop, an office, anywhere. Stand one alone, or chain them into a site.',
+    prompt:'Choose your path',
+    cards:[
+      {h:'See what you can build', p:'Tour the cottage types — Lab, Grow, MYCottage, Shop, and more — and watch one chassis transform into a finished facility.', go:'Open the Showcase'},
+      {h:'See how they connect', p:'Watch two units dock — cones lead in, every utility zone self-aligns, a zero-power lock draws them tight into one sealed structure.', go:'Watch the connection'},
+      {h:'How do you want to build?', p:'Three ways in — buy the chassis hardware, add the as-built plans and self-build, or have us deliver the finished product turnkey.', go:'See the build paths'}
+    ] },
+  es:{ nav:['Showcase','Conectar','Construir'],
+    eyebrow:'GC-DPS · Sistema de Puerto de Acople Grush Cottages',
+    h1:'Un solo chasis de acople.<br>Instalaciones <span class="hl">infinitas</span>.',
+    sub:'Un chasis de contenedor estandarizado con un conector de acople universal — construye un laboratorio, un cuarto de cultivo, un taller o una oficina, donde sea. Levanta uno solo o encadénalos en un sitio.',
+    prompt:'Elige tu camino',
+    cards:[
+      {h:'Mira lo que puedes construir', p:'Recorre los tipos de cabaña — Laboratorio, Cultivo, MYCottage, Taller y más — y mira cómo un chasis se transforma en una instalación terminada.', go:'Abrir el Showcase'},
+      {h:'Mira cómo se conectan', p:'Observa cómo se acoplan dos unidades — los conos guían, cada zona de servicio se autoalinea y un cierre sin energía las une en una sola estructura sellada.', go:'Ver la conexión'},
+      {h:'¿Cómo quieres construir?', p:'Tres formas de entrar — compra el chasis, añade los planos as-built y constrúyelo tú mismo, o te lo entregamos terminado llave en mano.', go:'Ver las rutas de construcción'}
+    ] },
+  pt:{ nav:['Showcase','Conectar','Construir'],
+    eyebrow:'GC-DPS · Sistema de Porta de Acoplamento Grush Cottages',
+    h1:'Um chassi de acoplamento.<br>Instalações <span class="hl">infinitas</span>.',
+    sub:'Um chassi de contêiner padronizado com um conector de acoplamento universal — construa um laboratório, uma sala de cultivo, uma oficina ou um escritório, em qualquer lugar. Use um sozinho ou encadeie vários num site.',
+    prompt:'Escolha seu caminho',
+    cards:[
+      {h:'Veja o que você pode construir', p:'Percorra os tipos de cabana — Laboratório, Cultivo, MYCottage, Oficina e mais — e veja um chassi se transformar numa instalação pronta.', go:'Abrir o Showcase'},
+      {h:'Veja como elas se conectam', p:'Veja duas unidades se acoplarem — os cones guiam, cada zona de utilidade se autoalinha e um travamento sem energia as une numa única estrutura selada.', go:'Ver a conexão'},
+      {h:'Como você quer construir?', p:'Três formas de entrar — compre o chassi, adicione as plantas as-built e construa você mesmo, ou entregamos pronto na sua porta.', go:'Ver os caminhos de construção'}
+    ] }
+};
+function applyHubLang(){
+  var t=HUB_TXT[LANG]||HUB_TXT.en;
+  var nav=document.querySelectorAll('.hub-nav a'); if(nav[0])nav[0].textContent=t.nav[0]; if(nav[1])nav[1].textContent=t.nav[1]; if(nav[2])nav[2].textContent=t.nav[2];
+  var eb=document.querySelector('.hub-hero .eyebrow'); if(eb)eb.textContent=t.eyebrow;
+  var h1=document.querySelector('.hub-hero h1'); if(h1)h1.innerHTML=t.h1;
+  var sb=document.querySelector('.hub-hero p'); if(sb)sb.textContent=t.sub;
+  var pr=document.querySelector('.hub-prompt'); if(pr)pr.textContent=t.prompt;
+  var cards=document.querySelectorAll('.path');
+  cards.forEach(function(card,i){ if(!t.cards[i])return;
+    var h=card.querySelector('h2'); if(h)h.textContent=t.cards[i].h;
+    var p=card.querySelector('p'); if(p)p.textContent=t.cards[i].p;
+    var go=card.querySelector('.p-go'); if(go)go.innerHTML=t.cards[i].go+' <span class="arr">→</span>';
+  });
+}
+
+/* ===== Gate control: show gate, pick language, reveal hub ===== */
+function showGate(){ var g=document.getElementById('gate'); if(g){ g.classList.remove('gone'); g.classList.add('show'); } }
+function hideGateRevealHub(){
+  var g=document.getElementById('gate'), hub=document.getElementById('hub'), lc=document.getElementById('lang-control');
+  if(g){ g.classList.add('gone'); setTimeout(function(){ g.classList.remove('show'); }, 600); }
+  if(hub) hub.classList.add('show');
+  if(lc) lc.classList.add('show');
+}
+function choose(lang){ setLang(lang); applyHubLang(); hideGateRevealHub(); }
+document.addEventListener('DOMContentLoaded', function(){
+  applyHubLang();   // render hub in stored/default language up front (no English flash on re-entry)
+  Array.prototype.forEach.call(document.querySelectorAll('#gate .lang-btn'), function(btn){
+    var lang=btn.getAttribute('data-lang');
+    btn.addEventListener('click', function(e){ e.stopPropagation(); choose(lang); });
+    btn.setAttribute('tabindex','0');
+    btn.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); choose(lang); } });
+  });
+  var lc=document.getElementById('lang-control');
+  if(lc){ lc.addEventListener('click', function(){ showGate(); }); }
+});
+</script>
+<script>
 (function(){
   var splash = document.getElementById('splash');
   var hub = document.getElementById('hub');
@@ -274,10 +388,11 @@
       core.style.opacity='0'; shock.style.opacity='0';
       wordmark.classList.add('show');
     }, 120*3 + 900);
-    // hand off to hub
+    // hand off to language gate (or straight to hub if language already chosen)
     setTimeout(function(){
       splash.classList.add('gone');
-      hub.classList.add('show');
+      if(getLang()){ applyHubLang(); hub.classList.add('show'); var lc=document.getElementById('lang-control'); if(lc)lc.classList.add('show'); }
+      else { showGate(); }
       setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 800);
     }, 120*3 + 1900);
   }
@@ -285,10 +400,11 @@
   // kick off shortly after load
   setTimeout(snap, 380);
 
-  // allow click-to-skip straight to hub
+  // allow click-to-skip straight to gate (or hub if language already chosen)
   splash.addEventListener('click', function(){
     splash.classList.add('gone');
-    hub.classList.add('show');
+    if(getLang()){ applyHubLang(); hub.classList.add('show'); var lc=document.getElementById('lang-control'); if(lc)lc.classList.add('show'); }
+    else { showGate(); }
     setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 800);
   });
 })();
