@@ -358,8 +358,8 @@
   <span class="tag">Product<br>Showcase</span>
 </div>
 <div class="hero" id="hero">
-  <h1>One docking chassis.<br><span class="hl">Infinite</span> ways to use it.</h1>
-  <p>A single dockable shell with a standardized utility interface. Fit it out for cultivation, fabrication, science, or crisis response — then chain units together when you grow.</p>
+  <h1 id="heroTitle">One docking chassis.<br><span class="hl">Infinite</span> ways to use it.</h1>
+  <p id="heroSub">A single dockable shell with a standardized utility interface. Fit it out for cultivation, fabrication, science, or crisis response — then chain units together when you grow.</p>
   <div class="cta">
     <button class="btn primary" id="startNarrated">▶ Play narrated tour</button>
     <button class="btn ghost" id="startExplore">Explore on my own</button>
@@ -1646,6 +1646,19 @@ const TXT={
 function TL(c, field){ try{ if(LANG!=='en' && TXT[LANG] && TXT[LANG][c.key] && TXT[LANG][c.key][field]!=null) return TXT[LANG][c.key][field]; }catch(e){} return c[field]; }
 // Intro caption (not a cottage, so TL can't reach it)
 function introCaption(){ var m={en:"One docking chassis. Infinite ways to use it.", es:"Un solo chasis de acople. Infinitas formas de usarlo.", pt:"Um chassi de acoplamento. Infinitas formas de usar."}; return m[LANG]||m.en; }
+// Hero (intro screen) localization
+var HERO_TXT={
+  en:{ title:'One docking chassis.<br><span class="hl">Infinite</span> ways to use it.', sub:'A single dockable shell with a standardized utility interface. Fit it out for cultivation, fabrication, science, or crisis response — then chain units together when you grow.', begin:'▶ Play narrated tour', explore:'Explore on my own' },
+  es:{ title:'Un solo chasis de acople.<br><span class="hl">Infinitas</span> formas de usarlo.', sub:'Un único casco acoplable con una interfaz de servicios estandarizada. Acondiciónalo para cultivo, fabricación, ciencia o respuesta ante crisis — y encadena unidades cuando crezcas.', begin:'▶ Reproducir tour narrado', explore:'Explorar por mi cuenta' },
+  pt:{ title:'Um chassi de acoplamento.<br><span class="hl">Infinitas</span> formas de usar.', sub:'Um único casco acoplável com uma interface de utilidades padronizada. Prepare-o para cultivo, fabricação, ciência ou resposta a crises — e encadeie unidades quando crescer.', begin:'▶ Reproduzir tour narrado', explore:'Explorar por conta própria' }
+};
+function applyHeroLang(){
+  var t=HERO_TXT[LANG]||HERO_TXT.en;
+  var hT=document.getElementById('heroTitle'); if(hT)hT.innerHTML=t.title;
+  var hS=document.getElementById('heroSub'); if(hS)hS.textContent=t.sub;
+  var bN=document.getElementById('startNarrated'); if(bN)bN.textContent=t.begin;
+  var bE=document.getElementById('startExplore'); if(bE)bE.textContent=t.explore;
+}
 
 // ============================================================
 //  THREE setup
@@ -2393,16 +2406,19 @@ function playClip(key,onend){
   htmlAudio=a; a.currentTime=0; a.volume=1; a.muted=false;
   let done=false; const adv=()=>{ if(done)return; done=true; clipActive=false; if(onend)onend(); };
   a.onended=adv;
+  // If the file is missing/unsupported (e.g. _es/_pt MP3 not recorded yet), the media
+  // 'error' event fires instead of a play() rejection — fall back to TTS so the tour advances.
+  a.onerror=function(){ if(done)return; clipActive=false; htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv(); };
   a.play().then(()=>{ const d=(isFinite(a.duration)&&a.duration>0)?a.duration:28; clearTimeout(a.__s); a.__s=setTimeout(adv,(d+0.3)*1000); })
    .catch(function(err){
      // Interrupted play (rapid stop/restart or language switch) rejects even though
      // audio is fine — do NOT speak over it.
-     if((err&&err.name==='AbortError') || (a && !a.paused)) return;
+     if((err&&err.name==='AbortError') || (a && !a.paused && !a.error)) return;
      clipActive=false; htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv();
    });
   return true;
 }
-function stopAllClips(){ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; try{ a.pause(); a.currentTime=0; clearTimeout(a.__s); a.onended=null; }catch(e){} } htmlAudio=null; clipActive=false; }
+function stopAllClips(){ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; try{ a.pause(); a.currentTime=0; clearTimeout(a.__s); a.onended=null; a.onerror=null; }catch(e){} } htmlAudio=null; clipActive=false; }
 function stopClip(){ stopAllClips(); }
 
 let synth=window.speechSynthesis;
@@ -2444,6 +2460,7 @@ function enterShowcase(narrated){
 
 addEventListener('DOMContentLoaded',()=>{
   init(); buildCards();
+  applyHeroLang();   // localize the intro hero to the stored/default language
   if(synth){ synth.onvoiceschanged=()=>{}; synth.getVoices(); }
   const updA=()=>{ const b=document.getElementById('audioBtn'); b.textContent=audioOn?'🔊':'🔇'; b.classList.toggle('on',audioOn); };
   // ---- Grush splash: click to continue -> auto narrated tour ----
@@ -2938,22 +2955,21 @@ if(beginBtn_){
   <div class="lp-btn" data-lang="pt"><span class="lp-label">Português</span><span class="lp-sub">PT</span></div>
 </div></div>
 <script>
-document.addEventListener('DOMContentLoaded', function(){
+(function(){
   var lc=document.getElementById('lang-control'), pop=document.getElementById('lang-pop');
   if(lc&&pop){ lc.addEventListener('click', function(){ pop.classList.add('show'); }); }
   if(pop){
     Array.prototype.forEach.call(pop.querySelectorAll('.lp-btn'), function(btn){
       btn.addEventListener('click', function(){
         var prev=LANG; setLang(btn.getAttribute('data-lang')); pop.classList.remove('show');
-        if(prev!==LANG){
-          try{ preloadAudio(); }catch(e){}                 // rebuild MP3 pool for the new language
-          try{ if(typeof currentIndex!=='undefined' && currentIndex>=0 && typeof selectCottage==='function'){ stopClip&&stopClip(); stopSpeak&&stopSpeak(); selectCottage(currentIndex); } }catch(e){}
-        }
+        applyHeroLang();                                  // re-localize hero if still on it
+        try{ preloadAudio(); }catch(e){}                 // rebuild MP3 pool for the new language
+        try{ if(typeof currentIndex!=='undefined' && currentIndex>=0 && typeof selectCottage==='function'){ stopClip&&stopClip(); stopSpeak&&stopSpeak(); selectCottage(currentIndex); } }catch(e){}
       });
     });
     pop.addEventListener('click', function(e){ if(e.target===pop) pop.classList.remove('show'); });
   }
-});
+})();
 </script>
 </body>
 </html>
