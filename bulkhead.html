@@ -399,8 +399,8 @@
   <span class="tag">Product<br>Showcase</span>
 </div>
 <div class="hero" id="hero">
-  <h1>How two buildings<br><span class="hl">become one</span>.</h1>
-  <p>A look inside the Grush docking port — the bulkhead that guides two units into alignment, locks them together, and chains utilities down the line.</p>
+  <h1 id="heroTitle">How two buildings<br><span class="hl">become one</span>.</h1>
+  <p id="heroSub">A look inside the Grush docking port — the bulkhead that guides two units into alignment, locks them together, and chains utilities down the line.</p>
   <div class="cta">
     <button class="btn primary" id="startNarrated">▶ Begin</button>
     <button class="btn ghost" id="startExplore">Explore on my own</button>
@@ -1687,6 +1687,20 @@ const TXT = {
 // Return a beat's field in the current language, falling back to English (the BEATS value).
 function TL(c, field){ try{ if(LANG!=='en' && TXT[LANG] && TXT[LANG][c.key] && TXT[LANG][c.key][field]!=null) return TXT[LANG][c.key][field]; }catch(e){} return c[field]; }
 
+// ---- Hero (intro screen) localization ----
+const HERO_TXT = {
+  en: { title:'How two buildings<br><span class="hl">become one</span>.', sub:'A look inside the Grush docking port — the bulkhead that guides two units into alignment, locks them together, and chains utilities down the line.', begin:'▶ Begin', explore:'Explore on my own' },
+  es: { title:'Cómo dos edificios<br><span class="hl">se vuelven uno</span>.', sub:'Una mirada dentro del puerto de acople Grush — el mamparo que alinea dos unidades, las une y encadena los servicios a lo largo de la línea.', begin:'▶ Comenzar', explore:'Explorar por mi cuenta' },
+  pt: { title:'Como dois edifícios<br><span class="hl">se tornam um</span>.', sub:'Um olhar dentro da porta de acoplamento Grush — o mamparo que alinha duas unidades, as une e encadeia as utilidades ao longo da linha.', begin:'▶ Começar', explore:'Explorar por conta própria' }
+};
+function applyHeroLang(){
+  var t=(HERO_TXT[LANG]||HERO_TXT.en);
+  var hT=document.getElementById('heroTitle'); if(hT) hT.innerHTML=t.title;
+  var hS=document.getElementById('heroSub');   if(hS) hS.textContent=t.sub;
+  var bN=document.getElementById('startNarrated'); if(bN) bN.textContent=t.begin;
+  var bE=document.getElementById('startExplore');  if(bE) bE.textContent=t.explore;
+}
+
 // ---- Geometry stage hooks ----
 // 2b: build the two free-standing bulkheads (poster frame). 2c animates them.
 // All four beats currently show the same parked poster frame; the mate motion
@@ -2456,9 +2470,10 @@ function showCaption(text,accent){
 var LANG='en';
 const CLIP_KEYS=['cluemein','theyleadwiththepins','eachzonefindsitself','thenitlocks','onebecomestwo'];
 function audioFile(key){ return LANG==='en' ? key+'.mp3' : key+'_'+LANG+'.mp3'; }
-let audioUnlocked=false, htmlAudio=null;
+let audioUnlocked=false, htmlAudio=null, clipActive=false;
 const AUDIO_POOL={};
-function preloadAudio(){ for(const k in AUDIO_POOL){ try{ AUDIO_POOL[k].pause(); }catch(e){} delete AUDIO_POOL[k]; } for(const k of CLIP_KEYS){ const a=new Audio(audioFile(k)); a.preload="auto"; a.volume=1; AUDIO_POOL[k]=a; } }
+var POOL_LANG=null;
+function preloadAudio(){ if(POOL_LANG===LANG && Object.keys(AUDIO_POOL).length) return; POOL_LANG=LANG; for(const k in AUDIO_POOL){ try{ AUDIO_POOL[k].pause(); }catch(e){} delete AUDIO_POOL[k]; } for(const k of CLIP_KEYS){ const a=new Audio(audioFile(k)); a.preload="auto"; a.volume=1; AUDIO_POOL[k]=a; } }
 function unlockAudio(){
   if(audioUnlocked)return; audioUnlocked=true;
   for(const k in AUDIO_POOL){
@@ -2472,25 +2487,27 @@ function unlockAudio(){
 function playClip(key,onend){
   stopClip(); if(synth)synth.cancel();
   const a=AUDIO_POOL[key]; if(!a){ if(window.__spk)window.__spk(key,onend); return true; }
+  clipActive=true;                                  // a real MP3 is committed — block TTS
   htmlAudio=a; a.currentTime=0; a.volume=1; a.muted=false;
-  let done=false; const adv=()=>{ if(done)return; done=true; if(onend)onend(); };
+  let done=false; const adv=()=>{ if(done)return; done=true; clipActive=false; if(onend)onend(); };
   a.onended=adv;
   a.play().then(()=>{ const d=(isFinite(a.duration)&&a.duration>0)?a.duration:28; clearTimeout(a.__s); a.__s=setTimeout(adv,(d+0.3)*1000); })
    .catch(function(err){
-     // An interrupted play (e.g. a rapid stop/restart or language switch) rejects
-     // the promise even though audio is fine — do NOT speak over it.
+     // An interrupted play (rapid stop/restart or language switch) rejects the
+     // promise even though audio is fine — do NOT speak over it.
      if((err&&err.name==='AbortError') || (a && !a.paused)) return;
-     htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv();
+     clipActive=false; htmlAudio=null; if(window.__spk)window.__spk(key,onend); else adv();
    });
   return true;
 }
-function stopAllClips(){ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; try{ a.pause(); a.currentTime=0; clearTimeout(a.__s); a.onended=null; }catch(e){} } htmlAudio=null; }
+function stopAllClips(){ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; try{ a.pause(); a.currentTime=0; clearTimeout(a.__s); a.onended=null; }catch(e){} } htmlAudio=null; clipActive=false; }
 function stopClip(){ stopAllClips(); }
 
 let synth=window.speechSynthesis;
 function pickVoice(){ const vs=synth.getVoices(); return vs.find(v=>/Google US English|Samantha|Daniel|Aria/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs[0]; }
 function speak_(text,onend){
-  // Never speak over a clip that's actually playing (prevents TTS + MP3 doubling).
+  // Never speak over a clip that's committed or actually playing (prevents TTS + MP3 doubling).
+  if(clipActive){ if(onend) setTimeout(onend,1000); return; }
   try{ for(const k in AUDIO_POOL){ const a=AUDIO_POOL[k]; if(a && !a.paused && !a.ended){ if(onend){ const d=(isFinite(a.duration)&&a.duration>0)?a.duration:28; setTimeout(onend,(d+0.3)*1000); } return; } } }catch(e){}
   if(!synth){if(onend)setTimeout(onend,6000);return;} synth.cancel(); const u=new SpeechSynthesisUtterance(text); const v=pickVoice(); if(v)u.voice=v; u.rate=0.98; u.onend=()=>{if(onend)onend();}; synth.speak(u); }
 function stopSpeak(){ if(synth)synth.cancel(); }
@@ -2875,6 +2892,7 @@ function run(){
 var gate=document.getElementById('gate');
 function powerOn(lang){
   if(lang){ LANG=lang; }
+  applyHeroLang();                         // localize the intro hero to the chosen language
   initAudio();
   preloadAudio();                          // build the pool for the chosen language
   audioUnlocked=false; unlockAudio();      // re-arm unlock for the new audio elements
