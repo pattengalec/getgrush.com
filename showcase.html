@@ -1663,9 +1663,9 @@ function TL(c, field){ try{ if(LANG!=='en' && TXT[LANG] && TXT[LANG][c.key] && T
 function introCaption(){ var m={en:"One docking chassis. Infinite ways to use it.", es:"Un solo chasis de acople. Infinitas formas de usarlo.", pt:"Um chassi de acoplamento. Infinitas formas de usar."}; return m[LANG]||m.en; }
 // Hero (intro screen) localization
 var HERO_TXT={
-  en:{ title:'One docking chassis.<br><span class="hl">Infinite</span> ways to use it.', sub:'A single dockable shell with a standardized utility interface. Fit it out for cultivation, fabrication, science, or crisis response — then chain units together when you grow.', begin:'▶ Play narrated tour', explore:'Explore on my own' },
-  es:{ title:'Un solo chasis de acople.<br><span class="hl">Infinitas</span> formas de usarlo.', sub:'Un único casco acoplable con una interfaz de servicios estandarizada. Acondiciónalo para cultivo, fabricación, ciencia o respuesta ante crisis — y encadena unidades cuando crezcas.', begin:'▶ Reproducir tour narrado', explore:'Explorar por mi cuenta' },
-  pt:{ title:'Um chassi de acoplamento.<br><span class="hl">Infinitas</span> formas de usar.', sub:'Um único casco acoplável com uma interface de utilidades padronizada. Prepare-o para cultivo, fabricação, ciência ou resposta a crises — e encadeie unidades quando crescer.', begin:'▶ Reproduzir tour narrado', explore:'Explorar por conta própria' }
+  en:{ title:'One docking chassis.<br><span class="hl">Infinite</span> ways to use it.', sub:'A single dockable shell with a standardized utility interface. Fit it out for cultivation, fabrication, science, or crisis response — then chain units together when you grow.', begin:'▶ Play narrated tour', explore:'Explore on my own', beginShowcase:'▶ Begin Showcase' },
+  es:{ title:'Un solo chasis de acople.<br><span class="hl">Infinitas</span> formas de usarlo.', sub:'Un único casco acoplable con una interfaz de servicios estandarizada. Acondiciónalo para cultivo, fabricación, ciencia o respuesta ante crisis — y encadena unidades cuando crezcas.', begin:'▶ Reproducir tour narrado', explore:'Explorar por mi cuenta', beginShowcase:'▶ Comenzar showcase' },
+  pt:{ title:'Um chassi de acoplamento.<br><span class="hl">Infinitas</span> formas de usar.', sub:'Um único casco acoplável com uma interface de utilidades padronizada. Prepare-o para cultivo, fabricação, ciência ou resposta a crises — e encadeie unidades quando crescer.', begin:'▶ Reproduzir tour narrado', explore:'Explorar por conta própria', beginShowcase:'▶ Começar showcase' }
 };
 function applyHeroLang(){
   var t=HERO_TXT[LANG]||HERO_TXT.en;
@@ -1673,6 +1673,7 @@ function applyHeroLang(){
   var hS=document.getElementById('heroSub'); if(hS)hS.textContent=t.sub;
   var bN=document.getElementById('startNarrated'); if(bN)bN.textContent=t.begin;
   var bE=document.getElementById('startExplore'); if(bE)bE.textContent=t.explore;
+  var bS=document.getElementById('splash-begin'); if(bS)bS.textContent=t.beginShowcase;
 }
 
 // ============================================================
