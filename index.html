@@ -3,411 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grush — One Docking Chassis. Infinite Facilities.</title>
+<title>grush — grow-management software, any space, any scale</title>
+<meta name="description" content="Grush is grow-management software that scales from a countertop to acreage. See it running at two live deployments.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#050a18;--navy2:#0a1428;--cyan:#00c8ff;--chart:#c8ff00;--amber:#ffb830;--ink:#e8eef7;--mute:#8a9bb5;--accent:#00c8ff}
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;width:100%;background:var(--navy);color:var(--ink);
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;}
-  body{min-height:100vh;overflow-x:hidden;}
+  :root{
+    --graphite:#23262B; --graphite-2:#2A2E33; --bone:#F0EDE6;
+    --oxblood:#C34044; --gold:#B4A71D; --steel:#A6ADB4; --moss:#7E9A6E;
+    --line:#3A3D43;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; padding:0;}
+  body{background:var(--graphite); color:var(--bone);
+    font-family:'Source Sans 3',system-ui,sans-serif; line-height:1.65;
+    -webkit-font-smoothing:antialiased; padding:26px 22px 64px;}
+  .wrap{max-width:680px; margin:0 auto;}
 
-  /* ===== SPLASH (magnet-snap entrance, reused from Showcase) ===== */
-  #splash{
-    --sp-navy:#0a1531; --grow:#2f7d52; --myc:#7f97a3; --shop:#e8702a; --office:#27485c;
-    --dead:#131a24; --dead-bdr:#171f28; --dead-icon:#2e3846;
-    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--sp-navy);z-index:60;}
-  #splash::before{content:'';position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(ellipse 70% 55% at 50% 44%, rgba(60,90,130,0.45) 0%, rgba(30,48,78,0.18) 48%, rgba(0,0,0,0) 76%);}
-  #logo-stage{position:relative;width:340px;height:430px;display:flex;align-items:center;justify-content:center;}
-  #grid{position:relative;width:300px;height:300px;}
-  .tile{position:absolute;width:140px;height:140px;display:flex;align-items:center;justify-content:center;
-    clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
-    background:var(--dead);border:0;opacity:0;will-change:transform,opacity;}
-  .tile .ring{position:absolute;inset:0;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
-    box-shadow:inset 0 0 0 3px var(--dead-bdr);transition:box-shadow .45s ease;}
-  .tile svg{width:74px;height:74px;position:relative;z-index:2;display:block;}
-  .tile .icon-path{fill:var(--dead-icon);transition:fill .5s ease;}
-  .tile .glow{position:absolute;inset:-6px;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
-    opacity:0;background:radial-gradient(circle at 50% 50%, rgba(0,200,255,0.55), rgba(0,200,255,0) 68%);transition:opacity .5s ease;}
-  #tile-grow{top:0;left:0;}
-  #tile-myc{top:0;left:160px;}
-  #tile-office{top:160px;left:0;}
-  #tile-shop{top:160px;left:160px;}
-  .tile.live#tile-grow{background:var(--grow);}
-  .tile.live#tile-myc{background:var(--myc);}
-  .tile.live#tile-office{background:var(--office);}
-  .tile.live#tile-shop{background:var(--shop);}
-  .tile.live .ring{box-shadow:inset 0 0 0 3px rgba(255,255,255,0.18);}
-  .tile.live .icon-path{fill:#f4f8fa;}
-  .tile.live .glow,.tile.lit .glow{opacity:1;}
-  #core{position:absolute;top:150px;left:50%;transform:translate(-50%,-50%) scale(0);
-    width:60px;height:60px;border-radius:50%;
-    background:radial-gradient(circle, rgba(180,240,255,1) 0%, rgba(0,200,255,0.9) 30%, rgba(0,200,255,0) 70%);
-    opacity:0;z-index:5;pointer-events:none;filter:blur(1px);}
-  #shock{position:absolute;top:150px;left:150px;transform:translate(-50%,-50%) scale(0.2);
-    width:300px;height:300px;border-radius:50%;border:2px solid rgba(0,200,255,0.9);opacity:0;z-index:4;pointer-events:none;}
-  #seam-v,#seam-h{position:absolute;background:var(--cyan);opacity:0;z-index:3;box-shadow:0 0 12px 2px rgba(0,200,255,0.8);}
-  #seam-v{top:0;left:149px;width:2px;height:300px;}
-  #seam-h{top:149px;left:0;width:300px;height:2px;}
-  #wordmark{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%) translateY(14px);
-    text-align:center;opacity:0;transition:opacity .7s ease, transform .7s ease;white-space:nowrap;}
-  #wordmark .wm-main{font-size:34px;font-weight:800;letter-spacing:0.08em;color:#eef2f4;}
-  #wordmark .wm-sub{font-size:13px;letter-spacing:0.04em;color:var(--myc);margin-top:2px;}
-  #wordmark .wm-sub b{color:var(--cyan);font-weight:700;}
-  #wordmark.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  #splash.gone{opacity:0;pointer-events:none;transition:opacity .7s ease;}
+  .hero{text-align:center; margin:14px 0 4px;}
+  .hero svg{width:min(360px,84vw); height:auto;}
+  .kicker{text-align:center; font-family:Georgia,serif; font-style:italic;
+    color:var(--steel); font-size:17px; margin:0 0 40px;}
 
-  /* ===== HUB ===== */
-  #hub{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;
-    opacity:0;transition:opacity .9s ease;}
-  #hub.show{opacity:1;}
-  .hub-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:
-      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,200,255,0.10) 0%, rgba(0,0,0,0) 60%),
-      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(10,20,40,0.6) 0%, rgba(0,0,0,0) 70%),
-      var(--navy);}
+  h2{font-family:Georgia,serif; font-weight:600; font-size:13px; letter-spacing:3px;
+    text-transform:uppercase; color:var(--gold); margin:46px 0 14px;}
+  p{font-size:17px; margin:0 0 18px; color:#E4E0D6;}
+  .lead{font-size:20px; color:var(--bone); text-align:center; margin:0 0 8px;}
 
-  header.hub-top{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;
-    padding:22px 32px;}
-  .hub-brand{font-size:15px;letter-spacing:0.30em;text-transform:uppercase;font-weight:700;color:#eef2f4;}
-  .hub-brand .g{color:var(--cyan);}
-  .hub-nav{display:flex;gap:8px;}
-  .hub-nav a{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);
-    text-decoration:none;padding:8px 14px;border-radius:6px;transition:.2s;}
-  .hub-nav a:hover{color:var(--cyan);background:rgba(0,200,255,0.06);}
+  /* live example cards — the proof */
+  .examples{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;}
+  @media (max-width:560px){ .examples{grid-template-columns:1fr;} }
+  .ex{display:block; text-decoration:none; color:inherit;
+    background:var(--graphite-2); border:1px solid var(--line); border-radius:14px;
+    padding:20px 20px 18px; transition:border-color .15s, transform .15s;}
+  .ex:hover{border-color:var(--oxblood); transform:translateY(-2px);}
+  .ex-name{font-size:22px; font-weight:600; color:var(--bone); margin:0 0 4px;}
+  .ex-tag{font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--gold); margin:0 0 10px;}
+  .ex-desc{font-size:15px; color:#CFCABF; margin:0 0 14px; line-height:1.55;}
+  .ex-go{font-size:14px; font-weight:600; color:var(--moss);}
+  .ex:hover .ex-go{color:var(--oxblood);}
+  .ex-note{text-align:center; font-size:15px; color:var(--steel); font-style:italic; margin:16px 0 0;}
 
-  .hub-hero{position:relative;z-index:2;text-align:center;padding:46px 24px 16px;}
-  .hub-hero .eyebrow{font-size:11px;letter-spacing:0.30em;text-transform:uppercase;color:var(--cyan);font-weight:600;margin-bottom:18px;}
-  .hub-hero h1{font-size:clamp(30px,5.2vw,54px);font-weight:800;line-height:1.06;letter-spacing:-0.01em;color:#f3f7fb;}
-  .hub-hero h1 .hl{color:var(--cyan);}
-  .hub-hero p{max-width:640px;margin:18px auto 0;font-size:clamp(15px,1.7vw,18px);line-height:1.55;color:var(--mute);}
+  /* scale ladder */
+  .ladder{margin-top:8px; border:1px solid var(--line); border-radius:12px; overflow:hidden;}
+  .rung{display:flex; align-items:baseline; gap:12px; padding:12px 16px; border-bottom:1px solid var(--line); font-size:15px;}
+  .rung:last-child{border-bottom:0;}
+  .rung b{color:var(--bone); font-weight:600; min-width:104px; display:inline-block;}
+  .rung span{color:#B9B4A9;}
+  .rung.next b{color:var(--gold);}
+  .rung.next span{color:var(--steel); font-style:italic;}
 
-  .hub-prompt{position:relative;z-index:2;text-align:center;margin:40px auto 18px;
-    font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:var(--mute);font-weight:600;}
+  /* placeholder blocks (founder / ask) — real content to be filled */
+  .hold{border:1px dashed var(--line); border-radius:12px; padding:18px 20px;
+    background:rgba(255,255,255,.02); color:#B9B4A9; font-size:16px;}
+  .hold .lbl{display:inline-block; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--steel); margin-bottom:8px;}
 
-  .paths{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
-    max-width:1100px;margin:0 auto;padding:0 32px 60px;width:100%;}
-  @media(max-width:880px){.paths{grid-template-columns:1fr;max-width:460px;}}
-
-  .path{position:relative;display:flex;flex-direction:column;text-decoration:none;
-    background:linear-gradient(180deg, rgba(12,24,46,0.9) 0%, rgba(8,16,32,0.9) 100%);
-    border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:30px 26px 26px;overflow:hidden;
-    transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;}
-  .path::before{content:'';position:absolute;inset:0;border-radius:16px;pointer-events:none;opacity:0;
-    transition:opacity .3s ease;background:radial-gradient(ellipse 80% 60% at 50% 0%, var(--p-glow) 0%, rgba(0,0,0,0) 60%);}
-  .path:hover{transform:translateY(-6px);border-color:var(--p-accent);box-shadow:0 22px 60px rgba(0,0,0,0.5);}
-  .path:hover::before{opacity:1;}
-  .path .p-step{font-size:11px;letter-spacing:0.20em;text-transform:uppercase;color:var(--p-accent);font-weight:700;margin-bottom:14px;}
-  .path .p-ic{width:46px;height:46px;margin-bottom:18px;}
-  .path .p-ic svg{width:100%;height:100%;display:block;}
-  .path .p-ic path,.path .p-ic circle,.path .p-ic rect,.path .p-ic line,.path .p-ic polyline{
-    stroke:var(--p-accent);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-  .path h2{font-size:22px;font-weight:800;color:#f3f7fb;margin-bottom:8px;letter-spacing:-0.01em;}
-  .path .p-q{font-size:13px;color:var(--p-accent);font-weight:600;margin-bottom:14px;letter-spacing:0.01em;}
-  .path p{font-size:14.5px;line-height:1.55;color:var(--mute);flex:1;}
-  .path .p-go{margin-top:22px;display:inline-flex;align-items:center;gap:8px;
-    font-size:13px;font-weight:700;letter-spacing:0.04em;color:#f3f7fb;}
-  .path .p-go .arr{transition:transform .25s ease;}
-  .path:hover .p-go .arr{transform:translateX(5px);}
-
-  .path-showcase{--p-accent:var(--chart);--p-glow:rgba(200,255,0,0.12);}
-  .path-bulkhead{--p-accent:var(--cyan);--p-glow:rgba(0,200,255,0.14);}
-  .path-offer{--p-accent:var(--amber);--p-glow:rgba(255,184,48,0.12);}
-
-  footer.hub-foot{position:relative;z-index:2;margin-top:auto;text-align:center;
-    padding:26px 24px 34px;border-top:1px solid rgba(255,255,255,0.06);}
-  .hub-foot .f-line{font-size:12.5px;color:var(--mute);}
-  .hub-foot .f-line a{color:var(--cyan);text-decoration:none;}
-  .hub-foot .f-line a:hover{text-decoration:underline;}
-  .hub-foot .f-sub{font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:#3a4a5a;margin-top:8px;}
-  /* ===== LANGUAGE GATE ===== */
-  #gate{position:fixed;inset:0;z-index:65;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--navy);}
-  #gate.show{display:flex;}
-  #gate.gone{opacity:0;pointer-events:none;transition:opacity .6s ease;}
-  #gate::before{content:'';position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(circle at 50% 42%, rgba(0,200,255,0.10), transparent 60%);}
-  #gate .gate-brand{position:relative;z-index:2;font-size:13px;letter-spacing:0.34em;text-transform:uppercase;color:var(--myc);margin-bottom:2.4rem;font-weight:600;}
-  #gate .gate-brand b{color:#eef2f4;font-weight:700;}
-  #gate .gate-langs{position:relative;z-index:2;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
-  #gate .lang-btn{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;
-    padding:22px 26px;min-width:128px;border-radius:14px;
-    background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);
-    transition:transform .15s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;}
-  #gate .lang-btn:hover{background:rgba(0,200,255,0.18);border-color:var(--cyan);box-shadow:0 0 30px rgba(0,200,255,0.25);transform:translateY(-3px);}
-  #gate .lang-btn:active{transform:scale(0.97);}
-  #gate .lang-btn .pwr-icon{width:22px;height:22px;display:inline-block;border:2px solid var(--cyan);border-radius:50%;position:relative;}
-  #gate .lang-btn .pwr-icon::after{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:2px;height:11px;background:var(--cyan);}
-  #gate .lang-btn .lang-label{font-size:15px;font-weight:700;color:#eef2f4;letter-spacing:0.02em;}
-  #gate .lang-btn .lang-sub{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--myc);}
-  #gate .gate-hint{position:relative;z-index:2;margin-top:2rem;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#3a4a5a;}
-  #lang-control{position:fixed;top:16px;right:16px;z-index:40;cursor:pointer;display:none;
-    align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
-    background:rgba(10,21,49,0.7);border:1px solid rgba(255,255,255,0.16);
-    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);transition:.2s;}
-  #lang-control:hover{color:var(--cyan);border-color:var(--cyan);}
-  #lang-control.show{display:inline-flex;}
+  .foot{margin-top:52px; padding-top:20px; border-top:1px solid var(--line);
+    text-align:center; font-size:13px; color:#8a8f96;}
+  .foot .mark{font-family:'Yellowtail',cursive; font-size:20px; color:var(--oxblood); vertical-align:middle;}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- ===== MAGNET-SNAP SPLASH (entrance) ===== -->
-<div id="splash">
-  <div id="logo-stage">
-    <div id="grid">
-      <div id="shock"></div>
-      <div id="seam-v"></div>
-      <div id="seam-h"></div>
-      <div class="tile" id="tile-grow">
-        <div class="glow"></div><div class="ring"></div>
-        <svg viewBox="0 0 100 100" aria-label="Grow">
-          <path class="icon-path" d="M48 86 h4 v-30 h-4 z"/>
-          <path class="icon-path" d="M50 58 C40 56 30 48 28 34 C42 36 50 46 50 58 Z"/>
-          <path class="icon-path" d="M50 54 C58 50 66 40 66 26 C54 30 48 42 50 54 Z"/>
-          <path class="icon-path" d="M50 70 C42 70 34 64 32 54 C44 54 50 62 50 70 Z"/>
-          <path class="icon-path" d="M50 68 C56 66 64 60 66 50 C54 50 50 60 50 68 Z"/>
-        </svg>
-      </div>
-      <div class="tile" id="tile-myc">
-        <div class="glow"></div><div class="ring"></div>
-        <svg viewBox="0 0 100 100" aria-label="MYCottage">
-          <path class="icon-path" d="M50 30 C30 30 20 46 20 54 C20 58 24 58 30 58 L70 58 C76 58 80 58 80 54 C80 46 70 30 50 30 Z"/>
-          <path class="icon-path" d="M44 58 L44 74 C44 80 40 82 36 84 L64 84 C60 82 56 80 56 74 L56 58 Z"/>
-        </svg>
-      </div>
-      <div class="tile" id="tile-office">
-        <div class="glow"></div><div class="ring"></div>
-        <svg viewBox="0 0 100 100" aria-label="Office">
-          <path class="icon-path" d="M24 28 h52 a4 4 0 0 1 4 4 v30 a4 4 0 0 1 -4 4 h-52 a4 4 0 0 1 -4 -4 v-30 a4 4 0 0 1 4 -4 Z M26 34 v26 h48 v-26 Z"/>
-          <path class="icon-path" d="M40 70 h20 l4 10 h-28 z"/>
-          <path class="icon-path" d="M30 78 h40 v4 h-40 z"/>
-        </svg>
-      </div>
-      <div class="tile" id="tile-shop">
-        <div class="glow"></div><div class="ring"></div>
-        <svg viewBox="0 0 100 100" aria-label="Shop">
-          <path class="icon-path" d="M30 24 C40 20 54 22 62 32 L54 40 C48 32 38 30 32 34 Z"/>
-          <path class="icon-path" d="M54 36 l10 -10 8 8 -10 10 z"/>
-          <path class="icon-path" d="M58 44 L42 60 L32 78 a4 4 0 0 1 -7 -7 L43 51 L59 35 Z" transform="rotate(8 50 55)"/>
-        </svg>
-      </div>
-      <div id="core"></div>
-    </div>
-    <div id="wordmark">
-      <div class="wm-main">GRUSH</div>
-      <div class="wm-sub">Custom Modular <b>Facilities</b></div>
-    </div>
+  <!-- ── HERO ─────────────────────────────────────────────── -->
+  <div class="hero">
+    <svg viewBox="0 0 360 150" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>grush</title>
+      <desc>The grush signature in oxblood with a gold inner and steel outer keyline.</desc>
+      <defs><linearGradient id="stl" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FBFCFD"/><stop offset="0.3" stop-color="#D2D7DC"/>
+        <stop offset="0.5" stop-color="#A6ADB4"/><stop offset="0.54" stop-color="#868D95"/>
+        <stop offset="0.8" stop-color="#C6CCD2"/><stop offset="1" stop-color="#7A818A"/>
+      </linearGradient></defs>
+      <g transform="rotate(-9 180 92)">
+        <path d="M104 112 C 152 122, 218 120, 258 109 C 218 126, 152 128, 104 116 Z"
+          fill="#C34044" stroke="url(#stl)" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round"/>
+        <path d="M108 122 C 152 128, 214 126, 252 117" fill="none" stroke="url(#stl)"
+          stroke-width="1.6" stroke-linecap="round"/>
+        <text x="180" y="94" text-anchor="middle" font-family="'Yellowtail',cursive" font-size="68"
+          fill="none" stroke="url(#stl)" stroke-width="6.5" stroke-linejoin="round">grush</text>
+        <text x="180" y="94" text-anchor="middle" font-family="'Yellowtail',cursive" font-size="68"
+          fill="#C34044" stroke="#B4A71D" stroke-width="3.6" paint-order="stroke" stroke-linejoin="round">grush</text>
+      </g>
+    </svg>
   </div>
-</div>
 
-<!-- ===== LANGUAGE GATE (front door — sets language site-wide) ===== -->
-<div id="gate">
-  <div class="gate-brand">Grush <b>Cottages</b></div>
-  <div class="gate-langs">
-    <div class="lang-btn" data-lang="en"><span class="pwr-icon"></span><span class="lang-label">Power on</span><span class="lang-sub">English</span></div>
-    <div class="lang-btn" data-lang="es"><span class="pwr-icon"></span><span class="lang-label">Encender</span><span class="lang-sub">Español</span></div>
-    <div class="lang-btn" data-lang="pt"><span class="pwr-icon"></span><span class="lang-label">Ligar</span><span class="lang-sub">Português</span></div>
+  <p class="kicker">grow-management software &mdash; any space, any scale</p>
+
+  <p class="lead">One system runs the daily work of any growing operation.</p>
+  <p style="text-align:center">A garden, a farm, a container grow &mdash; grush turns tasks, plantings, harvests, inventory, and records into a tap-not-type system anyone on the ground can run. The same engine underneath, branded as its own at every site. Over time, the daily work becomes real data: what grew, when, where, and how it did.</p>
+
+  <!-- ── LIVE EXAMPLES (the proof) ─────────────────────────── -->
+  <h2>See it running</h2>
+  <p>Two live deployments. Same grush template underneath &mdash; so learning one teaches you the other.</p>
+  <div class="examples">
+    <a class="ex" href="https://funguyfungi.org">
+      <div class="ex-name">Fun Guy Fungi</div>
+      <div class="ex-tag">Compact &middot; Indoor &middot; Fungus</div>
+      <div class="ex-desc">A 40&#8209;ft shipping&#8209;container mushroom farm &mdash; substrate, inoculation, fruiting, and packaging in one one&#8209;way workflow.</div>
+      <div class="ex-go">Visit funguyfungi.org &rarr;</div>
+    </a>
+    <a class="ex" href="https://lancerfarms.com">
+      <div class="ex-name">Lancer Farms</div>
+      <div class="ex-tag">Mid&#8209;sized &middot; Outdoor &middot; Garden</div>
+      <div class="ex-desc">A working teaching garden in Riverside, California &mdash; beds, plantings, and harvests logged from the field on a phone.</div>
+      <div class="ex-go">Visit lancerfarms.com &rarr;</div>
+    </a>
   </div>
-  <div class="gate-hint">Choose a language to begin · Elige un idioma · Escolha um idioma</div>
+  <p class="ex-note">Open both. Notice they work the same way.</p>
+
+  <!-- ── WHAT GRUSH IS ─────────────────────────────────────── -->
+  <h2>What grush is</h2>
+  <p>Most growing operations run on memory, notebooks, and spreadsheets. grush replaces that with one field-first tool: big buttons, no jargon, works with dirt on your hands or gloves on. Staff log the work; the record builds itself; the operator sees everything.</p>
+  <p>It isn't built for one crop or one place. The <em>same</em> software runs an outdoor teaching garden and an indoor container mushroom farm today &mdash; because a growing operation is a growing operation, whatever it grows.</p>
+
+  <!-- ── BUILT TO SCALE ────────────────────────────────────── -->
+  <h2>Built to scale</h2>
+  <p>grush is designed to run the same from the smallest grow to the largest &mdash; modular, like the container farm it manages.</p>
+  <div class="ladder">
+    <div class="rung"><b>Countertop</b><span>a single grow &mdash; the home or hobby scale</span></div>
+    <div class="rung"><b>Container</b><span>Fun Guy Fungi &mdash; a 40ft container mushroom farm, one operator</span></div>
+    <div class="rung"><b>Grounds</b><span>Lancer Farms &mdash; a mid&#8209;sized outdoor garden</span></div>
+    <div class="rung next"><b>Acreage</b><span>large&#8209;scale, mapped farm operations &mdash; in development (ArcGIS)</span></div>
+  </div>
+
+  <!-- ── FOUNDER (placeholder — to fill) ───────────────────── -->
+  <h2>Why I built this</h2>
+  <div class="hold" id="founder">
+    <span class="lbl">Founder &mdash; coming</span>
+    Veteran-built. A career spent running systems where the person on the ground had to get it right the first time &mdash; then building software so anyone can. <em>(Full founder story to be added here.)</em>
+  </div>
+
+  <!-- ── THE ASK / BUSINESS (placeholder — to fill) ────────── -->
+  <h2>The working model</h2>
+  <p>Fun Guy Fungi is the first grush business built on the platform: a single 40ft high&#8209;cube container (~320 sq ft), single-operator, dual-door one-way workflow, targeting ~300+ lbs/week at capacity &mdash; and modular-expandable by adding containers, exactly as grush is built to scale.</p>
+  <div class="hold">
+    <span class="lbl">Business plan &amp; the ask &mdash; coming</span>
+    Full business plan, financials, and funding ask to be added here.
+  </div>
+
+  <!-- ── FOOTER ────────────────────────────────────────────── -->
+  <div class="foot">
+    <span class="mark">grush</span> &middot; Grush Ventures &middot;
+    <a href="https://funguyfungi.org" style="color:#8a8f96">Fun Guy Fungi</a> &middot;
+    <a href="https://lancerfarms.com" style="color:#8a8f96">Lancer Farms</a>
+  </div>
+
 </div>
-<div id="lang-control"><span>⇆</span><span>Language</span></div>
-
-<!-- ===== HUB ===== -->
-<div class="hub-bg"></div>
-<div id="hub">
-  <header class="hub-top">
-    <div class="hub-brand"><span class="g">G</span>RUSH</div>
-    <nav class="hub-nav">
-      <a href="/showcase.html">Showcase</a>
-      <a href="/bulkhead.html">Connect</a>
-      <a href="/offer.html">Build</a>
-    </nav>
-  </header>
-
-  <section class="hub-hero">
-    <div class="eyebrow">GC-DPS · Grush Cottages Docking Port System</div>
-    <h1>One docking chassis.<br><span class="hl">Infinite</span> facilities.</h1>
-    <p>A standardized container chassis with a universal docking connector — build a lab, a grow room, a workshop, an office, anywhere. Stand one alone, or chain them into a site.</p>
-  </section>
-
-  <div class="hub-prompt">Choose your path</div>
-
-  <section class="paths">
-    <a class="path path-showcase" href="/showcase.html">
-      <div class="p-step">01 · The Vision</div>
-      <div class="p-ic"><svg viewBox="0 0 100 100"><rect x="18" y="26" width="64" height="44" rx="4"/><line x1="34" y1="82" x2="66" y2="82"/><line x1="50" y1="70" x2="50" y2="82"/><polyline points="30,58 44,44 54,54 70,36"/></svg></div>
-      <h2>See what you can build</h2>
-      <div class="p-q">"What can this become?"</div>
-      <p>Tour the cottage types — Lab, Grow, MYCottage, Shop, and more — and watch one chassis transform into a finished facility.</p>
-      <span class="p-go">Open the Showcase <span class="arr">→</span></span>
-    </a>
-
-    <a class="path path-bulkhead" href="/bulkhead.html">
-      <div class="p-step">02 · The Proof</div>
-      <div class="p-ic"><svg viewBox="0 0 100 100"><rect x="16" y="30" width="30" height="40" rx="3"/><rect x="54" y="30" width="30" height="40" rx="3"/><line x1="46" y1="42" x2="54" y2="42"/><line x1="46" y1="50" x2="54" y2="50"/><line x1="46" y1="58" x2="54" y2="58"/></svg></div>
-      <h2>See how they connect</h2>
-      <div class="p-q">"How do two buildings join?"</div>
-      <p>Watch two units dock — cones lead in, every utility zone self-aligns, a zero-power lock draws them tight into one sealed structure.</p>
-      <span class="p-go">Watch the connection <span class="arr">→</span></span>
-    </a>
-
-    <a class="path path-offer" href="/offer.html">
-      <div class="p-step">03 · The Offer</div>
-      <div class="p-ic"><svg viewBox="0 0 100 100"><path d="M50 18 L78 32 V58 C78 72 66 80 50 86 C34 80 22 72 22 58 V32 Z"/><polyline points="38,52 47,61 64,42"/></svg></div>
-      <h2>How do you want to build?</h2>
-      <div class="p-q">"What's right for me?"</div>
-      <p>Three ways in — buy the chassis hardware, add the as-built plans and self-build, or have us deliver the finished product turnkey.</p>
-      <span class="p-go">See the build paths <span class="arr">→</span></span>
-    </a>
-  </section>
-
-  <footer class="hub-foot">
-    <div class="f-line">Grush Ventures · <a href="mailto:chad@getgrush.com">chad@getgrush.com</a></div>
-    <div class="f-sub">Patent Pending · GC-DPS Docking Port System</div>
-  </footer>
-</div>
-
-<script>
-/* ===== Site-wide language (shared pattern across all pages) ===== */
-var GRUSH_LANG_KEY='grush_lang';
-function getLang(){ try{ var v=localStorage.getItem(GRUSH_LANG_KEY); return (v==='es'||v==='pt'||v==='en')?v:null; }catch(e){ return null; } }
-function setLang(v){ try{ localStorage.setItem(GRUSH_LANG_KEY,v); }catch(e){} LANG=v; }
-var LANG=getLang()||'en';
-
-/* ===== Hub text (EN/ES/PT) ===== */
-var HUB_TXT={
-  en:{ nav:['Showcase','Connect','Build'],
-    eyebrow:'GC-DPS · Grush Cottages Docking Port System',
-    h1:'One docking chassis.<br><span class="hl">Infinite</span> facilities.',
-    sub:'A standardized container chassis with a universal docking connector — build a lab, a grow room, a workshop, an office, anywhere. Stand one alone, or chain them into a site.',
-    prompt:'Choose your path',
-    cards:[
-      {h:'See what you can build', p:'Tour the cottage types — Lab, Grow, MYCottage, Shop, and more — and watch one chassis transform into a finished facility.', go:'Open the Showcase'},
-      {h:'See how they connect', p:'Watch two units dock — cones lead in, every utility zone self-aligns, a zero-power lock draws them tight into one sealed structure.', go:'Watch the connection'},
-      {h:'How do you want to build?', p:'Three ways in — buy the chassis hardware, add the as-built plans and self-build, or have us deliver the finished product turnkey.', go:'See the build paths'}
-    ] },
-  es:{ nav:['Showcase','Conectar','Construir'],
-    eyebrow:'GC-DPS · Sistema de Puerto de Acople Grush Cottages',
-    h1:'Un solo chasis de acople.<br>Instalaciones <span class="hl">infinitas</span>.',
-    sub:'Un chasis de contenedor estandarizado con un conector de acople universal — construye un laboratorio, un cuarto de cultivo, un taller o una oficina, donde sea. Levanta uno solo o encadénalos en un sitio.',
-    prompt:'Elige tu camino',
-    cards:[
-      {h:'Mira lo que puedes construir', p:'Recorre los tipos de cabaña — Laboratorio, Cultivo, MYCottage, Taller y más — y mira cómo un chasis se transforma en una instalación terminada.', go:'Abrir el Showcase'},
-      {h:'Mira cómo se conectan', p:'Observa cómo se acoplan dos unidades — los conos guían, cada zona de servicio se autoalinea y un cierre sin energía las une en una sola estructura sellada.', go:'Ver la conexión'},
-      {h:'¿Cómo quieres construir?', p:'Tres formas de entrar — compra el chasis, añade los planos as-built y constrúyelo tú mismo, o te lo entregamos terminado llave en mano.', go:'Ver las rutas de construcción'}
-    ] },
-  pt:{ nav:['Showcase','Conectar','Construir'],
-    eyebrow:'GC-DPS · Sistema de Porta de Acoplamento Grush Cottages',
-    h1:'Um chassi de acoplamento.<br>Instalações <span class="hl">infinitas</span>.',
-    sub:'Um chassi de contêiner padronizado com um conector de acoplamento universal — construa um laboratório, uma sala de cultivo, uma oficina ou um escritório, em qualquer lugar. Use um sozinho ou encadeie vários num site.',
-    prompt:'Escolha seu caminho',
-    cards:[
-      {h:'Veja o que você pode construir', p:'Percorra os tipos de cabana — Laboratório, Cultivo, MYCottage, Oficina e mais — e veja um chassi se transformar numa instalação pronta.', go:'Abrir o Showcase'},
-      {h:'Veja como elas se conectam', p:'Veja duas unidades se acoplarem — os cones guiam, cada zona de utilidade se autoalinha e um travamento sem energia as une numa única estrutura selada.', go:'Ver a conexão'},
-      {h:'Como você quer construir?', p:'Três formas de entrar — compre o chassi, adicione as plantas as-built e construa você mesmo, ou entregamos pronto na sua porta.', go:'Ver os caminhos de construção'}
-    ] }
-};
-function applyHubLang(){
-  var t=HUB_TXT[LANG]||HUB_TXT.en;
-  var nav=document.querySelectorAll('.hub-nav a'); if(nav[0])nav[0].textContent=t.nav[0]; if(nav[1])nav[1].textContent=t.nav[1]; if(nav[2])nav[2].textContent=t.nav[2];
-  var eb=document.querySelector('.hub-hero .eyebrow'); if(eb)eb.textContent=t.eyebrow;
-  var h1=document.querySelector('.hub-hero h1'); if(h1)h1.innerHTML=t.h1;
-  var sb=document.querySelector('.hub-hero p'); if(sb)sb.textContent=t.sub;
-  var pr=document.querySelector('.hub-prompt'); if(pr)pr.textContent=t.prompt;
-  var cards=document.querySelectorAll('.path');
-  cards.forEach(function(card,i){ if(!t.cards[i])return;
-    var h=card.querySelector('h2'); if(h)h.textContent=t.cards[i].h;
-    var p=card.querySelector('p'); if(p)p.textContent=t.cards[i].p;
-    var go=card.querySelector('.p-go'); if(go)go.innerHTML=t.cards[i].go+' <span class="arr">→</span>';
-  });
-}
-
-/* ===== Gate control: show gate, pick language, reveal hub ===== */
-function showGate(){ var g=document.getElementById('gate'); if(g){ g.classList.remove('gone'); g.classList.add('show'); } }
-function hideGateRevealHub(){
-  var g=document.getElementById('gate'), hub=document.getElementById('hub'), lc=document.getElementById('lang-control');
-  if(g){ g.classList.add('gone'); setTimeout(function(){ g.classList.remove('show'); }, 600); }
-  if(hub) hub.classList.add('show');
-  if(lc) lc.classList.add('show');
-}
-function choose(lang){ setLang(lang); applyHubLang(); hideGateRevealHub(); }
-document.addEventListener('DOMContentLoaded', function(){
-  applyHubLang();   // render hub in stored/default language up front (no English flash on re-entry)
-  Array.prototype.forEach.call(document.querySelectorAll('#gate .lang-btn'), function(btn){
-    var lang=btn.getAttribute('data-lang');
-    btn.addEventListener('click', function(e){ e.stopPropagation(); choose(lang); });
-    btn.setAttribute('tabindex','0');
-    btn.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); choose(lang); } });
-  });
-  var lc=document.getElementById('lang-control');
-  if(lc){ lc.addEventListener('click', function(){ showGate(); }); }
-});
-</script>
-<script>
-(function(){
-  var splash = document.getElementById('splash');
-  var hub = document.getElementById('hub');
-  var tiles = ['grow','myc','office','shop'].map(function(k){return document.getElementById('tile-'+k);});
-  var core = document.getElementById('core');
-  var shock = document.getElementById('shock');
-  var seamV = document.getElementById('seam-v');
-  var seamH = document.getElementById('seam-h');
-  var wordmark = document.getElementById('wordmark');
-
-  // Starting scattered positions (fly in from off-grid corners)
-  var starts = [
-    {x:-220,y:-180,r:-40},
-    {x: 220,y:-180,r: 40},
-    {x:-220,y: 180,r: 38},
-    {x: 220,y: 180,r:-38}
-  ];
-  tiles.forEach(function(t,i){
-    var s=starts[i];
-    t.style.transform='translate('+s.x+'px,'+s.y+'px) rotate('+s.r+'deg) scale(0.6)';
-  });
-
-  function snap(){
-    tiles.forEach(function(t,i){
-      setTimeout(function(){
-        t.style.transition='transform .62s cubic-bezier(.18,.9,.24,1), opacity .4s ease';
-        t.style.opacity='1';
-        t.style.transform='translate(0,0) rotate(0deg) scale(1)';
-        t.classList.add('live');
-      }, 120*i);
-    });
-    // seams + core flash as the grid locks
-    setTimeout(function(){
-      seamV.style.transition='opacity .25s ease'; seamH.style.transition='opacity .25s ease';
-      seamV.style.opacity='1'; seamH.style.opacity='1';
-      core.style.transition='transform .45s ease, opacity .3s ease';
-      core.style.opacity='1'; core.style.transform='translate(-50%,-50%) scale(1.4)';
-      shock.style.transition='transform .6s ease, opacity .6s ease';
-      shock.style.opacity='0.9'; shock.style.transform='translate(-50%,-50%) scale(1.3)';
-    }, 120*3 + 480);
-    setTimeout(function(){
-      seamV.style.opacity='0'; seamH.style.opacity='0';
-      core.style.opacity='0'; shock.style.opacity='0';
-      wordmark.classList.add('show');
-    }, 120*3 + 900);
-    // hand off to language gate (or straight to hub if language already chosen)
-    setTimeout(function(){
-      splash.classList.add('gone');
-      if(getLang()){ applyHubLang(); hub.classList.add('show'); var lc=document.getElementById('lang-control'); if(lc)lc.classList.add('show'); }
-      else { showGate(); }
-      setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 800);
-    }, 120*3 + 1900);
-  }
-
-  // kick off shortly after load
-  setTimeout(snap, 380);
-
-  // allow click-to-skip straight to gate (or hub if language already chosen)
-  splash.addEventListener('click', function(){
-    splash.classList.add('gone');
-    if(getLang()){ applyHubLang(); hub.classList.add('show'); var lc=document.getElementById('lang-control'); if(lc)lc.classList.add('show'); }
-    else { showGate(); }
-    setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 800);
-  });
-})();
-</script>
 </body>
 </html>
