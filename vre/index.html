@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>grush — Veteran Readiness &amp; Employment documents</title>
+<meta name="description" content="Reference documents supporting the Fun Guy Fungi self-employment plan (VA Chapter 31). Public, non-personal — downloadable and linkable.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --graphite:#23262B; --graphite-2:#2A2E33; --bone:#F0EDE6;
+    --oxblood:#C34044; --gold:#B4A71D; --steel:#A6ADB4; --moss:#7E9A6E;
+    --line:#3A3D43;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; padding:0;}
+  body{background:var(--graphite); color:var(--bone);
+    font-family:'Source Sans 3',system-ui,sans-serif; line-height:1.65;
+    -webkit-font-smoothing:antialiased; padding:26px 22px 64px;}
+  .wrap{max-width:680px; margin:0 auto;}
+
+  .hero{text-align:center; margin:14px 0 4px;}
+  .hero svg{width:min(300px,74vw); height:auto;}
+  .kicker{text-align:center; font-family:Georgia,serif; font-style:italic;
+    color:var(--steel); font-size:17px; margin:0 0 34px;}
+
+  h2{font-family:Georgia,serif; font-weight:600; font-size:13px; letter-spacing:3px;
+    text-transform:uppercase; color:var(--gold); margin:46px 0 14px;}
+  p{font-size:17px; margin:0 0 18px; color:#E4E0D6;}
+  .lead{font-size:20px; color:var(--bone); text-align:center; margin:0 0 8px;}
+
+  /* document cards */
+  .docs{display:grid; grid-template-columns:1fr; gap:14px; margin-top:6px;}
+  .card{scroll-margin-top:20px;
+    background:var(--graphite-2); border:1px solid var(--line); border-radius:14px;
+    padding:20px 20px 18px; transition:border-color .15s;}
+  .card:target{border-color:var(--oxblood); box-shadow:0 0 0 1px var(--oxblood);}
+  .card-name{font-size:22px; font-weight:600; color:var(--bone); margin:0 0 4px;}
+  .card-tag{font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--gold); margin:0 0 10px;}
+  .card-desc{font-size:15px; color:#CFCABF; margin:0 0 14px; line-height:1.55;}
+  .dl{display:inline-block; margin:0 10px 0 0; padding:9px 16px; border-radius:9px;
+    font-size:14px; font-weight:600; text-decoration:none; border:1px solid var(--line);
+    transition:border-color .15s, color .15s;}
+  .dl.pdf{color:var(--bone); background:rgba(195,64,68,.10);}
+  .dl.pdf:hover{border-color:var(--oxblood); color:#fff;}
+  .dl.doc{color:var(--steel);}
+  .dl.doc:hover{color:var(--bone); border-color:var(--gold);}
+
+  .note{font-size:15px; color:var(--steel); font-style:italic; margin:22px 0 0; line-height:1.6;}
+  .note code{font-style:normal; font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:13px; color:var(--bone); background:rgba(255,255,255,.05);
+    padding:1px 6px; border-radius:5px;}
+
+  .foot{margin-top:52px; padding-top:20px; border-top:1px solid var(--line);
+    text-align:center; font-size:13px; color:#8a8f96;}
+  .foot a{color:#8a8f96;}
+  .foot .mark{font-family:'Yellowtail',cursive; font-size:20px; color:var(--oxblood); vertical-align:middle;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── HERO ─────────────────────────────────────────────── -->
+  <div class="hero">
+    <svg viewBox="0 0 360 150" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>grush</title>
+      <desc>The grush signature in oxblood with a gold inner and steel outer keyline.</desc>
+      <defs><linearGradient id="stl" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FBFCFD"/><stop offset="0.3" stop-color="#D2D7DC"/>
+        <stop offset="0.5" stop-color="#A6ADB4"/><stop offset="0.54" stop-color="#868D95"/>
+        <stop offset="0.8" stop-color="#C6CCD2"/><stop offset="1" stop-color="#7A818A"/>
+      </linearGradient></defs>
+      <g transform="rotate(-9 180 92)">
+        <path d="M104 112 C 152 122, 218 120, 258 109 C 218 126, 152 128, 104 116 Z"
+          fill="#C34044" stroke="url(#stl)" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round"/>
+        <path d="M108 122 C 152 128, 214 126, 252 117" fill="none" stroke="url(#stl)"
+          stroke-width="1.6" stroke-linecap="round"/>
+        <text x="180" y="94" text-anchor="middle" font-family="'Yellowtail',cursive" font-size="68"
+          fill="none" stroke="url(#stl)" stroke-width="6.5" stroke-linejoin="round">grush</text>
+        <text x="180" y="94" text-anchor="middle" font-family="'Yellowtail',cursive" font-size="68"
+          fill="#C34044" stroke="#B4A71D" stroke-width="3.6" paint-order="stroke" stroke-linejoin="round">grush</text>
+      </g>
+    </svg>
+  </div>
+
+  <p class="kicker">Veteran Readiness &amp; Employment (Chapter 31) &mdash; supporting documents</p>
+
+  <p class="lead">Reference documents for the Fun Guy Fungi self-employment plan.</p>
+  <p style="text-align:center">A public reference set supporting a VA Chapter&nbsp;31 self-employment application built around <a href="https://funguyfungi.org" style="color:var(--moss)">Fun&nbsp;Guy&nbsp;Fungi</a>, a single-container gourmet-mushroom operation. Each item is downloadable as PDF or Word and can be linked to directly. These pages carry no personal information &mdash; benefits, enrollment, and identifying records are provided separately, on request.</p>
+
+  <!-- ── DOCUMENTS ─────────────────────────────────────────── -->
+  <h2>The documents</h2>
+  <div class="docs">
+
+    <div class="card" id="businessplan">
+      <div class="card-name">Business Plan (Summary)</div>
+      <div class="card-tag">One page &middot; Overview</div>
+      <div class="card-desc">The venture at a glance: founder background, why self-employment fits, the sequenced revenue streams, market thesis, a conservative financial summary, and the funding request.</div>
+      <a class="dl pdf" href="FunGuyFungi_VRE_BusinessPlan.pdf">Download PDF</a>
+      <a class="dl doc" href="FunGuyFungi_VRE_BusinessPlan.docx">Word</a>
+    </div>
+
+    <div class="card" id="equipment">
+      <div class="card-name">Equipment &amp; Cost Breakdown &mdash; Phase 1</div>
+      <div class="card-tag">One page &middot; Budget</div>
+      <div class="card-desc">Itemized single-container buildout by production zone, scoped to the local approval threshold. The container is flagged as a separate question, and a second container is documented as a Phase-2 expansion.</div>
+      <a class="dl pdf" href="FunGuyFungi_VRE_Equipment.pdf">Download PDF</a>
+      <a class="dl doc" href="FunGuyFungi_VRE_Equipment.docx">Word</a>
+    </div>
+
+    <div class="card" id="degree">
+      <div class="card-name">Degree-Necessity Brief</div>
+      <div class="card-tag">One page &middot; Justification</div>
+      <div class="card-desc">The case for why finishing the B.S. in Environmental Science is the necessary, lowest-cost path to the credentialed expertise the venture&rsquo;s restoration and remediation lines require &mdash; offered for the counselor&rsquo;s evaluation.</div>
+      <a class="dl pdf" href="FunGuyFungi_VRE_DegreeNecessity.pdf">Download PDF</a>
+      <a class="dl doc" href="FunGuyFungi_VRE_DegreeNecessity.docx">Word</a>
+    </div>
+
+    <div class="card" id="market">
+      <div class="card-name">Market Feasibility Brief</div>
+      <div class="card-tag">One page &middot; Market</div>
+      <div class="card-desc">Demand, channel pricing by species, yield and revenue potential, and why channel mix &mdash; not raw yield &mdash; drives profitability, including the Riverside seasonal-rotation edge.</div>
+      <a class="dl pdf" href="FunGuyFungi_VRE_MarketFeasibility.pdf">Download PDF</a>
+      <a class="dl doc" href="FunGuyFungi_VRE_MarketFeasibility.docx">Word</a>
+    </div>
+
+  </div>
+
+  <p class="note">Deep links: add <code>#businessplan</code>, <code>#equipment</code>, <code>#degree</code>, or <code>#market</code> to this page&rsquo;s address to open straight to a document &mdash; e.g. <code>getgrush.com/vre/#equipment</code>. Figures in these documents are industry-baseline estimates to be finalized with the VBOC; approval thresholds are to be confirmed with the counselor.</p>
+
+  <!-- ── FOOTER ────────────────────────────────────────────── -->
+  <div class="foot">
+    <a href="https://getgrush.com">&larr; getgrush.com</a> &middot;
+    <span class="mark">grush</span> &middot; Grush Ventures &middot;
+    <a href="https://funguyfungi.org">Fun Guy Fungi</a> &middot;
+    <a href="https://lancerfarms.com">Lancer Farms</a>
+  </div>
+
+</div>
+</body>
+</html>
