@@ -1,157 +1,474 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>grush — grow-management software, any space, any scale</title>
-<meta name="description" content="Grush is grow-management software that scales from a countertop to acreage. See it running at two live deployments.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grush</title>
+<meta name="description" content="Grush is an umbrella for four ventures: Grush software, Fun Guy Fungi, fungAI, and Cottages.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Yellowtail&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --graphite:#23262B; --graphite-2:#2A2E33; --bone:#F0EDE6;
-    --oxblood:#C34044; --gold:#B4A71D; --steel:#A6ADB4; --moss:#7E9A6E;
-    --line:#3A3D43;
+    --substrate:#14110F;
+    --substrate-2:#1C1815;
+    --substrate-3:#252019;
+    --mycelium:#E8E1D4;
+    --mycelium-dim:#948B7E;
+    --mycelium-faint:#5A5248;
+    --oxblood:#8C2F39;
+    --oxblood-lit:#B84450;
+    --spore:#C9A227;
+    --hairline:#302A24;
+    --display:'Fraunces',Georgia,serif;
+    --body:'IBM Plex Sans',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0; padding:0;}
-  body{background:var(--graphite); color:var(--bone);
-    font-family:'Source Sans 3',system-ui,sans-serif; line-height:1.65;
-    -webkit-font-smoothing:antialiased; padding:26px 22px 64px;}
-  .wrap{max-width:680px; margin:0 auto;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--substrate);
+    color:var(--mycelium);
+    font-family:var(--body);
+    font-weight:300;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--oxblood);color:var(--mycelium)}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
 
-  .hero{text-align:center; margin:14px 0 4px;}
-  .hero svg{width:min(360px,84vw); height:auto;}
-  .kicker{text-align:center; font-family:Georgia,serif; font-style:italic;
-    color:var(--steel); font-size:17px; margin:0 0 40px;}
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding:26px 0;border-bottom:1px solid var(--hairline);
+  }
+  .wordmark{
+    font-family:var(--display);font-weight:600;font-size:26px;
+    letter-spacing:.14em;text-transform:uppercase;
+  }
+  .masthead .meta{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--mycelium-dim);
+  }
 
-  h2{font-family:Georgia,serif; font-weight:600; font-size:13px; letter-spacing:3px;
-    text-transform:uppercase; color:var(--gold); margin:46px 0 14px;}
-  p{font-size:17px; margin:0 0 18px; color:#E4E0D6;}
-  .lead{font-size:20px; color:var(--bone); text-align:center; margin:0 0 8px;}
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 48px}
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--spore);margin-bottom:22px;
+  }
+  .thesis{
+    font-family:var(--display);
+    font-weight:300;
+    font-size:clamp(30px,5.2vw,52px);
+    line-height:1.16;
+    letter-spacing:-.015em;
+    max-width:19ch;
+  }
+  .thesis em{font-style:italic;color:var(--spore)}
+  .sub{
+    margin-top:24px;max-width:56ch;color:var(--mycelium-dim);
+    font-size:16.5px;
+  }
 
-  /* live example cards — the proof */
-  .examples{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;}
-  @media (max-width:560px){ .examples{grid-template-columns:1fr;} }
-  .ex{display:block; text-decoration:none; color:inherit;
-    background:var(--graphite-2); border:1px solid var(--line); border-radius:14px;
-    padding:20px 20px 18px; transition:border-color .15s, transform .15s;}
-  .ex:hover{border-color:var(--oxblood); transform:translateY(-2px);}
-  .ex-name{font-size:22px; font-weight:600; color:var(--bone); margin:0 0 4px;}
-  .ex-tag{font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--gold); margin:0 0 10px;}
-  .ex-desc{font-size:15px; color:#CFCABF; margin:0 0 14px; line-height:1.55;}
-  .ex-go{font-size:14px; font-weight:600; color:var(--moss);}
-  .ex:hover .ex-go{color:var(--oxblood);}
-  .ex-note{text-align:center; font-size:15px; color:var(--steel); font-style:italic; margin:16px 0 0;}
+  /* ---------- the web ---------- */
+  .weave{margin:16px 0 8px;position:relative}
+  .weave svg{width:100%;height:auto;display:block;overflow:visible}
+  .hypha{
+    fill:none;stroke:var(--mycelium-faint);stroke-width:1.1;
+    stroke-linecap:round;transition:stroke .35s ease,stroke-width .35s ease;
+  }
+  .hypha.dormant{stroke-dasharray:3 7;stroke:var(--hairline)}
+  .hypha.hot{stroke:var(--oxblood-lit);stroke-width:1.8}
+  .filament{fill:none;stroke:var(--hairline);stroke-width:.6;stroke-linecap:round}
+  .node-hit{cursor:pointer;fill:transparent}
+  .node-ring{
+    fill:var(--substrate);stroke:var(--mycelium-faint);stroke-width:1.2;
+    transition:stroke .3s ease,fill .3s ease;
+  }
+  .node-core{fill:var(--mycelium-dim);transition:fill .3s ease,r .3s ease}
+  .node-label{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.07em;
+    fill:var(--mycelium-dim);transition:fill .3s ease;
+  }
+  .node-role{
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;fill:var(--mycelium-faint);
+  }
+  g.node:hover .node-ring,g.node:focus-visible .node-ring{stroke:var(--spore)}
+  g.node:hover .node-core,g.node:focus-visible .node-core{fill:var(--spore)}
+  g.node:hover .node-label,g.node:focus-visible .node-label{fill:var(--mycelium)}
+  g.node:focus-visible{outline:none}
+  g.node:focus-visible .node-ring{stroke-width:2}
+  .hub-ring{fill:var(--substrate);stroke:var(--oxblood);stroke-width:1.6}
+  .hub-core{fill:var(--oxblood)}
+  .hub-label{
+    font-family:var(--display);font-weight:600;font-size:15px;
+    letter-spacing:.16em;fill:var(--mycelium);text-transform:uppercase;
+  }
+  .node.is-dormant .node-ring{stroke:var(--hairline)}
+  .node.is-dormant .node-core{fill:var(--hairline)}
+  .node.is-dormant .node-label{fill:var(--mycelium-faint)}
 
-  /* scale ladder */
-  .ladder{margin-top:8px; border:1px solid var(--line); border-radius:12px; overflow:hidden;}
-  .rung{display:flex; align-items:baseline; gap:12px; padding:12px 16px; border-bottom:1px solid var(--line); font-size:15px;}
-  .rung:last-child{border-bottom:0;}
-  .rung b{color:var(--bone); font-weight:600; min-width:104px; display:inline-block;}
-  .rung span{color:#B9B4A9;}
-  .rung.next b{color:var(--gold);}
-  .rung.next span{color:var(--steel); font-style:italic;}
+  /* ---------- loop ---------- */
+  .loop{
+    border-top:1px solid var(--hairline);
+    border-bottom:1px solid var(--hairline);
+    padding:38px 0;margin-top:40px;
+  }
+  .loop-line{
+    font-family:var(--display);font-weight:300;
+    font-size:clamp(17px,2.3vw,22px);line-height:1.55;max-width:60ch;
+  }
+  .loop-line b{font-weight:600;color:var(--spore)}
 
-  /* founder / working-model content blocks */
-  .hold{border:1px dashed var(--line); border-radius:12px; padding:18px 20px;
-    background:rgba(255,255,255,.02); color:#B9B4A9; font-size:16px;}
-  .hold .lbl{display:inline-block; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
-    color:var(--steel); margin-bottom:8px;}
+  /* ---------- branches ---------- */
+  .branches{padding:8px 0 0}
+  .branch{
+    padding:44px 0;border-bottom:1px solid var(--hairline);
+    display:grid;grid-template-columns:150px 1fr;gap:36px;align-items:start;
+  }
+  .branch-role{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--mycelium-faint);padding-top:9px;
+  }
+  .branch-role .tag{
+    display:inline-block;color:var(--spore);
+  }
+  .branch h2{
+    font-family:var(--display);font-weight:500;
+    font-size:clamp(24px,3.4vw,34px);letter-spacing:-.01em;line-height:1.2;
+  }
+  .branch h2 a{text-decoration:none;border-bottom:1px solid var(--oxblood);padding-bottom:2px}
+  .branch h2 a:hover{color:var(--spore);border-color:var(--spore)}
+  .branch p{margin-top:14px;max-width:58ch;color:var(--mycelium-dim);font-size:16px}
 
-  .foot{margin-top:52px; padding-top:20px; border-top:1px solid var(--line);
-    text-align:center; font-size:13px; color:#8a8f96;}
-  .foot .mark{font-family:'Yellowtail',cursive; font-size:20px; color:var(--oxblood); vertical-align:middle;}
+  .attrs{
+    display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:20px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+  }
+  .attr{
+    border:1px solid var(--hairline);border-radius:2px;
+    padding:4px 9px;color:var(--mycelium-dim);
+  }
+  .attr b{color:var(--mycelium-faint);font-weight:400}
+
+  /* ---------- deployments ---------- */
+  .deploys{margin-top:26px;border-top:1px solid var(--hairline)}
+  .deploy{
+    display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    padding:15px 0;border-bottom:1px solid var(--hairline);
+  }
+  .deploy-name{font-size:15.5px}
+  .deploy-name a{text-decoration:none;border-bottom:1px solid var(--hairline)}
+  .deploy-name a:hover{color:var(--spore);border-color:var(--spore)}
+  .deploy-name span{
+    display:block;font-family:var(--mono);font-size:10.5px;
+    color:var(--mycelium-faint);letter-spacing:.05em;margin-top:4px;
+  }
+  .status{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;white-space:nowrap;display:flex;
+    align-items:center;gap:7px;color:var(--mycelium-dim);
+  }
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--mycelium-faint)}
+  .status.live .dot{background:var(--spore);box-shadow:0 0 0 3px rgba(201,162,39,.16)}
+  .status.live{color:var(--spore)}
+
+  .research{
+    margin-top:22px;display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .research li{
+    list-style:none;font-family:var(--mono);font-size:11.5px;
+    border:1px solid var(--hairline);border-radius:2px;padding:6px 11px;
+    color:var(--mycelium-dim);
+  }
+  .note{
+    margin-top:18px;font-size:14px;color:var(--mycelium-faint);
+    border-left:2px solid var(--hairline);padding-left:14px;max-width:52ch;
+  }
+
+  .branch.dormant{opacity:.5;transition:opacity .4s ease}
+  .branch.dormant:hover{opacity:.85}
+
+  /* ---------- foot ---------- */
+  .foot{
+    padding:52px 0 64px;display:flex;flex-wrap:wrap;gap:18px;
+    justify-content:space-between;align-items:baseline;
+  }
+  .foot a{
+    font-family:var(--display);font-size:20px;font-weight:500;
+    text-decoration:none;border-bottom:1px solid var(--oxblood);
+  }
+  .foot a:hover{color:var(--spore);border-color:var(--spore)}
+  .foot .fine{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+    color:var(--mycelium-faint);text-transform:uppercase;
+  }
+
+  @media (max-width:700px){
+    .branch{grid-template-columns:1fr;gap:12px}
+    .branch-role{padding-top:0}
+    .hero{padding:44px 0 32px}
+    .deploy{flex-direction:column;gap:8px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+  }
 </style>
 </head>
 <body>
+
 <div class="wrap">
 
-  <!-- ── HERO ─────────────────────────────────────────────── -->
-  <div class="hero">
-    <svg viewBox="0 0 360 150" role="img" xmlns="http://www.w3.org/2000/svg">
-      <title>grush</title>
-      <desc>The grush signature in oxblood with a gold inner and steel outer keyline.</desc>
-      <defs><linearGradient id="stl" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#FBFCFD"/><stop offset="0.3" stop-color="#D2D7DC"/>
-        <stop offset="0.5" stop-color="#A6ADB4"/><stop offset="0.54" stop-color="#868D95"/>
-        <stop offset="0.8" stop-color="#C6CCD2"/><stop offset="1" stop-color="#7A818A"/>
-      </linearGradient></defs>
-      <g transform="rotate(-9 180 92)">
-        <path d="M104 112 C 152 122, 218 120, 258 109 C 218 126, 152 128, 104 116 Z"
-          fill="#C34044" stroke="url(#stl)" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round"/>
-        <path d="M108 122 C 152 128, 214 126, 252 117" fill="none" stroke="url(#stl)"
-          stroke-width="1.6" stroke-linecap="round"/>
-        <text x="180" y="94" text-anchor="middle" font-family="'Yellowtail',cursive" font-size="68"
-          fill="none" stroke="url(#stl)" stroke-width="6.5" stroke-linejoin="round">grush</text>
-        <text x="180" y="94" text-anchor="middle" font-family="'Yellowtail',cursive" font-size="68"
-          fill="#C34044" stroke="#B4A71D" stroke-width="3.6" paint-order="stroke" stroke-linejoin="round">grush</text>
+  <header class="masthead">
+    <div class="wordmark">Grush</div>
+    <div class="meta">Riverside, California</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Umbrella &middot; four ventures</div>
+    <h1 class="thesis">Fungi that <em>work</em>, watched by software that <em>listens</em>.</h1>
+    <p class="sub">Grush is the umbrella. Underneath it, three ventures feed each other in a loop — research, biomass, data — and a fourth waits its turn.</p>
+  </section>
+
+  <section class="weave" aria-label="Structure of the Grush ventures">
+    <svg viewBox="0 0 800 470" role="img" aria-label="Diagram: Grush at the centre connected to fungAI, Fun Guy Fungi, and Grush software, which form a loop. Cottages sits dormant, downstream of all three.">
+      <g id="filaments" stroke-linecap="round"></g>
+      <g id="cords">
+        <path class="hypha" data-pair="hub-fungai"   d="M400,235 C360,205 320,175 268,148"/>
+        <path class="hypha" data-pair="hub-fgf"      d="M400,235 C470,215 530,200 588,186"/>
+        <path class="hypha" data-pair="hub-soft"     d="M400,245 C370,300 340,340 306,372"/>
+        <path class="hypha" data-pair="fungai-fgf"   d="M285,135 C380,95 500,110 590,168"/>
+        <path class="hypha" data-pair="fgf-soft"     d="M596,205 C560,300 430,368 328,382"/>
+        <path class="hypha" data-pair="soft-fungai"  d="M288,358 C230,300 218,210 250,152"/>
+        <path class="hypha dormant" d="M280,155 C440,150 640,240 662,392"/>
+        <path class="hypha dormant" d="M608,192 C660,250 664,320 664,384"/>
+        <path class="hypha dormant" d="M322,378 C450,410 580,402 646,396"/>
+      </g>
+
+      <!-- fungAI -->
+      <g class="node" tabindex="0" role="link" data-go="#fungai" data-cords="hub-fungai fungai-fgf soft-fungai">
+        <circle class="node-hit" cx="264" cy="140" r="42"/>
+        <circle class="node-ring" cx="264" cy="140" r="13"/>
+        <circle class="node-core" cx="264" cy="140" r="4.5"/>
+        <text class="node-label" x="264" y="112" text-anchor="middle">fungAI</text>
+        <text class="node-role"  x="264" y="98"  text-anchor="middle">knows</text>
+      </g>
+
+      <!-- Fun Guy Fungi -->
+      <g class="node" tabindex="0" role="link" data-go="#fgf" data-cords="hub-fgf fungai-fgf fgf-soft">
+        <circle class="node-hit" cx="596" cy="180" r="46"/>
+        <circle class="node-ring" cx="596" cy="180" r="13"/>
+        <circle class="node-core" cx="596" cy="180" r="4.5"/>
+        <text class="node-label" x="596" y="152" text-anchor="middle">Fun Guy Fungi</text>
+        <text class="node-role"  x="596" y="138" text-anchor="middle">grows</text>
+      </g>
+
+      <!-- Grush software -->
+      <g class="node" tabindex="0" role="link" data-go="#software" data-cords="hub-soft fgf-soft soft-fungai">
+        <circle class="node-hit" cx="300" cy="380" r="46"/>
+        <circle class="node-ring" cx="300" cy="380" r="13"/>
+        <circle class="node-core" cx="300" cy="380" r="4.5"/>
+        <text class="node-label" x="300" y="415" text-anchor="middle">Grush software</text>
+        <text class="node-role"  x="300" y="429" text-anchor="middle">reads</text>
+      </g>
+
+      <!-- Cottages (dormant) -->
+      <g class="node is-dormant" tabindex="0" role="link" data-go="#cottages" data-cords="">
+        <circle class="node-hit" cx="664" cy="392" r="40"/>
+        <circle class="node-ring" cx="664" cy="392" r="11"/>
+        <circle class="node-core" cx="664" cy="392" r="3.5"/>
+        <text class="node-label" x="664" y="427" text-anchor="middle">Cottages</text>
+        <text class="node-role"  x="664" y="441" text-anchor="middle">dormant</text>
+      </g>
+
+      <!-- hub -->
+      <g>
+        <circle class="hub-ring" cx="400" cy="240" r="21"/>
+        <circle class="hub-core" cx="400" cy="240" r="6"/>
+        <text class="hub-label" x="400" y="285" text-anchor="middle">Grush</text>
       </g>
     </svg>
+  </section>
+
+  <section class="loop">
+    <p class="loop-line">
+      <b>fungAI</b> learns what fungi can do. <b>Fun Guy Fungi</b> grows the organism it needs.
+      <b>Grush software</b> records what the organism does — and that data feeds the research again.
+      Each one needs the other two.
+    </p>
+  </section>
+
+  <div class="branches">
+
+    <!-- Grush software -->
+    <section class="branch" id="software">
+      <div class="branch-role"><span class="tag">reads</span><br>venture</div>
+      <div>
+        <h2><a href="#software">Grush software</a></h2>
+        <p>Farm management software for growing sites. Staff log work by tapping, not typing; tasks age themselves; visitors get a read-only window into what the site is doing. Every deployment carries a live status panel.</p>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>type</b> venture</span>
+        </div>
+
+        <div class="deploys">
+          <div class="deploy">
+            <div class="deploy-name">
+              <a href="https://lancerfarms.com">Lancer Farms &amp; Gardens</a>
+              <span>owner: California Baptist University &middot; site: CBU campus garden</span>
+            </div>
+            <div class="status live"><i class="dot"></i>Live</div>
+          </div>
+          <div class="deploy">
+            <div class="deploy-name">
+              <a href="https://funguyfungi.org">Fun Guy Fungi</a>
+              <span>owner: Chad Pattengale &middot; site: none yet</span>
+            </div>
+            <div class="status"><i class="dot"></i>In development</div>
+          </div>
+        </div>
+        <p class="note">The deployments index grows as sites come online. Each one is listed with its owner, its site, and its honest status.</p>
+      </div>
+    </section>
+
+    <!-- Fun Guy Fungi -->
+    <section class="branch" id="fgf">
+      <div class="branch-role"><span class="tag">grows</span><br>venture &middot; deployment</div>
+      <div>
+        <h2><a href="https://funguyfungi.org">Fun Guy Fungi</a></h2>
+        <p>A mobile container garden business growing specialty mushrooms. It has an owner, a species plan, and a floor plan. It does not have a home yet — the software ran ahead of the farm on purpose. Proof before land, bench before container.</p>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>site</b> none yet</span>
+          <span class="attr"><b>status</b> in development</span>
+        </div>
+        <p class="note">Fun Guy Fungi is the only node that is both a venture and a Grush deployment. It grows the organism the research runs on, and it runs the software that watches it.</p>
+      </div>
+    </section>
+
+    <!-- fungAI -->
+    <section class="branch" id="fungai">
+      <div class="branch-role"><span class="tag">knows</span><br>venture</div>
+      <div>
+        <h2><a href="#fungai">fungAI</a></h2>
+        <p>The research branch. Fungi as instruments: reading the signals they propagate through their environment, and asking whether mycorrhizal networks can be monitored across large geography in response to stimulus.</p>
+        <ul class="research">
+          <li>Fungi as a sensor</li>
+          <li>Fungi as an environmental remediator</li>
+          <li>Fungi as a consumable — culinary</li>
+          <li>Fungi as a consumable — cosmetic</li>
+          <li>Fungi as a consumable — pharmaceutical</li>
+        </ul>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>type</b> venture</span>
+        </div>
+        <p class="note">This work is theoretical. Nothing here is a finding — it is a set of questions being set up to be answered honestly, or not at all.</p>
+      </div>
+    </section>
+
+    <!-- Cottages -->
+    <section class="branch dormant" id="cottages">
+      <div class="branch-role"><span class="tag" style="color:var(--mycelium-faint)">paused</span><br>venture</div>
+      <div>
+        <h2>Cottages</h2>
+        <p>A line of specialized container buildings, designed by applying the other three ventures to the buildings themselves. Downstream of the loop: it consumes what the others produce, so it waits until they produce something worth applying.</p>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>status</b> dormant</span>
+        </div>
+        <p class="note">Long-term. On the back burner by choice, not by neglect.</p>
+      </div>
+    </section>
+
   </div>
 
-  <p class="kicker">grow-management software &mdash; any space, any scale</p>
-
-  <p class="lead">One system runs the daily work of any growing operation.</p>
-  <p style="text-align:center">A garden, a farm, a container grow &mdash; grush turns tasks, plantings, harvests, inventory, and records into a tap-not-type system anyone on the ground can run. The same engine underneath, branded as its own at every site. Over time, the daily work becomes real data: what grew, when, where, and how it did.</p>
-
-  <!-- ── LIVE EXAMPLES (the proof) ─────────────────────────── -->
-  <h2>See it running</h2>
-  <p>Two live deployments. Same grush template underneath &mdash; so learning one teaches you the other.</p>
-  <div class="examples">
-    <a class="ex" href="https://funguyfungi.org">
-      <div class="ex-name">Fun Guy Fungi</div>
-      <div class="ex-tag">Compact &middot; Indoor &middot; Fungus</div>
-      <div class="ex-desc">A 40&#8209;ft shipping&#8209;container mushroom farm &mdash; substrate, inoculation, fruiting, and packaging in one one&#8209;way workflow.</div>
-      <div class="ex-go">Visit funguyfungi.org &rarr;</div>
-    </a>
-    <a class="ex" href="https://lancerfarms.com">
-      <div class="ex-name">Lancer Farms</div>
-      <div class="ex-tag">Mid&#8209;sized &middot; Outdoor &middot; Garden</div>
-      <div class="ex-desc">A working teaching garden in Riverside, California &mdash; beds, plantings, and harvests logged from the field on a phone.</div>
-      <div class="ex-go">Visit lancerfarms.com &rarr;</div>
-    </a>
-  </div>
-  <p class="ex-note">Open both. Notice they work the same way.</p>
-
-  <!-- ── WHAT GRUSH IS ─────────────────────────────────────── -->
-  <h2>What grush is</h2>
-  <p>Most growing operations run on memory, notebooks, and spreadsheets. grush replaces that with one field-first tool: big buttons, no jargon, works with dirt on your hands or gloves on. Staff log the work; the record builds itself; the operator sees everything.</p>
-  <p>It isn't built for one crop or one place. The <em>same</em> software runs an outdoor teaching garden and an indoor container mushroom farm today &mdash; because a growing operation is a growing operation, whatever it grows.</p>
-
-  <!-- ── BUILT TO SCALE ────────────────────────────────────── -->
-  <h2>Built to scale</h2>
-  <p>grush is designed to run the same from the smallest grow to the largest &mdash; modular, like the container farm it manages.</p>
-  <div class="ladder">
-    <div class="rung"><b>Countertop</b><span>a single grow &mdash; the home or hobby scale</span></div>
-    <div class="rung"><b>Container</b><span>Fun Guy Fungi &mdash; a 40ft container mushroom farm, one operator</span></div>
-    <div class="rung"><b>Grounds</b><span>Lancer Farms &mdash; a mid&#8209;sized outdoor garden</span></div>
-    <div class="rung next"><b>Acreage</b><span>large&#8209;scale, mapped farm operations &mdash; in development (ArcGIS)</span></div>
-  </div>
-  <p class="ex-note">It isn't rocket science &mdash; but it's built so it could be. The same tap&#8209;not&#8209;type tool that runs a backyard bed would run a grow on the moon: gloved hands, sealed suit, no room for error. That's what simple is for.</p>
-
-  <!-- ── FOUNDER ─────────────────────────────────────────── -->
-  <h2>Why I built this</h2>
-  <p>My path doesn't read like a straight line &mdash; and that's the point. I've been a Marine linguist, a 911 operator, and an armed power&#8209;plant guard; a nurse through cardiac ICU, emergency, trauma, and prison units; and an electrician, a builder, and a project coordinator on the power&#8209;distribution buildings that AI data centers and utility companies across the country depend on. Every one of those jobs came down to the same thing: the person on the ground had to get it right the first time, under real pressure, with real consequences.</p>
-  <p>Being a linguist taught me the lesson that shaped this: all the skill in the world doesn't matter if the team can't communicate. The best plan fails when the person who needs it can't read it, or the person who has the answer can't get it where it needs to go. grush is built around that &mdash; simple enough to be approachable to anyone, in whatever language they work in, so the knowledge actually moves.</p>
-  <p>Now, finishing a degree in environmental science, I'm building the tool I wish those systems had: one that turns the daily work into a record you can actually trust. I taught myself the whole stack &mdash; the software and the hardware &mdash; the same way I learned everything else: because the job needed doing.</p>
-  <p>grush is that idea applied to growing things. Every part of it is built for the person with dirt on their hands and the person running the operation alike.</p>
-  <p>I'm a 100% disabled Marine veteran and a father of four &mdash; one of them an active&#8209;duty Marine. I build things meant to be run by someone other than the person who built them.</p>
-
-  <!-- ── THE WORKING MODEL ─────────────────────────────────── -->
-  <h2>The working model</h2>
-  <p>Fun Guy Fungi is the first grush business built on the platform: a single 40ft high&#8209;cube container (~320 sq ft), single-operator, dual-door one-way workflow, targeting ~300+ lbs/week at capacity &mdash; and modular-expandable by adding containers, exactly as grush is built to scale.</p>
-  <p>The model has three parts that feed each other. <b>Operate</b> flagship grows like Fun Guy Fungi &mdash; real revenue and living proof the system works. <b>Deploy</b> the grush platform to other growing operations, each branded as its own. <b>Scale</b> every grow modularly, from a single container toward mapped acreage.</p>
-  <p>On the roadmap: large&#8209;scale mapped operations (ArcGIS), and a restoration&#8209;products line that turns spent growing material into soil amendments for wildfire&#8209;scarred land &mdash; circular by design.</p>
-  <p>Grush Ventures is veteran&#8209;owned. <span style="color:var(--steel); font-style:italic;">Detailed business plan, financials, and funding ask available on request.</span></p>
-
-  <!-- ── FOOTER ────────────────────────────────────────────── -->
-  <div class="foot">
-    <span class="mark">grush</span> &middot; Grush Ventures &middot;
-    <a href="https://funguyfungi.org" style="color:#8a8f96">Fun Guy Fungi</a> &middot;
-    <a href="https://lancerfarms.com" style="color:#8a8f96">Lancer Farms</a>
-  </div>
+  <footer class="foot">
+    <a href="mailto:chad@getgrush.com">chad@getgrush.com</a>
+    <div class="fine">Grush &middot; Riverside, California</div>
+  </footer>
 
 </div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* --- ambient filaments: short hyphal strands drifting off the cords --- */
+  var fil = document.getElementById('filaments');
+  var seedPts = [
+    [264,140],[596,180],[300,380],[400,240],[664,392]
+  ];
+  var rnd = function(a,b){ return a + Math.random()*(b-a); };
+  seedPts.forEach(function(p){
+    for (var i=0;i<7;i++){
+      var ang = rnd(0, Math.PI*2), len = rnd(18,52);
+      var x2 = p[0] + Math.cos(ang)*len, y2 = p[1] + Math.sin(ang)*len;
+      var mx = p[0] + Math.cos(ang)*len*0.5 + rnd(-9,9);
+      var my = p[1] + Math.sin(ang)*len*0.5 + rnd(-9,9);
+      var d = 'M'+p[0]+','+p[1]+' Q'+mx.toFixed(1)+','+my.toFixed(1)+' '+x2.toFixed(1)+','+y2.toFixed(1);
+      var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','filament');
+      path.setAttribute('d', d);
+      fil.appendChild(path);
+    }
+  });
+
+  /* --- growth: draw the cords in on load --- */
+  var cords = Array.prototype.slice.call(document.querySelectorAll('#cords .hypha'));
+  var strands = Array.prototype.slice.call(document.querySelectorAll('.filament'));
+  if (!reduce){
+    cords.concat(strands).forEach(function(p, i){
+      var L;
+      try { L = p.getTotalLength(); } catch(e){ return; }
+      var dash = p.classList.contains('dormant');
+      p.style.strokeDasharray = dash ? (L + ' ' + L) : (L + ' ' + L);
+      p.style.strokeDashoffset = L;
+      p.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(.22,.61,.36,1) ' + (i*45) + 'ms';
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          p.style.strokeDashoffset = '0';
+        });
+      });
+      if (dash){
+        setTimeout(function(){
+          p.style.strokeDasharray = '3 7';
+          p.style.strokeDashoffset = '0';
+        }, 1500 + i*45);
+      }
+    });
+  }
+
+  /* --- node interaction: light the cords that belong to a node --- */
+  function cordsFor(list){
+    return cords.filter(function(c){
+      return list.indexOf(c.getAttribute('data-pair')) !== -1;
+    });
+  }
+  document.querySelectorAll('g.node').forEach(function(n){
+    var list = (n.getAttribute('data-cords')||'').split(' ').filter(Boolean);
+    var mine = cordsFor(list);
+    function on(){ mine.forEach(function(c){ c.classList.add('hot'); }); }
+    function off(){ mine.forEach(function(c){ c.classList.remove('hot'); }); }
+    n.addEventListener('mouseenter', on);
+    n.addEventListener('mouseleave', off);
+    n.addEventListener('focus', on);
+    n.addEventListener('blur', off);
+    function go(){
+      var t = n.getAttribute('data-go');
+      var el = t && document.querySelector(t);
+      if (el) el.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'start'});
+    }
+    n.addEventListener('click', go);
+    n.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); }
+    });
+  });
+})();
+</script>
 </body>
 </html>
