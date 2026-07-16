@@ -383,20 +383,19 @@
   .page.hidden{opacity:0}
 
   /* scene primitives */
-  .cellwall{fill:none;stroke:var(--mycelium-faint);stroke-width:2.5}
-  .plasma{fill:none;stroke:var(--spore);stroke-width:1.8}
-  .cytoplasm{fill:rgba(232,225,212,.028)}
-  .hypha-a{fill:none;stroke:var(--mycelium);stroke-width:3.4;stroke-linecap:round}
-  .hypha-thin{fill:none;stroke:var(--mycelium);stroke-width:1.9;stroke-linecap:round}
-  .arb{fill:none;stroke:var(--mycelium);stroke-width:1.5;stroke-linecap:round}
-  .peri{fill:none;stroke:var(--spore);stroke-width:.9;opacity:.75}
+  .hand-g{fill:none;stroke:var(--mycelium);stroke-width:3.2;stroke-linecap:round}
+  .hand-g.fng{stroke-width:2.4}
+  .hand-c{fill:none;stroke:var(--steel-lit);stroke-width:3.2;stroke-linecap:round}
+  .hand-c.fng{stroke-width:2.4}
+  .weft{fill:none;stroke:var(--spore);stroke-width:1.4;stroke-linecap:round;opacity:.9}
+  .fuzz{fill:none;stroke:var(--spore);stroke-width:.7;stroke-linecap:round;opacity:.55}
+  .hypha-thin{fill:none;stroke:var(--mycelium);stroke-width:1.8;stroke-linecap:round}
   .scene-label{
     font-family:var(--mono);font-size:11px;letter-spacing:.1em;
     fill:var(--mycelium-faint);text-transform:uppercase;
   }
   .scene-label.hot{fill:var(--spore)}
   .lead{stroke:var(--hairline);stroke-width:.8}
-  .root-body{fill:rgba(201,162,39,.05);stroke:var(--spore);stroke-width:1.6}
   .spore-dot{fill:var(--mycelium)}
   .sig-out{fill:none;stroke:var(--spore);stroke-width:1;opacity:.5}
   .sig-in{fill:none;stroke:var(--steel-lit);stroke-width:1;opacity:.5}
@@ -420,51 +419,43 @@
 
     <!-- SCENE A — the membrane: colonization -->
     <div class="scene" id="sceneA">
-      <svg viewBox="0 0 400 760" role="img" aria-label="A fungal hypha rises from below and penetrates a root cell wall. The plant's plasma membrane invaginates around it without breaking, sheathing the branching arbuscule. Nutrients pass across the interface. The two organisms never fuse.">
-        <path class="cytoplasm" d="M52,70 C40,210 40,380 58,486 C150,520 262,520 348,486 C366,380 366,210 352,70 C262,42 146,42 52,70 Z"/>
-        <path class="cellwall" id="A_wall" d="M52,70 C40,210 40,380 58,486 C150,520 262,520 348,486 C366,380 366,210 352,70 C262,42 146,42 52,70"/>
+      <svg viewBox="0 0 400 760" role="img" aria-label="Two hands meet at a junction. Grush's hand descends from above in bone white; CBU's rises from below in steel. They take hold, and their fingers weave together with fungal filaments. They remain two hands throughout — interlaced, never fused. Value passes across the weave.">
 
-        <path class="plasma" id="A_plasma"
-          d="M66,86 C56,214 56,374 72,472
-             C110,486 150,494 178,498
-             C182,470 188,448 194,430
-             C200,410 208,392 206,374
-             C204,356 196,340 190,326
-             C184,312 178,300 176,288
-             C192,296 204,308 212,322
-             C220,338 224,356 222,374
-             C220,392 214,410 220,430
-             C226,448 232,470 236,498
-             C266,494 306,486 336,472
-             C352,374 352,214 340,86
-             C258,62 148,62 66,86"/>
-
-        <path class="hypha-a" id="A_hypha" d="M196,740 C196,660 196,600 196,540"/>
-        <path class="hypha-a" id="A_pen" d="M196,540 C196,522 196,510 196,494"/>
-
-        <g id="A_arb">
-          <path class="arb" d="M196,494 C196,450 198,414 202,388"/>
-          <path class="arb" d="M202,388 C208,352 230,318 254,292"/>
-          <path class="arb" d="M202,388 C194,352 172,318 148,292"/>
-          <path class="arb" d="M254,292 C274,268 292,246 302,220"/>
-          <path class="arb" d="M254,292 C266,272 282,258 300,248"/>
-          <path class="arb" d="M148,292 C128,268 110,246 100,220"/>
-          <path class="arb" d="M148,292 C136,272 120,258 102,248"/>
-          <path class="arb" d="M302,220 C310,198 314,178 314,158"/>
-          <path class="arb" d="M302,220 C286,212 270,206 254,204"/>
-          <path class="arb" d="M100,220 C92,198 88,178 88,158"/>
-          <path class="arb" d="M100,220 C116,212 132,206 148,204"/>
-          <path class="arb" d="M300,248 C304,226 306,208 308,192"/>
-          <path class="arb" d="M102,248 C98,226 96,208 94,192"/>
-        </g>
-        <g id="A_peri">
-          <path class="peri" d="M188,494 C188,450 190,414 194,386 C200,350 222,314 246,288"/>
-          <path class="peri" d="M204,494 C204,450 206,414 210,386 C202,350 180,314 156,288"/>
-          <path class="peri" d="M246,288 C266,264 284,242 294,216"/>
-          <path class="peri" d="M156,288 C136,264 118,242 108,216"/>
+        <!-- GRUSH hand, from above -->
+        <g id="A_gr">
+          <path class="hand-g" id="A_gr_arm" d="M200,20 C200,90 200,170 200,272"/>
+          <path class="hand-g fng" d="M200,286 C176,318 158,352 150,398"/>
+          <path class="hand-g fng" d="M200,286 C188,320 179,356 175,404"/>
+          <path class="hand-g fng" d="M200,286 C202,322 205,358 205,410"/>
+          <path class="hand-g fng" d="M200,286 C215,320 226,354 232,402"/>
+          <path class="hand-g fng" d="M200,286 C223,314 245,336 259,360"/>
         </g>
 
-        <path id="A_guide" fill="none" stroke="none" d="M196,740 C196,600 196,520 200,420 C206,350 240,300 300,240"/>
+        <!-- CBU hand, from below -->
+        <g id="A_cb">
+          <path class="hand-c" id="A_cb_arm" d="M200,740 C200,670 200,590 200,488"/>
+          <path class="hand-c fng" d="M200,474 C176,442 160,408 154,362"/>
+          <path class="hand-c fng" d="M200,474 C188,440 181,404 179,356"/>
+          <path class="hand-c fng" d="M200,474 C202,438 206,402 208,350"/>
+          <path class="hand-c fng" d="M200,474 C215,440 227,406 234,358"/>
+          <path class="hand-c fng" d="M200,474 C224,446 246,424 261,400"/>
+        </g>
+
+        <!-- the weave: filaments crossing between the two hands. gold = exchange -->
+        <g id="A_weave">
+          <path class="weft" d="M150,398 C168,384 176,372 179,356"/>
+          <path class="weft" d="M175,404 C190,390 200,376 208,350"/>
+          <path class="weft" d="M205,410 C216,392 226,376 234,358"/>
+          <path class="weft" d="M232,402 C244,388 252,376 261,400"/>
+          <path class="weft" d="M154,362 C166,378 170,392 175,404"/>
+          <path class="weft" d="M179,356 C192,374 198,392 205,410"/>
+          <path class="weft" d="M208,350 C220,372 228,388 232,402"/>
+          <path class="weft" d="M234,358 C246,374 254,384 259,360"/>
+        </g>
+        <!-- hyphal fuzz at the junction: the grip going fungal -->
+        <g id="A_fuzz"></g>
+
+        <path id="A_guide" fill="none" stroke="none" d="M200,700 C200,560 200,470 200,400 C200,330 200,220 200,60"/>
 
         <circle class="flow-p" id="p1" r="3.4" fill="#C9A227" opacity="0"/>
         <circle class="flow-p" id="p2" r="3.4" fill="#C9A227" opacity="0"/>
@@ -472,72 +463,73 @@
         <circle class="flow-c" id="c2" r="3.4" fill="#8AA6B8" opacity="0"/>
 
         <g id="A_labels" opacity="0">
-          <line class="lead" x1="90" y1="494" x2="30" y2="530"/>
-          <text class="scene-label" x="26" y="548" text-anchor="start">cell wall</text>
-          <line class="lead" x1="202" y1="388" x2="330" y2="388"/>
-          <text class="scene-label" x="336" y="384" text-anchor="start">arbuscule</text>
-          <line class="lead" x1="88" y1="158" x2="30" y2="120"/>
-          <text class="scene-label hot" x="14" y="106" text-anchor="start">periarbuscular</text>
-          <text class="scene-label hot" x="14" y="90" text-anchor="start">membrane</text>
-          <text class="scene-label" x="230" y="680" text-anchor="start">hypha</text>
+          <line class="lead" x1="200" y1="120" x2="300" y2="120"/>
+          <text class="scene-label" x="306" y="116" text-anchor="start">Grush</text>
+          <line class="lead" x1="200" y1="640" x2="300" y2="640"/>
+          <text class="scene-label" x="306" y="636" text-anchor="start" fill="#8AA6B8">CBU</text>
+          <line class="lead" x1="120" y1="382" x2="46" y2="330"/>
+          <text class="scene-label hot" x="14" y="318" text-anchor="start">the junction</text>
         </g>
       </svg>
     </div>
 
     <!-- SCENE B — the reach: pre-symbiotic signaling -->
     <div class="scene" id="sceneB">
-      <svg viewBox="0 0 400 760" role="img" aria-label="A plant root below releases strigolactones. A germinating fungal spore above grows down toward the signal and branches as it nears. The fungus answers with Myc factors. The two never touch.">
+      <svg viewBox="0 0 400 760" role="img" aria-label="Grush's hand reaches down and opens, sending fungal filaments toward CBU's hand below. CBU's hand stays lowered and unopened. The filaments stop short. The hand is offered and not yet taken.">
         <defs>
-          <radialGradient id="strig" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stop-color="#C9A227" stop-opacity=".22"/>
-            <stop offset="55%" stop-color="#C9A227" stop-opacity=".05"/>
+          <radialGradient id="strig" cx="0.5" cy="0.42" r="0.72">
+            <stop offset="0%" stop-color="#C9A227" stop-opacity=".18"/>
+            <stop offset="60%" stop-color="#C9A227" stop-opacity=".04"/>
             <stop offset="100%" stop-color="#C9A227" stop-opacity="0"/>
           </radialGradient>
         </defs>
         <rect id="B_field" x="0" y="0" width="400" height="760" fill="url(#strig)" opacity="0"/>
 
-        <path class="root-body" id="B_root" d="M40,700 C40,676 62,660 100,660 L300,660 C338,660 360,676 360,700 C360,716 350,724 330,724 L70,724 C50,724 40,716 40,700 Z"/>
-        <text class="scene-label" x="200" y="748" text-anchor="middle">host root</text>
-
-        <g id="B_sig_out">
-          <path class="sig-out" d="M130,636 C160,596 240,596 270,636"/>
-          <path class="sig-out" d="M108,600 C148,548 252,548 292,600"/>
-          <path class="sig-out" d="M92,562 C138,498 262,498 308,562"/>
+        <!-- GRUSH hand, reaching down and open -->
+        <g id="B_gr">
+          <path class="hand-g" id="B_main" d="M200,20 C200,90 200,160 200,244"/>
+          <path class="hand-g fng" d="M200,258 C172,292 154,330 146,378"/>
+          <path class="hand-g fng" d="M200,258 C186,294 176,332 172,384"/>
+          <path class="hand-g fng" d="M200,258 C202,296 206,334 207,390"/>
+          <path class="hand-g fng" d="M200,258 C216,294 228,330 236,382"/>
+          <path class="hand-g fng" d="M200,258 C226,286 250,308 266,332"/>
         </g>
-
-        <circle class="spore-dot" id="B_spore" cx="196" cy="52" r="6" opacity="0"/>
-        <path class="hypha-a" id="B_main" d="M196,58 C196,120 198,180 202,232 C206,284 212,330 220,372"/>
+        <!-- the reach: filaments exploring down, stopping short -->
         <g id="B_branch">
-          <path class="hypha-thin" d="M220,372 C232,404 250,428 272,448"/>
-          <path class="hypha-thin" d="M220,372 C210,406 194,432 174,454"/>
-          <path class="hypha-thin" d="M272,448 C288,466 300,482 308,498"/>
-          <path class="hypha-thin" d="M272,448 C254,462 240,476 230,490"/>
-          <path class="hypha-thin" d="M174,454 C158,472 146,488 138,504"/>
-          <path class="hypha-thin" d="M174,454 C190,468 202,482 210,494"/>
-          <path class="hypha-thin" d="M308,498 C316,514 320,528 322,540"/>
-          <path class="hypha-thin" d="M138,504 C130,520 126,534 124,546"/>
-          <path class="hypha-thin" d="M230,490 C234,510 236,524 238,538"/>
-          <path class="hypha-thin" d="M210,494 C208,514 206,528 204,542"/>
+          <path class="hypha-thin" d="M146,378 C142,404 142,424 146,444"/>
+          <path class="hypha-thin" d="M172,384 C170,410 170,432 174,452"/>
+          <path class="hypha-thin" d="M207,390 C208,416 208,438 208,458"/>
+          <path class="hypha-thin" d="M236,382 C240,408 242,428 240,448"/>
+          <path class="hypha-thin" d="M266,332 C276,356 280,376 278,396"/>
+          <path class="hypha-thin" d="M146,444 C138,460 134,472 133,484"/>
+          <path class="hypha-thin" d="M174,452 C170,468 168,480 168,492"/>
+          <path class="hypha-thin" d="M208,458 C206,474 206,486 206,498"/>
+          <path class="hypha-thin" d="M240,448 C246,464 250,476 251,488"/>
         </g>
 
-        <g id="B_sig_in" opacity="0">
-          <path class="sig-in" d="M170,570 C168,596 168,610 168,620"/>
-          <path class="sig-in" d="M212,572 C212,598 212,612 212,622"/>
-          <path class="sig-in" d="M254,566 C258,592 260,606 262,616"/>
+        <!-- CBU hand: present, lowered, unopened -->
+        <g id="B_root">
+          <path class="hand-c" d="M200,740 C200,700 200,660 200,624"/>
+          <path class="hand-c fng" d="M200,614 C182,606 168,600 158,598"/>
+          <path class="hand-c fng" d="M200,614 C186,620 172,626 162,632"/>
+          <path class="hand-c fng" d="M200,614 C214,606 228,600 238,598"/>
+          <path class="hand-c fng" d="M200,614 C216,620 230,626 240,632"/>
+          <path class="hand-c fng" d="M200,614 C200,600 200,590 200,580"/>
         </g>
+        <circle class="spore-dot" id="B_spore" cx="200" cy="20" r="0" opacity="0"/>
+        <g id="B_sig_out"><path class="sig-out" d="M200,580 C200,570 200,564 200,558"/></g>
+        <g id="B_sig_in" opacity="0"></g>
 
         <g id="B_labels" opacity="0">
-          <text class="scene-label hot" x="200" y="626" text-anchor="middle">&uarr; strigolactones</text>
-          <text class="scene-label" x="240" y="46" text-anchor="start">spore</text>
-          <line class="lead" x1="220" y1="372" x2="352" y2="372"/>
-          <text class="scene-label" x="352" y="392" text-anchor="end">branching intensifies</text>
+          <line class="lead" x1="200" y1="110" x2="300" y2="110"/>
+          <text class="scene-label" x="306" y="106" text-anchor="start">Grush</text>
+          <line class="lead" x1="200" y1="686" x2="300" y2="686"/>
+          <text class="scene-label" x="306" y="682" text-anchor="start" fill="#8AA6B8">CBU</text>
         </g>
-        <g id="B_myc_label" opacity="0">
-          <text class="scene-label" x="40" y="596" text-anchor="start">&darr; myc factors</text>
-        </g>
+        <g id="B_myc_label" opacity="0"></g>
         <g id="B_gap" opacity="0">
-          <line class="lead" x1="200" y1="556" x2="60" y2="524" stroke="#8AA6B8"/>
-          <text class="scene-label" x="40" y="516" text-anchor="start" fill="#8AA6B8">no contact</text>
+          <line class="lead" x1="200" y1="530" x2="70" y2="482" stroke="#8AA6B8"/>
+          <text class="scene-label" x="14" y="472" text-anchor="start" fill="#8AA6B8">not yet taken</text>
         </g>
       </svg>
     </div>
@@ -785,214 +777,207 @@
   var $  = function(s,r){ return (r||document).querySelector(s); };
   var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
 
-  /* ================= SUBTERRANEAN AUDIO ================= */
+  /* ================= SUBTERRANEAN AUDIO — on a grid ================= */
   var Snd = (function(){
-    var ctx=null, master=null, wet=null, bed=null, bedGain=null, on=true, ready=false;
+    var ctx=null, master=null, bed=null, bedGain=null, on=true, ready=false;
+    var BPM=52, SPB=60/BPM, t0=0, nextStep=0, step=0, schedTimer=null;
+    var density=0;                       /* 0..1 — how hard the network is growing */
 
     function noiseBuf(dur, brown){
-      var n = Math.floor(ctx.sampleRate*dur);
-      var b = ctx.createBuffer(1, n, ctx.sampleRate);
-      var d = b.getChannelData(0), last=0;
+      var n=Math.floor(ctx.sampleRate*dur), b=ctx.createBuffer(1,n,ctx.sampleRate);
+      var d=b.getChannelData(0), last=0;
       for (var i=0;i<n;i++){
-        var w = Math.random()*2-1;
-        if (brown){ last = (last + 0.02*w)/1.02; d[i] = last*3.2; }
-        else d[i] = w;
+        var w=Math.random()*2-1;
+        if (brown){ last=(last+0.02*w)/1.02; d[i]=last*3.2; } else d[i]=w;
       }
       return b;
     }
-    /* a cave, not a hall: short, dark, diffuse */
     function impulse(dur, decay){
-      var n = Math.floor(ctx.sampleRate*dur);
-      var b = ctx.createBuffer(2, n, ctx.sampleRate);
-      for (var c=0;c<2;c++){
-        var d = b.getChannelData(c);
-        for (var i=0;i<n;i++){
-          d[i] = (Math.random()*2-1) * Math.pow(1 - i/n, decay);
-        }
+      var n=Math.floor(ctx.sampleRate*dur), b=ctx.createBuffer(2,n,ctx.sampleRate);
+      for (var c=0;c<2;c++){ var d=b.getChannelData(c);
+        for (var i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n, decay);
       }
       return b;
     }
 
     function init(){
       if (ready) return true;
-      try {
-        var AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return false;
-        ctx = new AC();
-      } catch(e){ return false; }
+      try { var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return false; ctx=new AC(); }
+      catch(e){ return false; }
 
-      master = ctx.createGain(); master.gain.value = 0;
-
-      /* everything is buried: soil is a lowpass filter */
-      var soil = ctx.createBiquadFilter();
-      soil.type='lowpass'; soil.frequency.value=1100; soil.Q.value=.5;
-
-      var comp = ctx.createDynamicsCompressor();
-      comp.threshold.value=-28; comp.ratio.value=4; comp.attack.value=.02; comp.release.value=.35;
-
-      var rev = ctx.createConvolver(); rev.buffer = impulse(2.2, 3.2);
-      wet = ctx.createGain(); wet.gain.value=.34;
-
-      soil.connect(comp); comp.connect(master);
-      comp.connect(wet); wet.connect(rev); rev.connect(master);
+      master=ctx.createGain(); master.gain.value=0;
+      var soil=ctx.createBiquadFilter(); soil.type='lowpass'; soil.frequency.value=1100; soil.Q.value=.5;
+      var comp=ctx.createDynamicsCompressor();
+      comp.threshold.value=-26; comp.ratio.value=5; comp.attack.value=.015; comp.release.value=.3;
+      var rev=ctx.createConvolver(); rev.buffer=impulse(2.4,3.4);
+      var wet=ctx.createGain(); wet.gain.value=.32;
+      soil.connect(comp); comp.connect(master); comp.connect(wet); wet.connect(rev); rev.connect(master);
       master.connect(ctx.destination);
-      Snd.bus = soil;
+      Snd.bus=soil;
 
-      /* the earth itself */
-      bed = ctx.createBufferSource();
-      bed.buffer = noiseBuf(6, true); bed.loop = true;
-      var bf = ctx.createBiquadFilter(); bf.type='lowpass'; bf.frequency.value=150; bf.Q.value=.7;
-      bedGain = ctx.createGain(); bedGain.gain.value = 0;
-      bed.connect(bf); bf.connect(bedGain); bedGain.connect(soil);
-      bed.start(0);
+      bed=ctx.createBufferSource(); bed.buffer=noiseBuf(6,true); bed.loop=true;
+      var bf=ctx.createBiquadFilter(); bf.type='lowpass'; bf.frequency.value=150; bf.Q.value=.7;
+      bedGain=ctx.createGain(); bedGain.gain.value=0;
+      bed.connect(bf); bf.connect(bedGain); bedGain.connect(soil); bed.start(0);
 
-      ready = true;
-      return true;
+      t0=ctx.currentTime+.06; nextStep=t0; step=0;
+      scheduler();
+      ready=true; return true;
     }
 
-    function t(){ return ctx.currentTime; }
+    /* ---- the grid ---- */
+    function atNextBeat(){
+      if(!ready) return 0;
+      var el=ctx.currentTime-t0;
+      return t0 + Math.max(0,Math.ceil(el/SPB))*SPB;
+    }
+    function atNextBar(){
+      if(!ready) return 0;
+      var bar=SPB*4, el=ctx.currentTime-t0;
+      return t0 + Math.max(0,Math.ceil(el/bar))*bar;
+    }
 
-    /* hyphal tip extending — tiny granular ticks */
-    function crackle(gain){
+    /* ---- the pulse: the floor breathing, every half bar ---- */
+    function pulse(at, amp){
+      var o=ctx.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(58,at);
+      o.frequency.exponentialRampToValueAtTime(31,at+.24);
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(amp||.16,at+.018);
+      g.gain.exponentialRampToValueAtTime(.0001,at+.72);
+      o.connect(g); g.connect(Snd.bus); o.start(at); o.stop(at+.8);
+    }
+    function tick(at, amp){
+      var s=ctx.createBufferSource(); s.buffer=noiseBuf(.05,false);
+      var bp=ctx.createBiquadFilter(); bp.type='bandpass';
+      bp.frequency.value=1100+Math.random()*2800; bp.Q.value=4+Math.random()*7;
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime((amp||.05)*(.55+Math.random()*.8),at+.003);
+      g.gain.exponentialRampToValueAtTime(.0001,at+.03+Math.random()*.06);
+      s.connect(bp); bp.connect(g); g.connect(Snd.bus); s.start(at); s.stop(at+.14);
+    }
+
+    /* 16th-note scheduler with lookahead — crackles land on the grid, not on setTimeout jitter */
+    function scheduler(){
+      if(!ctx) return;
+      var sixteenth=SPB/4, ahead=.28;
+      while (nextStep < ctx.currentTime + ahead){
+        if (on){
+          if (step % 8 === 0) pulse(nextStep, .15);            /* every 2 beats */
+          if (step % 8 === 4) pulse(nextStep, .055);           /* soft ghost */
+          if (density > 0){
+            var beatish = (step % 4 === 0) ? 1.6 : 1;          /* cluster on the beat */
+            if (Math.random() < density*.55*beatish) tick(nextStep + Math.random()*.012, .05);
+            if (density > .6 && Math.random() < density*.3) tick(nextStep + sixteenth*.5, .035);
+          }
+        }
+        nextStep += sixteenth; step++;
+      }
+      schedTimer=setTimeout(scheduler, 90);
+    }
+
+    /* ---- quantised events ---- */
+    function bloom(f, at){
       if(!ready||!on) return;
-      var s = ctx.createBufferSource(); s.buffer = noiseBuf(.09,false);
-      var bp = ctx.createBiquadFilter(); bp.type='bandpass';
-      bp.frequency.value = 900 + Math.random()*3200; bp.Q.value = 3+Math.random()*6;
-      var g = ctx.createGain();
-      var n = t();
-      g.gain.setValueAtTime(0,n);
-      g.gain.linearRampToValueAtTime((gain||.05)*(.5+Math.random()*.9), n+.004);
-      g.gain.exponentialRampToValueAtTime(.0001, n+.05+Math.random()*.09);
-      s.connect(bp); bp.connect(g); g.connect(Snd.bus); s.start(n); s.stop(n+.2);
-    }
-    var crackTimer=null;
-    function crackleRun(ms, density){
-      if(!ready) return;
-      var stop = performance.now()+ms;
-      (function tick(){
-        if (performance.now()>stop) return;
-        crackle(.045);
-        crackTimer = setTimeout(tick, (30+Math.random()*130)/(density||1));
-      })();
-    }
-
-    /* a node resolves — a low bloom out of the dark */
-    function bloom(f){
-      if(!ready||!on) return;
-      var o = ctx.createOscillator(); o.type='sine';
-      var o2 = ctx.createOscillator(); o2.type='triangle';
-      var g = ctx.createGain(); var n=t();
-      f = f || (52 + Math.random()*46);
-      o.frequency.setValueAtTime(f, n);
-      o2.frequency.setValueAtTime(f*2.005, n);
-      var g2 = ctx.createGain(); g2.gain.value=.22;
-      g.gain.setValueAtTime(0,n);
-      g.gain.linearRampToValueAtTime(.11, n+.55);
-      g.gain.exponentialRampToValueAtTime(.0001, n+3.4);
+      at = at || atNextBeat();
+      var o=ctx.createOscillator(), o2=ctx.createOscillator();
+      o.type='sine'; o2.type='triangle';
+      f = f || (52+Math.random()*46);
+      o.frequency.setValueAtTime(f,at); o2.frequency.setValueAtTime(f*2.005,at);
+      var g=ctx.createGain(), g2=ctx.createGain(); g2.gain.value=.2;
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(.11,at+.5);
+      g.gain.exponentialRampToValueAtTime(.0001,at+3.2);
       o.connect(g); o2.connect(g2); g2.connect(g); g.connect(Snd.bus);
-      o.start(n); o2.start(n); o.stop(n+3.6); o2.stop(n+3.6);
+      o.start(at); o2.start(at); o.stop(at+3.4); o2.stop(at+3.4);
     }
-
-    /* the hypha presses through the wall — wet, low, brief */
     function press(){
       if(!ready||!on) return;
-      var n=t();
-      var s = ctx.createBufferSource(); s.buffer = noiseBuf(.9,false);
-      var lp = ctx.createBiquadFilter(); lp.type='lowpass';
-      lp.frequency.setValueAtTime(1600,n);
-      lp.frequency.exponentialRampToValueAtTime(180, n+.75);
-      var g = ctx.createGain();
-      g.gain.setValueAtTime(0,n);
-      g.gain.linearRampToValueAtTime(.16,n+.09);
-      g.gain.exponentialRampToValueAtTime(.0001,n+.85);
-      s.connect(lp); lp.connect(g); g.connect(Snd.bus); s.start(n); s.stop(n+1);
-
-      var o = ctx.createOscillator(); o.type='sine';
-      o.frequency.setValueAtTime(104,n);
-      o.frequency.exponentialRampToValueAtTime(38,n+.7);
-      var og = ctx.createGain();
-      og.gain.setValueAtTime(0,n);
-      og.gain.linearRampToValueAtTime(.16,n+.05);
-      og.gain.exponentialRampToValueAtTime(.0001,n+.9);
-      o.connect(og); og.connect(Snd.bus); o.start(n); o.stop(n+1);
+      var at=atNextBeat();
+      var s=ctx.createBufferSource(); s.buffer=noiseBuf(.9,false);
+      var lp=ctx.createBiquadFilter(); lp.type='lowpass';
+      lp.frequency.setValueAtTime(1700,at); lp.frequency.exponentialRampToValueAtTime(180,at+.7);
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at); g.gain.linearRampToValueAtTime(.17,at+.07);
+      g.gain.exponentialRampToValueAtTime(.0001,at+.8);
+      s.connect(lp); lp.connect(g); g.connect(Snd.bus); s.start(at); s.stop(at+1);
+      var o=ctx.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(108,at); o.frequency.exponentialRampToValueAtTime(38,at+.65);
+      var og=ctx.createGain();
+      og.gain.setValueAtTime(0,at); og.gain.linearRampToValueAtTime(.17,at+.04);
+      og.gain.exponentialRampToValueAtTime(.0001,at+.85);
+      o.connect(og); og.connect(Snd.bus); o.start(at); o.stop(at+1);
     }
-
-    /* nutrients moving across the interface */
     var flowNodes=null;
     function flowStart(){
       if(!ready||!on||flowNodes) return;
-      var n=t();
+      var at=atNextBar();
       var o1=ctx.createOscillator(), o2=ctx.createOscillator();
-      o1.type='sine'; o2.type='sine';
-      o1.frequency.value=142; o2.frequency.value=143.6;
-      var lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=.42;
-      var lg=ctx.createGain(); lg.gain.value=.035;
-      var g=ctx.createGain(); g.gain.setValueAtTime(0,n);
-      g.gain.linearRampToValueAtTime(.05,n+1.3);
+      o1.type='sine'; o2.type='sine'; o1.frequency.value=142; o2.frequency.value=143.5;
+      var lfo=ctx.createOscillator(); lfo.type='sine';
+      lfo.frequency.value = 1/(SPB*2);                 /* the swell rides the bar */
+      var lg=ctx.createGain(); lg.gain.value=.032;
+      var g=ctx.createGain(); g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(.05,at+1.2);
       lfo.connect(lg); lg.connect(g.gain);
       o1.connect(g); o2.connect(g); g.connect(Snd.bus);
-      o1.start(n); o2.start(n); lfo.start(n);
+      o1.start(at); o2.start(at); lfo.start(at);
       flowNodes={o1:o1,o2:o2,lfo:lfo,g:g};
     }
     function flowStop(){
       if(!flowNodes) return;
-      var n=t(), f=flowNodes;
+      var n=ctx.currentTime, f=flowNodes;
       try{
-        f.g.gain.cancelScheduledValues(n);
-        f.g.gain.setValueAtTime(f.g.gain.value,n);
-        f.g.gain.exponentialRampToValueAtTime(.0001,n+1.4);
-        f.o1.stop(n+1.5); f.o2.stop(n+1.5); f.lfo.stop(n+1.5);
+        f.g.gain.cancelScheduledValues(n); f.g.gain.setValueAtTime(f.g.gain.value,n);
+        f.g.gain.exponentialRampToValueAtTime(.0001,n+1.3);
+        f.o1.stop(n+1.4); f.o2.stop(n+1.4); f.lfo.stop(n+1.4);
       }catch(e){}
       flowNodes=null;
     }
-
-    /* chemical signal — faint, high, almost not there */
     function shimmer(){
       if(!ready||!on) return;
-      var n=t();
+      var at=atNextBeat();
       var o=ctx.createOscillator(); o.type='sine';
-      o.frequency.value = 620 + Math.random()*900;
+      o.frequency.value=620+Math.random()*900;
       var g=ctx.createGain();
-      g.gain.setValueAtTime(0,n);
-      g.gain.linearRampToValueAtTime(.022, n+.8);
-      g.gain.exponentialRampToValueAtTime(.0001, n+2.6);
-      o.connect(g); g.connect(Snd.bus); o.start(n); o.stop(n+2.8);
+      g.gain.setValueAtTime(0,at); g.gain.linearRampToValueAtTime(.022,at+.7);
+      g.gain.exponentialRampToValueAtTime(.0001,at+2.4);
+      o.connect(g); g.connect(Snd.bus); o.start(at); o.stop(at+2.6);
     }
-
-    /* a held breath under the floor */
     function swell(dur, depth){
       if(!ready||!on) return;
-      var n=t();
+      var at=atNextBar();
+      dur = dur || SPB*4;
       var o=ctx.createOscillator(); o.type='sine'; o.frequency.value=34;
       var g=ctx.createGain();
-      g.gain.setValueAtTime(0,n);
-      g.gain.linearRampToValueAtTime(depth||.1, n+(dur||3)*.45);
-      g.gain.exponentialRampToValueAtTime(.0001, n+(dur||3));
-      o.connect(g); g.connect(Snd.bus); o.start(n); o.stop(n+(dur||3)+.1);
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(depth||.1, at+dur*.45);
+      g.gain.exponentialRampToValueAtTime(.0001, at+dur);
+      o.connect(g); g.connect(Snd.bus); o.start(at); o.stop(at+dur+.1);
     }
 
     return {
-      bus:null,
-      init:init,
-      resume:function(){ if(ctx && ctx.state==='suspended') ctx.resume(); },
-      up:function(){ if(!ready) return; var n=t();
-        master.gain.cancelScheduledValues(n);
-        master.gain.setValueAtTime(master.gain.value,n);
+      bus:null, init:init, BPM:BPM, SPB:SPB,
+      resume:function(){ if(ctx&&ctx.state==='suspended') ctx.resume(); },
+      up:function(){ if(!ready) return; var n=ctx.currentTime;
+        master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n);
         master.gain.linearRampToValueAtTime(on?.9:0, n+2.2);
         bedGain.gain.linearRampToValueAtTime(.075, n+3.5); },
-      down:function(){ if(!ready) return; var n=t();
-        master.gain.cancelScheduledValues(n);
-        master.gain.setValueAtTime(master.gain.value,n);
+      down:function(){ if(!ready) return; var n=ctx.currentTime;
+        density=0;
+        master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n);
         master.gain.linearRampToValueAtTime(0, n+1.6);
-        if(crackTimer) clearTimeout(crackTimer);
+        if(schedTimer) clearTimeout(schedTimer);
         flowStop(); },
-      mute:function(m){ on=!m; if(!ready) return;
-        var n=t(); master.gain.cancelScheduledValues(n);
-        master.gain.setValueAtTime(master.gain.value,n);
+      mute:function(m){ on=!m; if(!ready) return; var n=ctx.currentTime;
+        master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n);
         master.gain.linearRampToValueAtTime(m?0:.9, n+.4); },
       isOn:function(){ return on; },
-      crackle:crackle, crackleRun:crackleRun, bloom:bloom, press:press,
-      flowStart:flowStart, flowStop:flowStop, shimmer:shimmer, swell:swell
+      density:function(v){ density = Math.max(0, Math.min(1, v)); },
+      bloom:bloom, press:press, flowStart:flowStart, flowStop:flowStop,
+      shimmer:shimmer, swell:swell
     };
   })();
 
@@ -1187,42 +1172,56 @@
   /* ---------- scene A: the membrane ---------- */
   async function sceneMembrane(){
     var s = $('#sceneA');
-    ['#A_wall','#A_plasma','#A_hypha','#A_pen'].forEach(function(id){ hide($(id)); });
-    $$('#A_arb path').forEach(hide); $$('#A_peri path').forEach(hide);
-    $('#A_labels').style.opacity = 0;
+    hide($('#A_gr_arm')); hide($('#A_cb_arm'));
+    $$('#A_gr .fng').forEach(hide); $$('#A_cb .fng').forEach(hide);
+    $$('#A_weave path').forEach(hide);
+    $('#A_fuzz').innerHTML = ''; $('#A_labels').style.opacity = 0;
+
+    /* hyphal fuzz sprouting off the grip */
+    var fz = $('#A_fuzz'), tips = [[150,398],[175,404],[205,410],[232,402],[154,362],[179,356],[208,350],[234,358],[259,360],[261,400]];
+    tips.forEach(function(t){
+      for (var i=0;i<4;i++){
+        var a = Math.random()*Math.PI*2, L = 8+Math.random()*16;
+        var x2 = t[0]+Math.cos(a)*L, y2 = t[1]+Math.sin(a)*L;
+        var pth = document.createElementNS('http://www.w3.org/2000/svg','path');
+        pth.setAttribute('class','fuzz');
+        pth.setAttribute('d','M'+t[0]+','+t[1]+' Q'+(t[0]+Math.cos(a)*L*.5+(Math.random()*6-3))+','+
+          (t[1]+Math.sin(a)*L*.5+(Math.random()*6-3))+' '+x2.toFixed(1)+','+y2.toFixed(1));
+        fz.appendChild(pth);
+      }
+    });
+    $$('#A_fuzz path').forEach(hide);
 
     s.classList.add('on');
-    Snd.swell(4, .09);
+    Snd.swell(null,.09);
     await wait(1300); if(killed) return;
 
-    draw($('#A_wall'), 2600);
-    await wait(1400); if(killed) return;
+    caption('grush reaches in');
+    Snd.density(.5);
+    draw($('#A_gr_arm'), 2400);
+    drawAll($$('#A_gr .fng'), 1800, 130);
+    await wait(3000); if(killed) return;
 
-    caption('a hypha arrives');
-    Snd.crackleRun(3000, 1.1);
-    draw($('#A_hypha'), 3000);
-    await wait(3400); if(killed) return;
+    caption('cbu reaches back');
+    Snd.density(.5);
+    draw($('#A_cb_arm'), 2400);
+    drawAll($$('#A_cb .fng'), 1800, 130);
+    await wait(3000); if(killed) return;
 
-    caption('it presses through the wall');
-    Snd.press();
-    draw($('#A_pen'), 1800);
+    caption('they take hold');
+    Snd.density(0); Snd.press(); Snd.swell(null,.11);
+    show($('#A_labels'), 1400);
     await wait(2000); if(killed) return;
 
-    caption('the host membrane <b>invaginates &mdash; it does not break</b>');
-    Snd.swell(4.5, .075);
-    draw($('#A_plasma'), 3400);
+    caption('the fingers weave &mdash; <b>neither becomes the other</b>');
+    Snd.density(.85);
+    drawAll($$('#A_weave path'), 1400, 170);
     await wait(2400); if(killed) return;
+    drawAll($$('#A_fuzz path'), 900, 22);
+    await wait(1800); if(killed) return;
+    Snd.density(.2);
 
-    Snd.crackleRun(2600, 1.5);
-    drawAll($$('#A_arb path'), 1500, 150);
-    await wait(2700); if(killed) return;
-
-    caption('the arbuscule branches <b>inside an unbroken wall</b>');
-    drawAll($$('#A_peri path'), 1700, 200);
-    show($('#A_labels'), 1400);
-    await wait(2200); if(killed) return;
-
-    caption('phosphorus in &middot; carbon out &middot; <b>nothing fuses</b>');
+    caption('value crosses. <b>nothing fuses.</b>');
     Snd.flowStart();
     var g = $('#A_guide');
     traffic(g, $('#p1'), 3400, false, 2.4);
@@ -1230,7 +1229,7 @@
     traffic(g, $('#c1'), 3800, true, 2.4);
     setTimeout(function(){ if(!killed) traffic(g, $('#c2'), 3800, true, 1.9); }, ms(1700));
     await wait(4200); if(killed) return;
-    Snd.flowStop();
+    Snd.flowStop(); Snd.density(0);
 
     caption('');
     s.classList.remove('on');
@@ -1240,52 +1239,50 @@
   /* ---------- scene B: the reach ---------- */
   async function sceneReach(){
     var s = $('#sceneB');
-    hide($('#B_root')); hide($('#B_main'));
-    $$('#B_sig_out path').forEach(hide);
+    hide($('#B_main'));
+    $$('#B_gr .fng').forEach(hide);
+    $$('#B_root path').forEach(hide);
     $$('#B_branch path').forEach(hide);
-    ['#B_labels','#B_myc_label','#B_gap','#B_sig_in'].forEach(function(id){ $(id).style.opacity = 0; });
+    $$('#B_sig_out path').forEach(hide);
+    ['#B_labels','#B_myc_label','#B_gap'].forEach(function(id){ $(id).style.opacity = 0; });
     $('#B_field').style.opacity = 0;
-    $('#B_spore').setAttribute('opacity','0');
 
     s.classList.add('on');
-    Snd.swell(4, .08);
+    Snd.swell(null,.08);
     await wait(1300); if(killed) return;
 
-    draw($('#B_root'), 2400);
-    await wait(1600); if(killed) return;
+    caption('elsewhere, a hand goes out');
+    Snd.density(.45);
+    draw($('#B_main'), 2400);
+    drawAll($$('#B_gr .fng'), 1800, 130);
+    await wait(3200); if(killed) return;
 
-    caption('the root releases <b>strigolactones</b>');
+    caption('cbu is right there');
+    Snd.density(0);
+    drawAll($$('#B_root path'), 1600, 130);
+    show($('#B_labels'), 1400);
+    Snd.bloom(48);
+    await wait(2600); if(killed) return;
+
+    caption('the signal travels');
     fade($('#B_field'), 1, 2600);
     Snd.shimmer();
-    drawAll($$('#B_sig_out path'), 2000, 380);
-    await wait(2600); if(killed) return;
+    drawAll($$('#B_sig_out path'), 1400, 200);
+    await wait(2200); if(killed) return;
 
-    caption('a spore germinates');
-    fade($('#B_spore'), 1, 1200);
-    $('#B_spore').setAttribute('opacity','1');
-    Snd.bloom(46);
-    await wait(1500); if(killed) return;
+    caption('grush puts filaments out toward it');
+    Snd.density(.75);
+    drawAll($$('#B_branch path'), 1300, 160);
+    await wait(3000); if(killed) return;
+    Snd.density(0);
 
-    caption('the hypha grows <b>toward the signal</b>');
-    Snd.crackleRun(3400, 1);
-    draw($('#B_main'), 3400);
-    await wait(3600); if(killed) return;
-
-    caption('branching intensifies as it nears');
-    Snd.crackleRun(2400, 1.8);
-    drawAll($$('#B_branch path'), 1300, 150);
-    show($('#B_labels'), 1400);
-    await wait(2600); if(killed) return;
-
-    caption('the fungus answers with <b>Myc factors</b>');
-    Snd.shimmer();
-    show($('#B_sig_in'), 1600); show($('#B_myc_label'), 1600);
+    caption('and there it stops');
+    Snd.swell(null,.06);
+    show($('#B_gap'), 1600);
     await wait(2400); if(killed) return;
 
-    caption('and there it stops. <b>no contact.</b>');
-    Snd.swell(5, .06);
-    show($('#B_gap'), 1600);
-    await wait(3200); if(killed) return;
+    caption('<b>offered. not yet taken.</b>');
+    await wait(2600); if(killed) return;
 
     caption('');
     s.classList.remove('on');
@@ -1309,7 +1306,7 @@
     await wait(3200); if(killed) return;
 
     caption('it reaches for what it needs');
-    Snd.crackleRun(4200, 1.2);
+    Snd.density(0.6);
     draw(byPair('hub-fungai'), 2800);
     draw(byPair('hub-fgf'), 2800, 500);
     draw(byPair('hub-soft'), 2800, 1000);
@@ -1322,7 +1319,7 @@
     await wait(1800); if(killed) return;
 
     caption('each one feeds the other two');
-    Snd.crackleRun(4000, 1);
+    Snd.density(0.5);
     draw(byPair('fungai-fgf'), 2600);
     draw(byPair('fgf-soft'), 2600, 600);
     draw(byPair('soft-fungai'), 2600, 1200);
@@ -1330,7 +1327,7 @@
     await wait(4200); if(killed) return;
 
     caption('the software goes to work');
-    Snd.crackleRun(2200, 1.1);
+    Snd.density(0.55);
     draw(byPair('soft-lancer'), 2200);
     await wait(1600); if(killed) return;
     resolve($$('g.node')[5], 1600, 110);
@@ -1348,7 +1345,7 @@
     await wait(2600); if(killed) return;
 
     caption('one cord crosses the membrane');
-    Snd.crackleRun(3000, 1.4);
+    Snd.density(0.7);
     draw(byPair('garden-deploy'), 3000);
     await wait(3200); if(killed) return;
 
@@ -1358,7 +1355,7 @@
     await moveCam(200, 440, 1, 2800); if(killed) return;
 
     caption('elsewhere, it reaches');
-    Snd.crackleRun(3000, .8);
+    Snd.density(0.4);
     draw(byPair('fungai-cbu'), 3200);
     await wait(3400); if(killed) return;
 
@@ -1375,7 +1372,8 @@
 
     caption('');
     drawAll(strands, 1600, 45);
-    Snd.crackleRun(1800, .7);
+    setTimeout(function(){ Snd.density(0); }, ms(1600));
+    Snd.density(0.35);
     mapBits.edges.forEach(function(n){ n.style.transition='opacity '+ms(1400)+'ms ease'; n.style.opacity=1; });
     Snd.swell(6, .09);
     await wait(2200); if(killed) return;
