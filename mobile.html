@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grush &mdash; mobile</title>
+<meta name="description" content="Grush is an umbrella for four ventures: Grush software, Fun Guy Fungi, fungAI, and Cottages.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --substrate:#14110F;
+    --substrate-2:#1C1815;
+    --substrate-3:#252019;
+    --mycelium:#E8E1D4;
+    --mycelium-dim:#948B7E;
+    --mycelium-faint:#5A5248;
+    --text-faint:#8F8676;
+    --oxblood:#8C2F39;
+    --oxblood-lit:#B84450;
+    --steel:#5C7080;
+    --steel-lit:#8AA6B8;
+    --spore:#C9A227;
+    --hairline:#302A24;
+    --display:'Fraunces',Georgia,serif;
+    --body:'IBM Plex Sans',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--substrate);
+    color:var(--mycelium);
+    font-family:var(--body);
+    font-weight:300;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--oxblood);color:var(--mycelium)}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding:26px 0;border-bottom:1px solid var(--hairline);
+  }
+  .wordmark{
+    font-family:var(--display);font-weight:600;font-size:26px;
+    letter-spacing:.14em;text-transform:uppercase;
+  }
+  .masthead .meta{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--mycelium-dim);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 48px}
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--spore);margin-bottom:22px;
+  }
+  .thesis{
+    font-family:var(--display);
+    font-weight:300;
+    font-size:clamp(30px,5.2vw,52px);
+    line-height:1.16;
+    letter-spacing:-.015em;
+    max-width:19ch;
+  }
+  .thesis em{font-style:italic;color:var(--spore)}
+  .sub{
+    margin-top:24px;max-width:56ch;color:var(--mycelium-dim);
+    font-size:16.5px;
+  }
+
+  /* ---------- the web ---------- */
+  .weave{margin:16px 0 8px;position:relative}
+  .page .weave > svg{max-height:78vh;width:auto;margin:0 auto}
+  .weave svg{width:100%;height:auto;display:block;overflow:visible}
+  .hypha{
+    fill:none;stroke:var(--mycelium-faint);stroke-width:1.1;
+    stroke-linecap:round;transition:stroke .35s ease,stroke-width .35s ease;
+  }
+  .hypha.dormant{stroke-dasharray:3 7;stroke:var(--hairline)}
+  .hypha.hot{stroke:var(--oxblood-lit);stroke-width:1.8}
+  .hypha.owns{
+    stroke:var(--steel);stroke-width:1;stroke-dasharray:1 5;
+  }
+  .hypha.owns.hot{stroke:var(--steel-lit);stroke-width:1.6}
+  .hypha.reach{
+    stroke:var(--steel);stroke-width:1;opacity:.5;
+    stroke-dasharray:2 6;
+  }
+  .hypha.reach.hot{stroke:var(--steel-lit);opacity:1;stroke-width:1.4}
+  .hypha.exchange{stroke:var(--spore);stroke-width:1.3;opacity:.85}
+  .hypha.exchange.hot{stroke:var(--spore);stroke-width:2;opacity:1}
+  .sphere-label{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;fill:var(--text-faint);
+  }
+  .edge-label{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;fill:var(--text-faint);
+  }
+  .boundary{
+    fill:none;stroke:var(--hairline);stroke-width:1;stroke-dasharray:6 8;
+  }
+  .boundary-label{
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;fill:var(--text-faint);
+  }
+  .filament{fill:none;stroke:var(--hairline);stroke-width:.6;stroke-linecap:round}
+  .node-hit{cursor:pointer;fill:transparent}
+  .node-ring{
+    fill:var(--substrate);stroke:var(--mycelium-faint);stroke-width:1.2;
+    transition:stroke .3s ease,fill .3s ease;
+  }
+  .node-core{fill:var(--mycelium-dim);transition:fill .3s ease,r .3s ease}
+  .node-label{
+    font-family:var(--mono);font-size:13.5px;letter-spacing:.04em;
+    fill:var(--mycelium);transition:fill .3s ease;
+  }
+  .node-role{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+    text-transform:uppercase;fill:var(--text-faint);
+  }
+  g.node:hover .node-ring,g.node:focus-visible .node-ring{stroke:var(--spore)}
+  g.node:hover .node-core,g.node:focus-visible .node-core{fill:var(--spore)}
+  g.node:hover .node-label,g.node:focus-visible .node-label{fill:var(--mycelium)}
+  g.node:focus-visible{outline:none}
+  g.node:focus-visible .node-ring{stroke-width:2}
+  .hub-ring{fill:var(--substrate);stroke:var(--oxblood);stroke-width:1.6}
+  .hub-core{fill:var(--oxblood)}
+  .hub-label{
+    font-family:var(--display);font-weight:600;font-size:15px;
+    letter-spacing:.16em;fill:var(--mycelium);text-transform:uppercase;
+  }
+  .node.is-dormant .node-ring{stroke:var(--hairline)}
+  .node.is-dormant .node-core{fill:var(--hairline)}
+  .node.is-dormant .node-label{fill:var(--text-faint)}
+
+  /* deployment nodes */
+  .node.is-deploy .node-core{fill:var(--text-faint)}
+  .node.is-deploy.is-live .node-core{fill:var(--spore)}
+  .node.is-deploy.is-live .node-ring{stroke:var(--spore);opacity:.7}
+  .dual-ring{
+    fill:none;stroke:var(--mycelium-faint);stroke-width:.9;opacity:.55;
+  }
+
+  /* external entity */
+  .node.is-external .ext-box{
+    fill:var(--substrate);stroke:var(--steel);stroke-width:1.1;
+    stroke-dasharray:3 3;transition:stroke .3s ease;
+  }
+  .node.is-external .node-core{fill:var(--steel)}
+  .node.is-external .node-label{fill:var(--steel-lit)}
+  .node.is-external:hover .ext-box,
+  .node.is-external:focus-visible .ext-box{stroke:var(--steel-lit);stroke-dasharray:none}
+  .node.is-external:hover .node-core{fill:var(--steel-lit)}
+
+  .replay{
+    display:block;margin:22px 0 0;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--text-faint);
+    background:transparent;border:1px solid var(--hairline);
+    border-radius:2px;padding:10px 16px;cursor:pointer;
+    transition:color .25s ease,border-color .25s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .replay:hover,.replay:active{color:var(--spore);border-color:var(--spore)}
+
+  /* legend */
+  .legend{
+    display:flex;flex-wrap:wrap;gap:10px 22px;
+    padding:18px 0 4px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+    color:var(--text-faint);text-transform:uppercase;
+  }
+  .legend span{display:flex;align-items:center;gap:8px}
+  .key{width:11px;height:11px;border-radius:50%;border:1px solid var(--mycelium-faint);flex:none}
+  .key.venture{background:transparent}
+  .key.dual{box-shadow:0 0 0 2.5px var(--substrate),0 0 0 3.5px var(--mycelium-faint)}
+  .key.live{border-color:var(--spore);background:var(--spore)}
+  .key.ext{border-radius:1px;border-color:var(--steel);border-style:dashed}
+  .key.paused{border-color:var(--hairline);border-style:dashed}
+
+  /* ---------- loop ---------- */
+  .loop{
+    border-top:1px solid var(--hairline);
+    border-bottom:1px solid var(--hairline);
+    padding:38px 0;margin-top:40px;
+  }
+  .loop-line{
+    font-family:var(--display);font-weight:300;
+    font-size:clamp(17px,2.3vw,22px);line-height:1.55;max-width:60ch;
+  }
+  .loop-line b{font-weight:600;color:var(--spore)}
+
+  /* ---------- branches ---------- */
+  .branches{padding:8px 0 0}
+  .branch{
+    padding:44px 0;border-bottom:1px solid var(--hairline);
+    display:grid;grid-template-columns:150px 1fr;gap:36px;align-items:start;
+  }
+  .branch-role{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--text-faint);padding-top:9px;
+  }
+  .branch-role .tag{
+    display:inline-block;color:var(--spore);
+  }
+  .branch h2{
+    font-family:var(--display);font-weight:500;
+    font-size:clamp(24px,3.4vw,34px);letter-spacing:-.01em;line-height:1.2;
+  }
+  .branch h2 a{text-decoration:none;border-bottom:1px solid var(--oxblood);padding-bottom:2px}
+  .branch h2 a:hover{color:var(--spore);border-color:var(--spore)}
+  .branch p{margin-top:14px;max-width:58ch;color:var(--mycelium-dim);font-size:16px}
+
+  .attrs{
+    display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:20px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+  }
+  .attr{
+    border:1px solid var(--hairline);border-radius:2px;
+    padding:4px 9px;color:var(--mycelium-dim);
+  }
+  .attr b{color:var(--text-faint);font-weight:400}
+
+  /* ---------- deployments ---------- */
+  .deploys{margin-top:26px;border-top:1px solid var(--hairline)}
+  .deploy{
+    display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    padding:15px 0;border-bottom:1px solid var(--hairline);
+  }
+  .deploy-name{font-size:15.5px}
+  .deploy-name a{text-decoration:none;border-bottom:1px solid var(--hairline)}
+  .deploy-name a:hover{color:var(--spore);border-color:var(--spore)}
+  .deploy-name span{
+    display:block;font-family:var(--mono);font-size:10.5px;
+    color:var(--text-faint);letter-spacing:.05em;margin-top:4px;
+  }
+  .status{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;white-space:nowrap;display:flex;
+    align-items:center;gap:7px;color:var(--mycelium-dim);
+  }
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--mycelium-faint)}
+  .status.live .dot{background:var(--spore);box-shadow:0 0 0 3px rgba(201,162,39,.16)}
+  .status.live{color:var(--spore)}
+
+  .research{
+    margin-top:22px;display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .research li{
+    list-style:none;font-family:var(--mono);font-size:11.5px;
+    border:1px solid var(--hairline);border-radius:2px;padding:6px 11px;
+    color:var(--mycelium-dim);
+  }
+  .note{
+    margin-top:18px;font-size:14px;color:var(--text-faint);
+    border-left:2px solid var(--hairline);padding-left:14px;max-width:52ch;
+  }
+
+  .branch.dormant{opacity:.5;transition:opacity .4s ease}
+  .branch.dormant:hover{opacity:.85}
+
+  /* ---------- foot ---------- */
+  .foot{
+    padding:52px 0 64px;display:flex;flex-wrap:wrap;gap:18px;
+    justify-content:space-between;align-items:baseline;
+  }
+  .foot a{
+    font-family:var(--display);font-size:20px;font-weight:500;
+    text-decoration:none;border-bottom:1px solid var(--oxblood);
+  }
+  .foot a:hover{color:var(--spore);border-color:var(--spore)}
+  .foot .fine{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+    color:var(--text-faint);text-transform:uppercase;
+  }
+
+
+  /* ---------- the gate ---------- */
+  .gate{
+    position:fixed;inset:0;z-index:102;
+    background:var(--substrate);
+    display:flex;align-items:center;justify-content:center;
+    opacity:1;transition:opacity 1.4s ease;
+  }
+  .gate.gone{opacity:0;pointer-events:none}
+  .gate-inner{text-align:center;padding:0 28px}
+  .gate-spore{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--oxblood);margin:0 auto 42px;
+    box-shadow:0 0 0 0 rgba(140,47,57,.45);
+    animation:breathe 4.6s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ box-shadow:0 0 0 0 rgba(140,47,57,.42); opacity:.75; transform:scale(1) }
+    50%    { box-shadow:0 0 0 22px rgba(140,47,57,0); opacity:1; transform:scale(1.18) }
+  }
+  .gate-title{
+    font-family:var(--display);font-weight:600;font-size:25px;
+    letter-spacing:.3em;text-transform:uppercase;color:var(--mycelium);
+    margin-bottom:10px;text-indent:.3em;
+  }
+  .gate-sub{
+    font-family:var(--mono);font-size:10px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--text-faint);margin-bottom:40px;
+  }
+  .gate-go{
+    display:block;margin:0 auto 20px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--mycelium);
+    background:transparent;border:1px solid var(--mycelium-faint);
+    border-radius:2px;padding:15px 40px;cursor:pointer;
+    transition:color .3s ease,border-color .3s ease,background .3s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .gate-go:hover,.gate-go:active{color:var(--spore);border-color:var(--spore)}
+  .gate-snd{
+    font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--text-faint);
+    background:transparent;border:0;padding:10px;cursor:pointer;
+    transition:color .3s ease;-webkit-tap-highlight-color:transparent;
+  }
+  .gate-snd[aria-pressed="true"]{color:var(--spore)}
+  .gate-snd:hover{color:var(--mycelium-dim)}
+
+  .sndtoggle{
+    position:fixed;top:16px;left:16px;z-index:101;
+    font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--text-faint);
+    background:transparent;border:1px solid var(--hairline);
+    border-radius:2px;padding:9px 13px;cursor:pointer;
+    transition:color .25s ease,border-color .25s ease,opacity .6s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .sndtoggle[aria-pressed="true"]{color:var(--spore);border-color:rgba(201,162,39,.35)}
+  .sndtoggle.gone{opacity:0;pointer-events:none}
+
+  /* ---------- intro sequence ---------- */
+  .intro{
+    position:fixed;inset:0;z-index:100;
+    background:var(--substrate);
+    display:flex;align-items:center;justify-content:center;
+    opacity:1;transition:opacity 1.1s ease;
+  }
+  .intro.gone{opacity:0;pointer-events:none}
+  .intro-stage{
+    position:relative;
+    width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .intro-stage > svg{
+    width:auto;height:88vh;max-width:94vw;
+    display:block;overflow:visible;margin:0 auto;
+  }
+  .scene{
+    position:absolute;inset:0;margin:auto;
+    width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;
+    transition:opacity .7s ease;
+  }
+  .scene.on{opacity:1}
+  .scene svg{width:auto;height:88vh;max-width:94vw;display:block;margin:0 auto}
+
+  .skip{
+    position:fixed;top:16px;right:16px;z-index:101;
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--mycelium-dim);
+    background:transparent;border:1px solid var(--hairline);
+    border-radius:2px;padding:9px 15px;cursor:pointer;
+    transition:color .25s ease,border-color .25s ease,opacity .6s ease;
+  }
+  .skip:hover{color:var(--spore);border-color:var(--spore)}
+  .skip.gone{opacity:0;pointer-events:none}
+
+  .caption{
+    position:fixed;left:0;right:0;bottom:26px;z-index:101;
+    text-align:center;pointer-events:none;padding:0 20px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.1em;line-height:1.6;
+    text-transform:uppercase;color:var(--mycelium-dim);
+    opacity:0;transition:opacity .6s ease;
+  }
+  .caption.on{opacity:1}
+  .caption b{color:var(--spore);font-weight:400}
+
+  body.intro-running{overflow:hidden}
+  .page{opacity:1;transition:opacity 1s ease}
+  .page.hidden{opacity:0}
+
+  /* scene primitives */
+  .hand-g{fill:none;stroke:var(--mycelium);stroke-width:3.2;stroke-linecap:round}
+  .hand-g.fng{stroke-width:2.4}
+  .hand-c{fill:none;stroke:var(--steel-lit);stroke-width:3.2;stroke-linecap:round}
+  .hand-c.fng{stroke-width:2.4}
+  .weft{fill:none;stroke:var(--spore);stroke-width:1.4;stroke-linecap:round;opacity:.9}
+  .fuzz{fill:none;stroke:var(--spore);stroke-width:.7;stroke-linecap:round;opacity:.55}
+  .hypha-thin{fill:none;stroke:var(--mycelium);stroke-width:1.8;stroke-linecap:round}
+  .scene-label{
+    font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;
+    fill:var(--mycelium-dim);text-transform:uppercase;
+  }
+  .scene-label.hot{fill:var(--spore)}
+  .lead{stroke:#4A4238;stroke-width:.9}
+  .spore-dot{fill:var(--mycelium)}
+  .sig-out{fill:none;stroke:var(--spore);stroke-width:1;opacity:.5}
+  .sig-in{fill:none;stroke:var(--steel-lit);stroke-width:1;opacity:.5}
+
+  @media (max-width:700px){
+    .branch{grid-template-columns:1fr;gap:12px}
+    .branch-role{padding-top:0}
+    .hero{padding:44px 0 32px}
+    .deploy{flex-direction:column;gap:8px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="intro" id="intro" hidden>
+  <div class="intro-stage" id="stage">
+
+    <!-- SCENE A — the membrane: colonization -->
+    <div class="scene" id="sceneA">
+      <svg viewBox="0 0 400 760" role="img" aria-label="Two hands meet at a junction. Grush's hand descends from above in bone white; CBU's rises from below in steel. They take hold, and their fingers weave together with fungal filaments. They remain two hands throughout — interlaced, never fused. Value passes across the weave.">
+
+        <!-- GRUSH hand, from above -->
+        <g id="A_gr">
+          <path class="hand-g" id="A_gr_arm" d="M200,20 C200,90 200,170 200,272"/>
+          <path class="hand-g fng" d="M200,286 C176,318 158,352 150,398"/>
+          <path class="hand-g fng" d="M200,286 C188,320 179,356 175,404"/>
+          <path class="hand-g fng" d="M200,286 C202,322 205,358 205,410"/>
+          <path class="hand-g fng" d="M200,286 C215,320 226,354 232,402"/>
+          <path class="hand-g fng" d="M200,286 C223,314 245,336 259,360"/>
+        </g>
+
+        <!-- CBU hand, from below -->
+        <g id="A_cb">
+          <path class="hand-c" id="A_cb_arm" d="M200,740 C200,670 200,590 200,488"/>
+          <path class="hand-c fng" d="M200,474 C176,442 160,408 154,362"/>
+          <path class="hand-c fng" d="M200,474 C188,440 181,404 179,356"/>
+          <path class="hand-c fng" d="M200,474 C202,438 206,402 208,350"/>
+          <path class="hand-c fng" d="M200,474 C215,440 227,406 234,358"/>
+          <path class="hand-c fng" d="M200,474 C224,446 246,424 261,400"/>
+        </g>
+
+        <!-- the weave: filaments crossing between the two hands. gold = exchange -->
+        <g id="A_weave">
+          <path class="weft" d="M150,398 C168,384 176,372 179,356"/>
+          <path class="weft" d="M175,404 C190,390 200,376 208,350"/>
+          <path class="weft" d="M205,410 C216,392 226,376 234,358"/>
+          <path class="weft" d="M232,402 C244,388 252,376 261,400"/>
+          <path class="weft" d="M154,362 C166,378 170,392 175,404"/>
+          <path class="weft" d="M179,356 C192,374 198,392 205,410"/>
+          <path class="weft" d="M208,350 C220,372 228,388 232,402"/>
+          <path class="weft" d="M234,358 C246,374 254,384 259,360"/>
+        </g>
+        <!-- hyphal fuzz at the junction: the grip going fungal -->
+        <g id="A_fuzz"></g>
+
+        <path id="A_guide" fill="none" stroke="none" d="M200,700 C200,560 200,470 200,400 C200,330 200,220 200,60"/>
+
+        <circle class="flow-p" id="p1" r="3.4" fill="#C9A227" opacity="0"/>
+        <circle class="flow-p" id="p2" r="3.4" fill="#C9A227" opacity="0"/>
+        <circle class="flow-c" id="c1" r="3.4" fill="#8AA6B8" opacity="0"/>
+        <circle class="flow-c" id="c2" r="3.4" fill="#8AA6B8" opacity="0"/>
+
+        <g id="A_labels" opacity="0">
+          <line class="lead" x1="200" y1="120" x2="300" y2="120"/>
+          <text class="scene-label" x="306" y="116" text-anchor="start">Grush</text>
+          <line class="lead" x1="200" y1="640" x2="300" y2="640"/>
+          <text class="scene-label" x="306" y="636" text-anchor="start" fill="#8AA6B8">CBU</text>
+          <line class="lead" x1="120" y1="382" x2="46" y2="330"/>
+          <text class="scene-label hot" x="14" y="318" text-anchor="start">the junction</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- SCENE B — the reach: pre-symbiotic signaling -->
+    <div class="scene" id="sceneB">
+      <svg viewBox="0 0 400 760" role="img" aria-label="The same frame as the handshake, with one hand missing. Grush's hand descends from above, open and offered. CBU's hand is present below but not raised — resting, neither reaching nor withdrawing. The space between them is empty. The offer stands, unanswered.">
+        <defs>
+          <radialGradient id="strig" cx="0.5" cy="0.8" r="0.7">
+            <stop offset="0%" stop-color="#C9A227" stop-opacity=".14"/>
+            <stop offset="60%" stop-color="#C9A227" stop-opacity=".03"/>
+            <stop offset="100%" stop-color="#C9A227" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect id="B_field" x="0" y="0" width="400" height="760" fill="url(#strig)" opacity="0"/>
+
+        <!-- GRUSH hand: the identical offer from scene A -->
+        <g id="B_gr">
+          <path class="hand-g" id="B_main" d="M200,20 C200,90 200,170 200,272"/>
+          <path class="hand-g fng" d="M200,286 C176,318 158,352 150,398"/>
+          <path class="hand-g fng" d="M200,286 C188,320 179,356 175,404"/>
+          <path class="hand-g fng" d="M200,286 C202,322 205,358 205,410"/>
+          <path class="hand-g fng" d="M200,286 C215,320 226,354 232,402"/>
+          <path class="hand-g fng" d="M200,286 C223,314 245,336 259,360"/>
+        </g>
+
+        <!-- the offer feeling forward, and finding nothing -->
+        <g id="B_branch">
+          <path class="hypha-thin" d="M150,398 C146,420 144,436 146,452"/>
+          <path class="hypha-thin" d="M175,404 C173,426 172,442 174,458"/>
+          <path class="hypha-thin" d="M205,410 C205,432 205,448 206,464"/>
+          <path class="hypha-thin" d="M232,402 C236,424 238,440 237,456"/>
+          <path class="hypha-thin" d="M259,360 C266,382 269,398 267,414"/>
+        </g>
+
+        <!-- CBU: present, at rest. not raised. not withdrawn. -->
+        <g id="B_root">
+          <path class="hand-c" d="M200,740 C200,700 200,662 200,606"/>
+          <path class="hand-c fng" d="M200,598 C176,596 154,600 138,608"/>
+          <path class="hand-c fng" d="M200,598 C176,604 156,610 142,618"/>
+          <path class="hand-c fng" d="M200,598 C224,596 246,600 262,608"/>
+          <path class="hand-c fng" d="M200,598 C224,604 244,610 258,618"/>
+          <path class="hand-c fng" d="M200,598 C200,584 199,576 198,568"/>
+        </g>
+        <circle class="spore-dot" id="B_spore" cx="200" cy="20" r="0" opacity="0"/>
+        <g id="B_sig_out"><path class="sig-out" d="M200,568 C200,556 200,548 200,540"/></g>
+        <g id="B_sig_in" opacity="0"></g>
+
+        <g id="B_labels" opacity="0">
+          <line class="lead" x1="200" y1="120" x2="296" y2="120"/>
+          <text class="scene-label" x="302" y="116" text-anchor="start">Grush</text>
+          <line class="lead" x1="200" y1="680" x2="296" y2="680"/>
+          <text class="scene-label" x="302" y="676" text-anchor="start" fill="#8AA6B8">CBU</text>
+        </g>
+        <g id="B_myc_label" opacity="0"></g>
+        <g id="B_gap" opacity="0">
+          <line class="lead" x1="200" y1="500" x2="200" y2="540" stroke="#8AA6B8" stroke-dasharray="3 5"/>
+          <line class="lead" x1="196" y1="520" x2="92" y2="520" stroke="#8AA6B8"/>
+          <text class="scene-label" x="84" y="516" text-anchor="end" fill="#8AA6B8">open</text>
+        </g>
+      </svg>
+    </div>
+
+  </div>
+</div>
+<div class="gate" id="gate" hidden>
+  <div class="gate-inner">
+    <div class="gate-spore"></div>
+    <div class="gate-title">Grush</div>
+    <div class="gate-sub">four ventures &middot; one organism</div>
+    <button class="gate-go" id="gateGo">begin</button>
+    <button class="gate-snd" id="gateSnd" aria-pressed="true">&#9673; sound on</button>
+  </div>
+</div>
+<button class="sndtoggle" id="sndToggle" aria-pressed="true" hidden>&#9673; sound</button>
+<button class="skip" id="skip" hidden>Skip</button>
+<div class="caption" id="caption"></div>
+
+<div class="wrap page" id="page">
+
+  <header class="masthead">
+    <div class="wordmark">Grush</div>
+    <div class="meta">Riverside, California</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Umbrella &middot; four ventures</div>
+    <h1 class="thesis">Fungi that <em>work</em>, watched by software that <em>listens</em>.</h1>
+    <p class="sub">Grush is the umbrella. Underneath it, three ventures feed each other in a loop — research, biomass, data — and a fourth waits its turn.</p>
+  </section>
+
+  <section class="weave" aria-label="Structure of the Grush ventures">
+    <svg viewBox="0 0 400 880" role="img" aria-label="Diagram in portrait: Grush occupies the upper region with fungAI, Fun Guy Fungi and Grush software forming a loop around the hub. A membrane runs horizontally near the bottom. Below it lies CBU's sphere of control, holding CBU and the Lancer Farms and Gardens site. One cord crosses the membrane: the exchange between the garden and the live Lancer Farms deployment. A potential connection reaches down from fungAI toward CBU but stops above the membrane without crossing. Cottages sits dormant, downstream of all three ventures.">
+
+      <path class="boundary" d="M15,668 C110,645 290,692 390,662"/>
+      <text class="sphere-label" x="335" y="72" text-anchor="middle">Grush</text>
+      <text class="sphere-label" x="200" y="862" text-anchor="middle">CBU&rsquo;s sphere of control</text>
+
+      <g id="filaments" stroke-linecap="round"></g>
+
+      <g id="cords">
+        <path class="hypha" data-pair="hub-fungai"  d="M188,292 C165,255 130,190 103,152"/>
+        <path class="hypha" data-pair="hub-fgf"     d="M205,292 C235,265 270,230 292,215"/>
+        <path class="hypha" data-pair="hub-soft"    d="M186,318 C165,350 130,395 113,412"/>
+        <path class="hypha" data-pair="fungai-fgf"  d="M110,125 C170,95 250,130 292,182"/>
+        <path class="hypha" data-pair="fgf-soft"    d="M305,215 C320,320 200,400 122,425"/>
+        <path class="hypha" data-pair="soft-fungai" d="M98,415 C70,340 68,225 85,152"/>
+        <path class="hypha" data-pair="soft-lancer" d="M120,440 C165,490 225,550 254,578"/>
+        <path class="hypha owns" data-pair="cbu-garden" d="M120,792 C165,778 220,760 253,745"/>
+        <path class="hypha exchange" data-pair="garden-deploy" d="M270,722 C272,690 272,640 270,598"/>
+        <path class="hypha reach" data-pair="fungai-cbu" d="M86,148 C45,280 42,480 55,628"/>
+        <path class="hypha dormant" d="M108,142 C220,180 310,320 328,468"/>
+        <path class="hypha dormant" d="M308,215 C325,300 330,400 331,468"/>
+        <path class="hypha dormant" d="M118,430 C200,455 280,470 318,478"/>
+      </g>
+
+      <text class="edge-label" x="292" y="676" text-anchor="start">exchange</text>
+      <text class="edge-label" x="14"  y="596" text-anchor="start">potential</text>
+
+      <!-- CBU -->
+      <g class="node is-external" tabindex="0" role="link" data-go="#software" data-cords="cbu-garden fungai-cbu">
+        <circle class="node-hit" cx="105" cy="805" r="38"/>
+        <rect class="ext-box" x="94" y="794" width="22" height="22" rx="2"/>
+        <circle class="node-core" cx="105" cy="805" r="3.5"/>
+        <text class="node-label" x="105" y="778" text-anchor="middle">CBU</text>
+        <text class="node-role"  x="105" y="838" text-anchor="middle">external &middot; owner</text>
+      </g>
+
+      <!-- Lancer Farms &amp; Gardens -->
+      <g class="node is-external is-site" tabindex="0" role="link" data-go="#software" data-cords="cbu-garden garden-deploy">
+        <circle class="node-hit" cx="270" cy="735" r="38"/>
+        <rect class="ext-box" x="260" y="725" width="20" height="20" rx="2"/>
+        <circle class="node-core" cx="270" cy="735" r="3"/>
+        <text class="node-label" x="270" y="708" text-anchor="middle">Lancer Farms</text>
+        <text class="node-role"  x="270" y="768" text-anchor="middle">the garden &middot; site</text>
+      </g>
+
+      <!-- fungAI -->
+      <g class="node" tabindex="0" role="link" data-go="#fungai" data-cords="hub-fungai fungai-fgf soft-fungai fungai-cbu">
+        <circle class="node-hit" cx="95" cy="135" r="38"/>
+        <circle class="node-ring" cx="95" cy="135" r="12"/>
+        <circle class="node-core" cx="95" cy="135" r="4"/>
+        <text class="node-label" x="95" y="108" text-anchor="middle">fungAI</text>
+        <text class="node-role"  x="95" y="94"  text-anchor="middle">knows</text>
+      </g>
+
+      <!-- Fun Guy Fungi -->
+      <g class="node is-dual" tabindex="0" role="link" data-go="#fgf" data-cords="hub-fgf fungai-fgf fgf-soft">
+        <circle class="node-hit" cx="300" cy="200" r="40"/>
+        <circle class="dual-ring" cx="300" cy="200" r="17"/>
+        <circle class="node-ring" cx="300" cy="200" r="12"/>
+        <circle class="node-core" cx="300" cy="200" r="4"/>
+        <text class="node-label" x="300" y="166" text-anchor="middle">Fun Guy Fungi</text>
+        <text class="node-role"  x="300" y="152" text-anchor="middle">grows</text>
+      </g>
+
+      <!-- Grush software -->
+      <g class="node" tabindex="0" role="link" data-go="#software" data-cords="hub-soft fgf-soft soft-fungai soft-lancer">
+        <circle class="node-hit" cx="105" cy="430" r="40"/>
+        <circle class="node-ring" cx="105" cy="430" r="12"/>
+        <circle class="node-core" cx="105" cy="430" r="4"/>
+        <text class="node-label" x="105" y="462" text-anchor="middle">Grush software</text>
+        <text class="node-role"  x="105" y="476" text-anchor="middle">reads</text>
+      </g>
+
+      <!-- Lancer Farms deployment -->
+      <g class="node is-deploy is-live" tabindex="0" role="link" data-go="#software" data-cords="soft-lancer garden-deploy">
+        <circle class="node-hit" cx="270" cy="585" r="36"/>
+        <circle class="node-ring" cx="270" cy="585" r="10"/>
+        <circle class="node-core" cx="270" cy="585" r="3.5"/>
+        <text class="node-label" x="270" y="558" text-anchor="middle">Lancer Farms</text>
+        <text class="node-role"  x="270" y="544" text-anchor="middle">deployment &middot; live</text>
+      </g>
+
+      <!-- Cottages -->
+      <g class="node is-dormant" tabindex="0" role="link" data-go="#cottages" data-cords="">
+        <circle class="node-hit" cx="330" cy="480" r="36"/>
+        <circle class="node-ring" cx="330" cy="480" r="10"/>
+        <circle class="node-core" cx="330" cy="480" r="3"/>
+        <text class="node-label" x="330" y="512" text-anchor="middle">Cottages</text>
+        <text class="node-role"  x="330" y="526" text-anchor="middle">dormant</text>
+      </g>
+
+      <!-- hub -->
+      <g>
+        <circle class="hub-ring" cx="195" cy="305" r="19"/>
+        <circle class="hub-core" cx="195" cy="305" r="5.5"/>
+        <text class="hub-label" x="195" y="347" text-anchor="middle">Grush</text>
+      </g>
+    </svg>
+
+    <button class="replay" id="replay">&#9654; watch the intro</button>
+
+    <div class="legend">
+      <span><i class="key venture"></i>venture</span>
+      <span><i class="key dual"></i>venture + deployment</span>
+      <span><i class="key live"></i>live deployment</span>
+      <span><i class="key paused"></i>dormant</span>
+      <span><i class="key ext"></i>outside Grush</span>
+    </div>
+  </section>
+
+  <section class="loop">
+    <p class="loop-line">
+      <b>fungAI</b> learns what fungi can do. <b>Fun Guy Fungi</b> grows the organism it needs.
+      <b>Grush software</b> records what the organism does — and that data feeds the research again.
+      Each one needs the other two.
+    </p>
+  </section>
+
+  <div class="branches">
+
+    <!-- Grush software -->
+    <section class="branch" id="software">
+      <div class="branch-role"><span class="tag">reads</span><br>venture</div>
+      <div>
+        <h2><a href="#software">Grush software</a></h2>
+        <p>Farm management software for growing sites. Staff log work by tapping, not typing; tasks age themselves; visitors get a read-only window into what the site is doing. Every deployment carries a live status panel.</p>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>type</b> venture</span>
+        </div>
+
+        <div class="deploys">
+          <div class="deploy">
+            <div class="deploy-name">
+              <a href="https://lancerfarms.com">Lancer Farms &amp; Gardens</a>
+              <span>owner: California Baptist University &middot; site: CBU campus garden</span>
+            </div>
+            <div class="status live"><i class="dot"></i>Live</div>
+          </div>
+          <div class="deploy">
+            <div class="deploy-name">
+              <a href="https://funguyfungi.org">Fun Guy Fungi</a>
+              <span>owner: Chad Pattengale &middot; site: none yet</span>
+            </div>
+            <div class="status"><i class="dot"></i>In development</div>
+          </div>
+        </div>
+        <p class="note">The deployments index grows as sites come online. Each one is listed with its owner, its site, and its honest status.</p>
+      </div>
+    </section>
+
+    <!-- Fun Guy Fungi -->
+    <section class="branch" id="fgf">
+      <div class="branch-role"><span class="tag">grows</span><br>venture &middot; deployment</div>
+      <div>
+        <h2><a href="https://funguyfungi.org">Fun Guy Fungi</a></h2>
+        <p>A mobile container garden business growing specialty mushrooms. It has an owner, a species plan, and a floor plan. It does not have a home yet — the software ran ahead of the farm on purpose. Proof before land, bench before container.</p>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>site</b> none yet</span>
+          <span class="attr"><b>status</b> in development</span>
+        </div>
+        <p class="note">Fun Guy Fungi is the only node that is both a venture and a Grush deployment. It grows the organism the research runs on, and it runs the software that watches it.</p>
+      </div>
+    </section>
+
+    <!-- fungAI -->
+    <section class="branch" id="fungai">
+      <div class="branch-role"><span class="tag">knows</span><br>venture</div>
+      <div>
+        <h2><a href="#fungai">fungAI</a></h2>
+        <p>The research branch. Fungi as instruments: reading the signals they propagate through their environment, and asking whether mycorrhizal networks can be monitored across large geography in response to stimulus.</p>
+        <ul class="research">
+          <li>Fungi as a sensor</li>
+          <li>Fungi as an environmental remediator</li>
+          <li>Fungi as a consumable — culinary</li>
+          <li>Fungi as a consumable — cosmetic</li>
+          <li>Fungi as a consumable — pharmaceutical</li>
+        </ul>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>type</b> venture</span>
+        </div>
+        <p class="note">This work is theoretical. Nothing here is a finding — it is a set of questions being set up to be answered honestly, or not at all.</p>
+      </div>
+    </section>
+
+    <!-- Cottages -->
+    <section class="branch dormant" id="cottages">
+      <div class="branch-role"><span class="tag" style="color:var(--text-faint)">paused</span><br>venture</div>
+      <div>
+        <h2>Cottages</h2>
+        <p>A line of specialized container buildings, designed by applying the other three ventures to the buildings themselves. Downstream of the loop: it consumes what the others produce, so it waits until they produce something worth applying.</p>
+        <div class="attrs">
+          <span class="attr"><b>owner</b> Chad Pattengale</span>
+          <span class="attr"><b>status</b> dormant</span>
+        </div>
+        <p class="note">Long-term. On the back burner by choice, not by neglect.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="foot">
+    <a href="mailto:chad@getgrush.com">chad@getgrush.com</a>
+    <div class="fine">Grush &middot; Riverside, California</div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $  = function(s,r){ return (r||document).querySelector(s); };
+  var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+
+  /* ================= SUBTERRANEAN AUDIO — on a grid ================= */
+  var Snd = (function(){
+    var ctx=null, master=null, bed=null, bedGain=null, on=true, ready=false;
+    var BPM=64, SPB=60/BPM, t0=0, nextStep=0, step=0, schedTimer=null, schedRunning=false;
+    var density=0;                       /* 0..1 — how hard the network is growing */
+
+    function noiseBuf(dur, brown){
+      var n=Math.floor(ctx.sampleRate*dur), b=ctx.createBuffer(1,n,ctx.sampleRate);
+      var d=b.getChannelData(0), last=0;
+      for (var i=0;i<n;i++){
+        var w=Math.random()*2-1;
+        if (brown){ last=(last+0.02*w)/1.02; d[i]=last*3.2; } else d[i]=w;
+      }
+      return b;
+    }
+    function impulse(dur, decay){
+      var n=Math.floor(ctx.sampleRate*dur), b=ctx.createBuffer(2,n,ctx.sampleRate);
+      for (var c=0;c<2;c++){ var d=b.getChannelData(c);
+        for (var i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n, decay);
+      }
+      return b;
+    }
+
+    function init(){
+      if (ready) return true;
+      try { var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return false; ctx=new AC(); }
+      catch(e){ return false; }
+
+      master=ctx.createGain(); master.gain.value=0;
+      var soil=ctx.createBiquadFilter(); soil.type='lowpass'; soil.frequency.value=1100; soil.Q.value=.5;
+      var comp=ctx.createDynamicsCompressor();
+      comp.threshold.value=-26; comp.ratio.value=5; comp.attack.value=.015; comp.release.value=.3;
+      var rev=ctx.createConvolver(); rev.buffer=impulse(2.4,3.4);
+      var wet=ctx.createGain(); wet.gain.value=.32;
+      soil.connect(comp); comp.connect(master); comp.connect(wet); wet.connect(rev); rev.connect(master);
+      master.connect(ctx.destination);
+      Snd.bus=soil;
+
+      bed=ctx.createBufferSource(); bed.buffer=noiseBuf(6,true); bed.loop=true;
+      var bf=ctx.createBiquadFilter(); bf.type='lowpass'; bf.frequency.value=150; bf.Q.value=.7;
+      bedGain=ctx.createGain(); bedGain.gain.value=0;
+      bed.connect(bf); bf.connect(bedGain); bedGain.connect(soil); bed.start(0);
+
+      t0=ctx.currentTime+.06; nextStep=t0; step=0;
+      schedRunning=true; scheduler();
+      ready=true; return true;
+    }
+
+    /* ---- the grid ---- */
+    function atNextBeat(){
+      if(!ready) return 0;
+      var el=ctx.currentTime-t0;
+      return t0 + Math.max(0,Math.ceil(el/SPB))*SPB;
+    }
+    function atNextBar(){
+      if(!ready) return 0;
+      var bar=SPB*4, el=ctx.currentTime-t0;
+      return t0 + Math.max(0,Math.ceil(el/bar))*bar;
+    }
+
+    /* ---- the pulse: the floor breathing, every half bar ---- */
+    function pulse(at, amp){
+      var o=ctx.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(58,at);
+      o.frequency.exponentialRampToValueAtTime(31,at+.24);
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(amp||.16,at+.018);
+      g.gain.exponentialRampToValueAtTime(.0001,at+.72);
+      o.connect(g); g.connect(Snd.bus); o.start(at); o.stop(at+.8);
+    }
+    function tick(at, amp){
+      var s=ctx.createBufferSource(); s.buffer=noiseBuf(.05,false);
+      var bp=ctx.createBiquadFilter(); bp.type='bandpass';
+      bp.frequency.value=1100+Math.random()*2800; bp.Q.value=4+Math.random()*7;
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime((amp||.05)*(.55+Math.random()*.8),at+.003);
+      g.gain.exponentialRampToValueAtTime(.0001,at+.03+Math.random()*.06);
+      s.connect(bp); bp.connect(g); g.connect(Snd.bus); s.start(at); s.stop(at+.14);
+    }
+
+    /* 16th-note scheduler with lookahead — crackles land on the grid, not on setTimeout jitter */
+    function scheduler(){
+      if(!ctx || !schedRunning) return;
+      var sixteenth=SPB/4, ahead=.28;
+      while (nextStep < ctx.currentTime + ahead){
+        if (on){
+          if (step % 8 === 0) pulse(nextStep, .15);            /* every 2 beats */
+          if (step % 8 === 4) pulse(nextStep, .055);           /* soft ghost */
+          if (density > 0){
+            var beatish = (step % 4 === 0) ? 1.6 : 1;          /* cluster on the beat */
+            if (Math.random() < density*.55*beatish) tick(nextStep + Math.random()*.012, .05);
+            if (density > .6 && Math.random() < density*.3) tick(nextStep + sixteenth*.5, .035);
+          }
+        }
+        nextStep += sixteenth; step++;
+      }
+      schedTimer=setTimeout(scheduler, 90);
+    }
+
+    /* ---- quantised events ---- */
+    function bloom(f, at){
+      if(!ready||!on) return;
+      at = at || atNextBeat();
+      var o=ctx.createOscillator(), o2=ctx.createOscillator();
+      o.type='sine'; o2.type='triangle';
+      f = f || (52+Math.random()*46);
+      o.frequency.setValueAtTime(f,at); o2.frequency.setValueAtTime(f*2.005,at);
+      var g=ctx.createGain(), g2=ctx.createGain(); g2.gain.value=.2;
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(.11,at+.5);
+      g.gain.exponentialRampToValueAtTime(.0001,at+3.2);
+      o.connect(g); o2.connect(g2); g2.connect(g); g.connect(Snd.bus);
+      o.start(at); o2.start(at); o.stop(at+3.4); o2.stop(at+3.4);
+    }
+    function press(){
+      if(!ready||!on) return;
+      var at=atNextBeat();
+      var s=ctx.createBufferSource(); s.buffer=noiseBuf(.9,false);
+      var lp=ctx.createBiquadFilter(); lp.type='lowpass';
+      lp.frequency.setValueAtTime(1700,at); lp.frequency.exponentialRampToValueAtTime(180,at+.7);
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at); g.gain.linearRampToValueAtTime(.17,at+.07);
+      g.gain.exponentialRampToValueAtTime(.0001,at+.8);
+      s.connect(lp); lp.connect(g); g.connect(Snd.bus); s.start(at); s.stop(at+1);
+      var o=ctx.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(108,at); o.frequency.exponentialRampToValueAtTime(38,at+.65);
+      var og=ctx.createGain();
+      og.gain.setValueAtTime(0,at); og.gain.linearRampToValueAtTime(.17,at+.04);
+      og.gain.exponentialRampToValueAtTime(.0001,at+.85);
+      o.connect(og); og.connect(Snd.bus); o.start(at); o.stop(at+1);
+    }
+    var flowNodes=null;
+    function flowStart(){
+      if(!ready||!on||flowNodes) return;
+      var at=atNextBar();
+      var o1=ctx.createOscillator(), o2=ctx.createOscillator();
+      o1.type='sine'; o2.type='sine'; o1.frequency.value=142; o2.frequency.value=143.5;
+      var lfo=ctx.createOscillator(); lfo.type='sine';
+      lfo.frequency.value = 1/(SPB*2);                 /* the swell rides the bar */
+      var lg=ctx.createGain(); lg.gain.value=.032;
+      var g=ctx.createGain(); g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(.05,at+1.2);
+      lfo.connect(lg); lg.connect(g.gain);
+      o1.connect(g); o2.connect(g); g.connect(Snd.bus);
+      o1.start(at); o2.start(at); lfo.start(at);
+      flowNodes={o1:o1,o2:o2,lfo:lfo,g:g};
+    }
+    function flowStop(){
+      if(!flowNodes) return;
+      var n=ctx.currentTime, f=flowNodes;
+      try{
+        f.g.gain.cancelScheduledValues(n); f.g.gain.setValueAtTime(f.g.gain.value,n);
+        f.g.gain.exponentialRampToValueAtTime(.0001,n+1.3);
+        f.o1.stop(n+1.4); f.o2.stop(n+1.4); f.lfo.stop(n+1.4);
+      }catch(e){}
+      flowNodes=null;
+    }
+    function shimmer(){
+      if(!ready||!on) return;
+      var at=atNextBeat();
+      var o=ctx.createOscillator(); o.type='sine';
+      o.frequency.value=620+Math.random()*900;
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at); g.gain.linearRampToValueAtTime(.022,at+.7);
+      g.gain.exponentialRampToValueAtTime(.0001,at+2.4);
+      o.connect(g); g.connect(Snd.bus); o.start(at); o.stop(at+2.6);
+    }
+    function swell(dur, depth){
+      if(!ready||!on) return;
+      var at=atNextBar();
+      dur = dur || SPB*4;
+      var o=ctx.createOscillator(); o.type='sine'; o.frequency.value=34;
+      var g=ctx.createGain();
+      g.gain.setValueAtTime(0,at);
+      g.gain.linearRampToValueAtTime(depth||.1, at+dur*.45);
+      g.gain.exponentialRampToValueAtTime(.0001, at+dur);
+      o.connect(g); g.connect(Snd.bus); o.start(at); o.stop(at+dur+.1);
+    }
+
+    return {
+      bus:null, init:init, BPM:BPM, SPB:SPB,
+      resume:function(){ if(ctx&&ctx.state==='suspended') ctx.resume(); },
+      up:function(){ if(!ready) return; var n=ctx.currentTime;
+        if(!schedRunning){ schedRunning=true; nextStep=Math.max(nextStep, n+.05); scheduler(); }
+        master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n);
+        master.gain.linearRampToValueAtTime(on?.9:0, n+2.2);
+        bedGain.gain.linearRampToValueAtTime(.075, n+3.5); },
+      down:function(){ if(!ready) return; var n=ctx.currentTime;
+        density=0;
+        master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n);
+        master.gain.linearRampToValueAtTime(0, n+1.6);
+        schedRunning=false; if(schedTimer) clearTimeout(schedTimer);
+        flowStop(); },
+      mute:function(m){ on=!m; if(!ready) return; var n=ctx.currentTime;
+        master.gain.cancelScheduledValues(n); master.gain.setValueAtTime(master.gain.value,n);
+        master.gain.linearRampToValueAtTime(m?0:.9, n+.4); },
+      isOn:function(){ return on; },
+      density:function(v){ density = Math.max(0, Math.min(1, v)); },
+      bloom:bloom, press:press, flowStart:flowStart, flowStop:flowStop,
+      shimmer:shimmer, swell:swell
+    };
+  })();
+
+  var mapSvg   = $('.weave svg');
+  var weave    = $('.weave');
+  var legendEl = $('.legend');
+  var intro    = $('#intro');
+  var stage    = $('#stage');
+  var skipBtn  = $('#skip');
+  var capEl    = $('#caption');
+  var pageEl   = $('#page');
+  var gate     = $('#gate');
+  var replayBtn= $('#replay');
+  var gateGo   = $('#gateGo');
+  var gateSnd  = $('#gateSnd');
+  var sndTgl   = $('#sndToggle');
+  var VB = { w:400, h:880 };
+  var T = 0.60;                          /* tempo: 1 = the long cut, lower = tighter */
+  var ms = function(n){ return Math.round(n*T); };
+
+  /* ---------- ambient filaments ---------- */
+  var fil = $('#filaments');
+  var seedPts = [[95,135],[300,200],[105,430],[195,305],[330,480],[270,585]];
+  var rnd = function(a,b){ return a + Math.random()*(b-a); };
+  seedPts.forEach(function(p){
+    for (var i=0;i<7;i++){
+      var ang = rnd(0, Math.PI*2), len = rnd(8,22);
+      var x2 = p[0] + Math.cos(ang)*len, y2 = p[1] + Math.sin(ang)*len;
+      var mx = p[0] + Math.cos(ang)*len*0.5 + rnd(-4,4);
+      var my = p[1] + Math.sin(ang)*len*0.5 + rnd(-4,4);
+      var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','filament');
+      path.setAttribute('d','M'+p[0]+','+p[1]+' Q'+mx.toFixed(1)+','+my.toFixed(1)+' '+x2.toFixed(1)+','+y2.toFixed(1));
+      fil.appendChild(path);
+    }
+  });
+
+  var cords   = $$('#cords .hypha');
+  var strands = $$('.filament');
+  var DASH    = { dormant:'3 7', owns:'1 5', reach:'2 6' };
+  function restDash(p){ for (var k in DASH){ if (p.classList.contains(k)) return DASH[k]; } return null; }
+  function byPair(n){ return cords.filter(function(c){ return c.getAttribute('data-pair')===n; })[0]; }
+
+  /* ---------- node interaction ---------- */
+  $$('g.node').forEach(function(n){
+    var list = (n.getAttribute('data-cords')||'').split(' ').filter(Boolean);
+    var mine = cords.filter(function(c){ return list.indexOf(c.getAttribute('data-pair'))!==-1; });
+    function on(){ mine.forEach(function(c){ c.classList.add('hot'); }); }
+    function off(){ mine.forEach(function(c){ c.classList.remove('hot'); }); }
+    n.addEventListener('mouseenter',on); n.addEventListener('mouseleave',off);
+    n.addEventListener('focus',on);      n.addEventListener('blur',off);
+    n.addEventListener('touchstart', function(){ on(); setTimeout(off, 1400); }, {passive:true});
+    function go(){
+      var t = n.getAttribute('data-go'); var el = t && $(t);
+      if (el) el.scrollIntoView({behavior: reduce ? 'auto':'smooth', block:'start'});
+    }
+    n.addEventListener('click',go);
+    n.addEventListener('keydown',function(e){
+      if (e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }
+    });
+  });
+
+  /* ---------- drawing ---------- */
+  var GROW = 'cubic-bezier(.16,.72,.28,1)';   /* fast tip, long settle — growth, not a wipe */
+  function len(p){ try { return p.getTotalLength(); } catch(e){ return 0; } }
+  function hide(p){
+    var L = len(p); if(!L) return;
+    p.style.strokeDasharray = L+' '+L;
+    p.style.strokeDashoffset = L;
+    p.style.transition = 'none';
+  }
+  function draw(p, dur, delay){
+    var L = len(p); if(!L) return;
+    dur = ms(dur); delay = ms(delay||0);
+    p.style.transition = 'stroke-dashoffset '+dur+'ms '+GROW+' '+delay+'ms';
+    p.style.strokeDashoffset = '0';
+    var rest = restDash(p);
+    if (rest){ setTimeout(function(){ if(!killed){ p.style.strokeDasharray = rest; p.style.strokeDashoffset='0'; } }, dur+delay); }
+  }
+  function drawAll(list, dur, stagger){ list.forEach(function(p,i){ draw(p, dur, i*(stagger||0)); }); }
+  function fade(el, to, dur){
+    if(!el) return;
+    el.style.transition = 'opacity '+ms(dur||900)+'ms ease';
+    el.style.opacity = to;
+  }
+  function show(el, dur){ fade(el, 1, dur||1000); }
+
+  /* ---------- camera: never perfectly still ---------- */
+  var cam = { x:0, y:0, w:VB.w, h:VB.h };
+  var rendering = false;
+  function applyCam(){
+    var t = performance.now()/1000;
+    var dx = Math.sin(t*0.13) * cam.w * 0.005;
+    var dy = Math.cos(t*0.097) * cam.h * 0.005;
+    var dz = 1 + Math.sin(t*0.061) * 0.004;
+    mapSvg.setAttribute('viewBox',
+      (cam.x+dx).toFixed(2)+' '+(cam.y+dy).toFixed(2)+' '+
+      (cam.w*dz).toFixed(2)+' '+(cam.h*dz).toFixed(2));
+  }
+  function renderLoop(){
+    if (!rendering) return;
+    applyCam();
+    requestAnimationFrame(renderLoop);
+  }
+  function easeInOut(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+  function moveCam(cx, cy, zoom, dur){
+    return new Promise(function(res){
+      var w1 = VB.w/zoom, h1 = VB.h/zoom;
+      var to = { x: cx-w1/2, y: cy-h1/2, w: w1, h: h1 };
+      var fr = { x:cam.x, y:cam.y, w:cam.w, h:cam.h };
+      dur = ms(dur);
+      var t0 = performance.now();
+      (function step(now){
+        if (killed){ res(); return; }
+        var t = Math.min(1,(now-t0)/dur), e = easeInOut(t);
+        cam.x = fr.x+(to.x-fr.x)*e; cam.y = fr.y+(to.y-fr.y)*e;
+        cam.w = fr.w+(to.w-fr.w)*e; cam.h = fr.h+(to.h-fr.h)*e;
+        if (t<1) requestAnimationFrame(step); else res();
+      })(t0);
+    });
+  }
+
+  /* ---------- traffic ---------- */
+  function traffic(guide, dot, dur, reverse, loops){
+    return new Promise(function(res){
+      var L = len(guide); if(!L){ res(); return; }
+      dur = ms(dur);
+      dot.setAttribute('opacity','1');
+      var t0 = performance.now();
+      (function step(now){
+        if (killed){ res(); return; }
+        var t = ((now-t0)%dur)/dur;
+        var d = reverse ? (1-t)*L : t*L;
+        var pt = guide.getPointAtLength(d);
+        dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y);
+        var edge = Math.min(t,1-t)*2;
+        dot.setAttribute('opacity', Math.min(1, edge*3).toFixed(2));
+        if ((now-t0) < dur*loops) requestAnimationFrame(step);
+        else { dot.setAttribute('opacity','0'); res(); }
+      })(t0);
+    });
+  }
+
+  /* ---------- sequencer ---------- */
+  var killed = false;
+  var timers = [];
+  function wait(msv){
+    return new Promise(function(res){
+      if (killed) return res();
+      timers.push(setTimeout(res, Math.round(msv*T)));
+    });
+  }
+  function caption(txt){
+    if (!txt){ capEl.classList.remove('on'); return; }
+    capEl.innerHTML = txt; capEl.classList.add('on');
+  }
+
+  var mapBits = {
+    boundary : $('.boundary'),
+    spheres  : $$('.sphere-label'),
+    edges    : $$('.edge-label'),
+    nodes    : $$('g.node'),
+    hub      : $$('.hub-ring, .hub-core, .hub-label')
+  };
+  function armIntro(){
+    cords.concat(strands).forEach(hide);
+    mapBits.nodes.forEach(function(n){ n.style.opacity = 0; });
+    mapBits.hub.forEach(function(n){ n.style.opacity = 0; });
+    mapBits.spheres.forEach(function(n){ n.style.opacity = 0; });
+    mapBits.edges.forEach(function(n){ n.style.opacity = 0; });
+    if (mapBits.boundary) mapBits.boundary.style.opacity = 0;
+    if (legendEl) legendEl.style.opacity = 0;
+  }
+  function settleAll(){
+    cords.concat(strands).forEach(function(p){
+      p.style.transition='none';
+      p.style.strokeDasharray = restDash(p) || 'none';
+      p.style.strokeDashoffset = '0';
+    });
+    [].concat(mapBits.nodes, mapBits.hub, mapBits.spheres, mapBits.edges,
+             mapBits.boundary?[mapBits.boundary]:[], legendEl?[legendEl]:[])
+      .forEach(function(n){ if(n){ n.style.transition='opacity 700ms ease'; n.style.opacity=1; } });
+    cam = { x:0, y:0, w:VB.w, h:VB.h };
+    mapSvg.setAttribute('viewBox','0 0 '+VB.w+' '+VB.h);
+  }
+  function resolve(node, dur, f){
+    if(!node) return;
+    node.style.transition='opacity '+ms(dur||1400)+'ms ease';
+    node.style.opacity=1;
+    Snd.bloom(f);
+  }
+
+  /* ---------- scene A: the membrane ---------- */
+  async function sceneMembrane(){
+    var s = $('#sceneA');
+    hide($('#A_gr_arm')); hide($('#A_cb_arm'));
+    $$('#A_gr .fng').forEach(hide); $$('#A_cb .fng').forEach(hide);
+    $$('#A_weave path').forEach(hide);
+    $('#A_fuzz').innerHTML = ''; $('#A_labels').style.opacity = 0;
+
+    /* hyphal fuzz sprouting off the grip */
+    var fz = $('#A_fuzz'), tips = [[150,398],[175,404],[205,410],[232,402],[154,362],[179,356],[208,350],[234,358],[259,360],[261,400]];
+    tips.forEach(function(t){
+      for (var i=0;i<4;i++){
+        var a = Math.random()*Math.PI*2, L = 8+Math.random()*16;
+        var x2 = t[0]+Math.cos(a)*L, y2 = t[1]+Math.sin(a)*L;
+        var pth = document.createElementNS('http://www.w3.org/2000/svg','path');
+        pth.setAttribute('class','fuzz');
+        pth.setAttribute('d','M'+t[0]+','+t[1]+' Q'+(t[0]+Math.cos(a)*L*.5+(Math.random()*6-3))+','+
+          (t[1]+Math.sin(a)*L*.5+(Math.random()*6-3))+' '+x2.toFixed(1)+','+y2.toFixed(1));
+        fz.appendChild(pth);
+      }
+    });
+    $$('#A_fuzz path').forEach(hide);
+
+    s.classList.add('on');
+    Snd.swell(null,.09);
+    await wait(1300); if(killed) return;
+
+    caption('grush reaches in');
+    Snd.density(.5);
+    draw($('#A_gr_arm'), 2400);
+    drawAll($$('#A_gr .fng'), 1800, 130);
+    await wait(3000); if(killed) return;
+
+    caption('cbu reaches back');
+    Snd.density(.5);
+    draw($('#A_cb_arm'), 2400);
+    drawAll($$('#A_cb .fng'), 1800, 130);
+    await wait(3000); if(killed) return;
+
+    caption('they take hold');
+    Snd.density(0); Snd.press(); Snd.swell(null,.11);
+    show($('#A_labels'), 1400);
+    await wait(2000); if(killed) return;
+
+    caption('the fingers weave &mdash; <b>neither becomes the other</b>');
+    Snd.density(.85);
+    drawAll($$('#A_weave path'), 1400, 170);
+    await wait(2400); if(killed) return;
+    drawAll($$('#A_fuzz path'), 900, 22);
+    await wait(1800); if(killed) return;
+    Snd.density(.2);
+
+    caption('value crosses. <b>nothing fuses.</b>');
+    Snd.flowStart();
+    var g = $('#A_guide');
+    traffic(g, $('#p1'), 3400, false, 2.4);
+    setTimeout(function(){ if(!killed) traffic(g, $('#p2'), 3400, false, 1.9); }, ms(1200));
+    traffic(g, $('#c1'), 3800, true, 2.4);
+    setTimeout(function(){ if(!killed) traffic(g, $('#c2'), 3800, true, 1.9); }, ms(1700));
+    await wait(4200); if(killed) return;
+    Snd.flowStop(); Snd.density(0);
+
+    caption('');
+    s.classList.remove('on');
+    await wait(1400);
+  }
+
+  /* ---------- scene B: the reach ---------- */
+  async function sceneReach(){
+    var s = $('#sceneB');
+    hide($('#B_main'));
+    $$('#B_gr .fng').forEach(hide);
+    $$('#B_root path').forEach(hide);
+    $$('#B_branch path').forEach(hide);
+    $$('#B_sig_out path').forEach(hide);
+    ['#B_labels','#B_myc_label','#B_gap'].forEach(function(id){ $(id).style.opacity = 0; });
+    $('#B_field').style.opacity = 0;
+
+    s.classList.add('on');
+    Snd.swell(null,.08);
+    await wait(1300); if(killed) return;
+
+    caption('elsewhere, the same hand goes out');
+    Snd.density(.45);
+    draw($('#B_main'), 2400);
+    drawAll($$('#B_gr .fng'), 1800, 130);
+    await wait(3200); if(killed) return;
+
+    caption('cbu is right there');
+    Snd.density(0);
+    fade($('#B_field'), 1, 2600);
+    drawAll($$('#B_root path'), 1600, 130);
+    drawAll($$('#B_sig_out path'), 1200, 0);
+    show($('#B_labels'), 1400);
+    Snd.bloom(48);
+    await wait(3000); if(killed) return;
+
+    caption('the offer reaches out');
+    Snd.density(.7);
+    drawAll($$('#B_branch path'), 1400, 160);
+    await wait(2600); if(killed) return;
+    Snd.density(0);
+
+    caption('and stops');
+    Snd.swell(null,.06);
+    show($('#B_gap'), 1600);
+    await wait(2400); if(killed) return;
+
+    caption('cbu has not taken it');
+    await wait(2200); if(killed) return;
+
+    caption('cbu has not refused it either');
+    await wait(2400); if(killed) return;
+
+    caption('<b>the offer stands</b>');
+    Snd.bloom(40);
+    await wait(2800); if(killed) return;
+
+    caption('');
+    s.classList.remove('on');
+    await wait(1400);
+  }
+
+  /* ---------- the sequence ---------- */
+  async function run(){
+    document.body.classList.add('intro-running');
+    intro.hidden = false; skipBtn.hidden = false; sndTgl.hidden = false;
+    pageEl.classList.add('hidden');
+    stage.insertBefore(mapSvg, stage.firstChild);
+    armIntro();
+    rendering = true; renderLoop();
+    Snd.up();
+    await wait(1400); if(killed) return;
+
+    caption('one spore');
+    mapBits.hub.forEach(function(n){ n.style.transition='opacity '+ms(2200)+'ms ease'; n.style.opacity=1; });
+    Snd.bloom(41); Snd.swell(5, .1);
+    await wait(3200); if(killed) return;
+
+    caption('it reaches for what it needs');
+    Snd.density(0.6);
+    draw(byPair('hub-fungai'), 2800);
+    draw(byPair('hub-fgf'), 2800, 500);
+    draw(byPair('hub-soft'), 2800, 1000);
+    await wait(2000); if(killed) return;
+    resolve($$('g.node')[2], 1600, 74);
+    await wait(700); if(killed) return;
+    resolve($$('g.node')[3], 1600, 58);
+    await wait(700); if(killed) return;
+    resolve($$('g.node')[4], 1600, 92);
+    await wait(1800); if(killed) return;
+
+    caption('each one feeds the other two');
+    Snd.density(0.5);
+    draw(byPair('fungai-fgf'), 2600);
+    draw(byPair('fgf-soft'), 2600, 600);
+    draw(byPair('soft-fungai'), 2600, 1200);
+    Snd.swell(5, .07);
+    await wait(4200); if(killed) return;
+
+    caption('the software goes to work');
+    Snd.density(0.55);
+    draw(byPair('soft-lancer'), 2200);
+    await wait(1600); if(killed) return;
+    resolve($$('g.node')[5], 1600, 110);
+    await wait(1800); if(killed) return;
+
+    caption('but the garden belongs to someone else');
+    show(mapBits.boundary, 2000);
+    mapBits.spheres.forEach(function(n){ n.style.transition='opacity '+ms(2000)+'ms ease'; n.style.opacity=1; });
+    Snd.swell(5, .08);
+    await wait(900); if(killed) return;
+    resolve($$('g.node')[0], 1600, 48);
+    await wait(800); if(killed) return;
+    resolve($$('g.node')[1], 1600, 64);
+    draw(byPair('cbu-garden'), 2200, 200);
+    await wait(2600); if(killed) return;
+
+    caption('one cord crosses the membrane');
+    Snd.density(0.7);
+    draw(byPair('garden-deploy'), 3000);
+    await wait(3200); if(killed) return;
+
+    caption('');
+    await moveCam(271, 660, 5, 2800); if(killed) return;
+    await sceneMembrane(); if(killed) return;
+    await moveCam(200, 440, 1, 2800); if(killed) return;
+
+    caption('elsewhere, it reaches');
+    Snd.density(0.4);
+    draw(byPair('fungai-cbu'), 3200);
+    await wait(3400); if(killed) return;
+
+    caption('');
+    await moveCam(48, 390, 5, 2800); if(killed) return;
+    await sceneReach(); if(killed) return;
+    await moveCam(200, 440, 1, 2800); if(killed) return;
+
+    caption('and something waits downstream');
+    $$('#cords .hypha.dormant').forEach(function(p,i){ draw(p, 2400, i*350); });
+    await wait(1400); if(killed) return;
+    resolve($$('g.node')[6], 1800, 36);
+    await wait(2400); if(killed) return;
+
+    caption('');
+    drawAll(strands, 1600, 45);
+    setTimeout(function(){ Snd.density(0); }, ms(1600));
+    Snd.density(0.35);
+    mapBits.edges.forEach(function(n){ n.style.transition='opacity '+ms(1400)+'ms ease'; n.style.opacity=1; });
+    Snd.swell(6, .09);
+    await wait(2200); if(killed) return;
+    finish();
+  }
+
+  function finish(){
+    if (killed) return;
+    killed = true;
+    timers.forEach(clearTimeout);
+    rendering = false;
+    Snd.down();
+    try { localStorage.setItem('grush_intro_seen_m','1'); } catch(e){}
+    settleAll();
+    $('#sceneA').classList.remove('on'); $('#sceneB').classList.remove('on');
+    caption('');
+    weave.insertBefore(mapSvg, legendEl);
+    intro.classList.add('gone'); skipBtn.classList.add('gone'); sndTgl.classList.add('gone');
+    pageEl.classList.remove('hidden');
+    document.body.classList.remove('intro-running');
+    setTimeout(function(){ intro.hidden = true; skipBtn.hidden = true; sndTgl.hidden = true; }, 1500);
+  }
+
+  function openGate(){
+    killed = false; timers = [];
+    intro.classList.remove('gone');
+    skipBtn.classList.remove('gone');
+    sndTgl.classList.remove('gone');
+    gate.hidden = false; gate.classList.remove('gone');
+  }
+  if (replayBtn) replayBtn.addEventListener('click', openGate);
+
+  skipBtn.addEventListener('click', finish);
+  document.addEventListener('keydown', function(e){
+    if (!intro.hidden && (e.key==='Escape')){ e.preventDefault(); finish(); }
+  });
+
+  /* ---------- sound toggles ---------- */
+  var wantSound = true;
+  function paint(btn, on, label){
+    btn.setAttribute('aria-pressed', on ? 'true':'false');
+    btn.innerHTML = (on ? '\u25C9 ' : '\u25CB ') + label + (label==='sound' ? '' : (on ? ' on' : ' off'));
+  }
+  gateSnd.addEventListener('click', function(){
+    wantSound = !wantSound; paint(gateSnd, wantSound, 'sound');
+    gateSnd.innerHTML = (wantSound?'\u25C9':'\u25CB') + ' sound ' + (wantSound?'on':'off');
+  });
+  sndTgl.addEventListener('click', function(){
+    wantSound = !wantSound;
+    Snd.mute(!wantSound);
+    sndTgl.setAttribute('aria-pressed', wantSound?'true':'false');
+    sndTgl.innerHTML = (wantSound?'\u25C9':'\u25CB') + ' sound';
+  });
+
+  /* ---------- decide ---------- */
+  var seen = false, force = /[?&](replay|again)\b/.test(location.search);
+  try { seen = !!localStorage.getItem('grush_intro_seen_m'); } catch(e){}
+  if (force){ try { localStorage.removeItem('grush_intro_seen_m'); } catch(e){} seen = false; }
+
+  settleAll();
+  gateGo.addEventListener('click', function(){
+      if (wantSound){ Snd.init(); Snd.resume(); }
+      Snd.mute(!wantSound);
+      sndTgl.setAttribute('aria-pressed', wantSound?'true':'false');
+      sndTgl.innerHTML = (wantSound?'\u25C9':'\u25CB') + ' sound';
+      gate.classList.add('gone');
+      setTimeout(function(){ gate.hidden = true; }, 1500);
+      run();
+  });
+
+  if (reduce || seen){
+    intro.hidden = true; skipBtn.hidden = true; gate.hidden = true; sndTgl.hidden = true;
+  } else {
+    gate.hidden = false;
+  }
+})();
+</script>
+
+
+</body>
+</html>
