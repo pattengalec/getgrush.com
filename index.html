@@ -18,6 +18,8 @@
     --mycelium-faint:#5A5248;
     --oxblood:#8C2F39;
     --oxblood-lit:#B84450;
+    --steel:#5C7080;
+    --steel-lit:#8AA6B8;
     --spore:#C9A227;
     --hairline:#302A24;
     --display:'Fraunces',Georgia,serif;
@@ -81,6 +83,32 @@
   }
   .hypha.dormant{stroke-dasharray:3 7;stroke:var(--hairline)}
   .hypha.hot{stroke:var(--oxblood-lit);stroke-width:1.8}
+  .hypha.owns{
+    stroke:var(--steel);stroke-width:1;stroke-dasharray:1 5;
+  }
+  .hypha.owns.hot{stroke:var(--steel-lit);stroke-width:1.6}
+  .hypha.reach{
+    stroke:var(--steel);stroke-width:1;opacity:.5;
+    stroke-dasharray:2 6;
+  }
+  .hypha.reach.hot{stroke:var(--steel-lit);opacity:1;stroke-width:1.4}
+  .hypha.exchange{stroke:var(--spore);stroke-width:1.3;opacity:.85}
+  .hypha.exchange.hot{stroke:var(--spore);stroke-width:2;opacity:1}
+  .sphere-label{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;fill:var(--mycelium-faint);
+  }
+  .edge-label{
+    font-family:var(--mono);font-size:9px;letter-spacing:.13em;
+    text-transform:uppercase;fill:var(--mycelium-faint);
+  }
+  .boundary{
+    fill:none;stroke:var(--hairline);stroke-width:1;stroke-dasharray:6 8;
+  }
+  .boundary-label{
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;
+    text-transform:uppercase;fill:var(--mycelium-faint);
+  }
   .filament{fill:none;stroke:var(--hairline);stroke-width:.6;stroke-linecap:round}
   .node-hit{cursor:pointer;fill:transparent}
   .node-ring{
@@ -110,6 +138,40 @@
   .node.is-dormant .node-ring{stroke:var(--hairline)}
   .node.is-dormant .node-core{fill:var(--hairline)}
   .node.is-dormant .node-label{fill:var(--mycelium-faint)}
+
+  /* deployment nodes */
+  .node.is-deploy .node-core{fill:var(--mycelium-faint)}
+  .node.is-deploy.is-live .node-core{fill:var(--spore)}
+  .node.is-deploy.is-live .node-ring{stroke:var(--spore);opacity:.7}
+  .dual-ring{
+    fill:none;stroke:var(--mycelium-faint);stroke-width:.9;opacity:.55;
+  }
+
+  /* external entity */
+  .node.is-external .ext-box{
+    fill:var(--substrate);stroke:var(--steel);stroke-width:1.1;
+    stroke-dasharray:3 3;transition:stroke .3s ease;
+  }
+  .node.is-external .node-core{fill:var(--steel)}
+  .node.is-external .node-label{fill:var(--steel-lit)}
+  .node.is-external:hover .ext-box,
+  .node.is-external:focus-visible .ext-box{stroke:var(--steel-lit);stroke-dasharray:none}
+  .node.is-external:hover .node-core{fill:var(--steel-lit)}
+
+  /* legend */
+  .legend{
+    display:flex;flex-wrap:wrap;gap:10px 22px;
+    padding:18px 0 4px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+    color:var(--mycelium-faint);text-transform:uppercase;
+  }
+  .legend span{display:flex;align-items:center;gap:8px}
+  .key{width:11px;height:11px;border-radius:50%;border:1px solid var(--mycelium-faint);flex:none}
+  .key.venture{background:transparent}
+  .key.dual{box-shadow:0 0 0 2.5px var(--substrate),0 0 0 3.5px var(--mycelium-faint)}
+  .key.live{border-color:var(--spore);background:var(--spore)}
+  .key.ext{border-radius:1px;border-color:var(--steel);border-style:dashed}
+  .key.paused{border-color:var(--hairline);border-style:dashed}
 
   /* ---------- loop ---------- */
   .loop{
@@ -235,63 +297,123 @@
   </section>
 
   <section class="weave" aria-label="Structure of the Grush ventures">
-    <svg viewBox="0 0 800 470" role="img" aria-label="Diagram: Grush at the centre connected to fungAI, Fun Guy Fungi, and Grush software, which form a loop. Cottages sits dormant, downstream of all three.">
+    <svg viewBox="0 0 1100 620" role="img" aria-label="Diagram: a membrane divides CBU's sphere of control on the left from Grush on the right. CBU owns the Lancer Farms and Gardens site. Inside Grush, the Lancer Farms deployment runs live, connected to Grush software. The only cord crossing the membrane is the exchange between the garden and the deployment. A potential research connection reaches from fungAI toward CBU but stops short of touching. Grush connects to fungAI, Fun Guy Fungi and Grush software, which form a loop. Cottages sits dormant, downstream of all three.">
+
+      <!-- the membrane -->
+      <path class="boundary" d="M275,40 C240,200 240,440 285,600"/>
+      <text class="sphere-label" x="140" y="62" text-anchor="middle">CBU&rsquo;s sphere</text>
+      <text class="sphere-label" x="140" y="76" text-anchor="middle">of control</text>
+      <text class="sphere-label" x="740" y="62" text-anchor="middle">Grush</text>
+
       <g id="filaments" stroke-linecap="round"></g>
+
       <g id="cords">
-        <path class="hypha" data-pair="hub-fungai"   d="M400,235 C360,205 320,175 268,148"/>
-        <path class="hypha" data-pair="hub-fgf"      d="M400,235 C470,215 530,200 588,186"/>
-        <path class="hypha" data-pair="hub-soft"     d="M400,245 C370,300 340,340 306,372"/>
-        <path class="hypha" data-pair="fungai-fgf"   d="M285,135 C380,95 500,110 590,168"/>
-        <path class="hypha" data-pair="fgf-soft"     d="M596,205 C560,300 430,368 328,382"/>
-        <path class="hypha" data-pair="soft-fungai"  d="M288,358 C230,300 218,210 250,152"/>
-        <path class="hypha dormant" d="M280,155 C440,150 640,240 662,392"/>
-        <path class="hypha dormant" d="M608,192 C660,250 664,320 664,384"/>
-        <path class="hypha dormant" d="M322,378 C450,410 580,402 646,396"/>
+        <!-- membership -->
+        <path class="hypha" data-pair="hub-fungai"  d="M568,250 C530,215 475,180 422,158"/>
+        <path class="hypha" data-pair="hub-fgf"     d="M570,260 C640,235 715,212 778,202"/>
+        <path class="hypha" data-pair="hub-soft"    d="M565,288 C530,315 480,355 448,372"/>
+        <!-- the loop -->
+        <path class="hypha" data-pair="fungai-fgf"  d="M428,133 C530,85 680,105 782,178"/>
+        <path class="hypha" data-pair="fgf-soft"    d="M798,213 C800,340 600,410 453,392"/>
+        <path class="hypha" data-pair="soft-fungai" d="M422,362 C395,300 395,215 405,163"/>
+        <!-- deployment -->
+        <path class="hypha" data-pair="soft-lancer" d="M428,396 C418,440 402,485 393,502"/>
+        <!-- ownership, inside CBU's own sphere -->
+        <path class="hypha owns" data-pair="cbu-garden" d="M128,318 C136,368 143,422 149,458"/>
+        <!-- THE ARBUSCULE: the only cord crossing the membrane -->
+        <path class="hypha exchange" data-pair="garden-deploy" d="M174,488 C244,508 318,518 366,520"/>
+        <!-- potential: fungAI reaching toward CBU, stopping short -->
+        <path class="hypha reach" data-pair="fungai-cbu" d="M394,152 C330,168 250,222 192,272"/>
+        <!-- dormant: downstream to Cottages -->
+        <path class="hypha dormant" d="M804,216 C880,290 928,390 940,458"/>
+        <path class="hypha dormant" d="M452,388 C610,440 830,468 918,474"/>
+        <path class="hypha dormant" d="M430,150 C680,196 900,320 938,456"/>
+      </g>
+
+      <!-- edge labels -->
+      <text class="edge-label" x="268" y="546" text-anchor="middle">exchange</text>
+      <text class="edge-label" x="262" y="212" text-anchor="middle">potential</text>
+
+      <!-- CBU — external entity -->
+      <g class="node is-external" tabindex="0" role="link" data-go="#software" data-cords="cbu-garden fungai-cbu">
+        <circle class="node-hit" cx="120" cy="300" r="40"/>
+        <rect class="ext-box" x="108" y="288" width="24" height="24" rx="2"/>
+        <circle class="node-core" cx="120" cy="300" r="4"/>
+        <text class="node-label" x="120" y="270" text-anchor="middle">CBU</text>
+        <text class="node-role"  x="120" y="336" text-anchor="middle">external &middot; owner</text>
+      </g>
+
+      <!-- Lancer Farms & Gardens — the physical site, CBU's -->
+      <g class="node is-external is-site" tabindex="0" role="link" data-go="#software" data-cords="cbu-garden garden-deploy">
+        <circle class="node-hit" cx="150" cy="480" r="42"/>
+        <rect class="ext-box" x="139" y="469" width="22" height="22" rx="2"/>
+        <circle class="node-core" cx="150" cy="480" r="3.5"/>
+        <text class="node-label" x="150" y="450" text-anchor="middle">Lancer Farms</text>
+        <text class="node-label" x="150" y="436" text-anchor="middle">&amp; Gardens</text>
+        <text class="node-role"  x="150" y="516" text-anchor="middle">the garden &middot; site</text>
       </g>
 
       <!-- fungAI -->
-      <g class="node" tabindex="0" role="link" data-go="#fungai" data-cords="hub-fungai fungai-fgf soft-fungai">
-        <circle class="node-hit" cx="264" cy="140" r="42"/>
-        <circle class="node-ring" cx="264" cy="140" r="13"/>
-        <circle class="node-core" cx="264" cy="140" r="4.5"/>
-        <text class="node-label" x="264" y="112" text-anchor="middle">fungAI</text>
-        <text class="node-role"  x="264" y="98"  text-anchor="middle">knows</text>
+      <g class="node" tabindex="0" role="link" data-go="#fungai" data-cords="hub-fungai fungai-fgf soft-fungai fungai-cbu">
+        <circle class="node-hit" cx="410" cy="145" r="42"/>
+        <circle class="node-ring" cx="410" cy="145" r="13"/>
+        <circle class="node-core" cx="410" cy="145" r="4.5"/>
+        <text class="node-label" x="410" y="117" text-anchor="middle">fungAI</text>
+        <text class="node-role"  x="410" y="103" text-anchor="middle">knows</text>
       </g>
 
-      <!-- Fun Guy Fungi -->
-      <g class="node" tabindex="0" role="link" data-go="#fgf" data-cords="hub-fgf fungai-fgf fgf-soft">
-        <circle class="node-hit" cx="596" cy="180" r="46"/>
-        <circle class="node-ring" cx="596" cy="180" r="13"/>
-        <circle class="node-core" cx="596" cy="180" r="4.5"/>
-        <text class="node-label" x="596" y="152" text-anchor="middle">Fun Guy Fungi</text>
-        <text class="node-role"  x="596" y="138" text-anchor="middle">grows</text>
+      <!-- Fun Guy Fungi — venture + deployment -->
+      <g class="node is-dual" tabindex="0" role="link" data-go="#fgf" data-cords="hub-fgf fungai-fgf fgf-soft">
+        <circle class="node-hit" cx="790" cy="195" r="46"/>
+        <circle class="dual-ring" cx="790" cy="195" r="18"/>
+        <circle class="node-ring" cx="790" cy="195" r="13"/>
+        <circle class="node-core" cx="790" cy="195" r="4.5"/>
+        <text class="node-label" x="790" y="162" text-anchor="middle">Fun Guy Fungi</text>
+        <text class="node-role"  x="790" y="148" text-anchor="middle">grows &middot; in development</text>
       </g>
 
       <!-- Grush software -->
-      <g class="node" tabindex="0" role="link" data-go="#software" data-cords="hub-soft fgf-soft soft-fungai">
-        <circle class="node-hit" cx="300" cy="380" r="46"/>
-        <circle class="node-ring" cx="300" cy="380" r="13"/>
-        <circle class="node-core" cx="300" cy="380" r="4.5"/>
-        <text class="node-label" x="300" y="415" text-anchor="middle">Grush software</text>
-        <text class="node-role"  x="300" y="429" text-anchor="middle">reads</text>
+      <g class="node" tabindex="0" role="link" data-go="#software" data-cords="hub-soft fgf-soft soft-fungai soft-lancer">
+        <circle class="node-hit" cx="430" cy="380" r="44"/>
+        <circle class="node-ring" cx="430" cy="380" r="13"/>
+        <circle class="node-core" cx="430" cy="380" r="4.5"/>
+        <text class="node-label" x="430" y="415" text-anchor="middle">Grush software</text>
+        <text class="node-role"  x="430" y="429" text-anchor="middle">reads</text>
       </g>
 
-      <!-- Cottages (dormant) -->
+      <!-- Lancer Farms deployment — inside Grush, live -->
+      <g class="node is-deploy is-live" tabindex="0" role="link" data-go="#software" data-cords="soft-lancer garden-deploy">
+        <circle class="node-hit" cx="388" cy="520" r="40"/>
+        <circle class="node-ring" cx="388" cy="520" r="11"/>
+        <circle class="node-core" cx="388" cy="520" r="4"/>
+        <text class="node-label" x="388" y="555" text-anchor="middle">Lancer Farms</text>
+        <text class="node-role"  x="388" y="569" text-anchor="middle">deployment &middot; live</text>
+      </g>
+
+      <!-- Cottages — dormant -->
       <g class="node is-dormant" tabindex="0" role="link" data-go="#cottages" data-cords="">
-        <circle class="node-hit" cx="664" cy="392" r="40"/>
-        <circle class="node-ring" cx="664" cy="392" r="11"/>
-        <circle class="node-core" cx="664" cy="392" r="3.5"/>
-        <text class="node-label" x="664" y="427" text-anchor="middle">Cottages</text>
-        <text class="node-role"  x="664" y="441" text-anchor="middle">dormant</text>
+        <circle class="node-hit" cx="940" cy="480" r="40"/>
+        <circle class="node-ring" cx="940" cy="480" r="11"/>
+        <circle class="node-core" cx="940" cy="480" r="3.5"/>
+        <text class="node-label" x="940" y="515" text-anchor="middle">Cottages</text>
+        <text class="node-role"  x="940" y="529" text-anchor="middle">dormant</text>
       </g>
 
       <!-- hub -->
       <g>
-        <circle class="hub-ring" cx="400" cy="240" r="21"/>
-        <circle class="hub-core" cx="400" cy="240" r="6"/>
-        <text class="hub-label" x="400" y="285" text-anchor="middle">Grush</text>
+        <circle class="hub-ring" cx="570" cy="275" r="21"/>
+        <circle class="hub-core" cx="570" cy="275" r="6"/>
+        <text class="hub-label" x="570" y="320" text-anchor="middle">Grush</text>
       </g>
     </svg>
+
+    <div class="legend">
+      <span><i class="key venture"></i>venture</span>
+      <span><i class="key dual"></i>venture + deployment</span>
+      <span><i class="key live"></i>live deployment</span>
+      <span><i class="key paused"></i>dormant</span>
+      <span><i class="key ext"></i>outside Grush</span>
+    </div>
   </section>
 
   <section class="loop">
@@ -401,7 +523,7 @@
   /* --- ambient filaments: short hyphal strands drifting off the cords --- */
   var fil = document.getElementById('filaments');
   var seedPts = [
-    [264,140],[596,180],[300,380],[400,240],[664,392]
+    [410,145],[790,195],[430,380],[570,275],[940,480],[388,520]
   ];
   var rnd = function(a,b){ return a + Math.random()*(b-a); };
   seedPts.forEach(function(p){
@@ -422,23 +544,28 @@
   var cords = Array.prototype.slice.call(document.querySelectorAll('#cords .hypha'));
   var strands = Array.prototype.slice.call(document.querySelectorAll('.filament'));
   if (!reduce){
+    var DASH = { dormant:'3 7', owns:'1 5', reach:'2 6' };
+    function restingDash(p){
+      for (var k in DASH){ if (p.classList.contains(k)) return DASH[k]; }
+      return null;
+    }
     cords.concat(strands).forEach(function(p, i){
       var L;
       try { L = p.getTotalLength(); } catch(e){ return; }
-      var dash = p.classList.contains('dormant');
-      p.style.strokeDasharray = dash ? (L + ' ' + L) : (L + ' ' + L);
+      var rest = restingDash(p);
+      p.style.strokeDasharray = L + ' ' + L;
       p.style.strokeDashoffset = L;
-      p.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(.22,.61,.36,1) ' + (i*45) + 'ms';
+      p.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(.22,.61,.36,1) ' + (i*40) + 'ms';
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           p.style.strokeDashoffset = '0';
         });
       });
-      if (dash){
+      if (rest){
         setTimeout(function(){
-          p.style.strokeDasharray = '3 7';
+          p.style.strokeDasharray = rest;
           p.style.strokeDashoffset = '0';
-        }, 1500 + i*45);
+        }, 1500 + i*40);
       }
     });
   }
