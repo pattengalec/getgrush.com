@@ -269,6 +269,74 @@
     color:var(--mycelium-faint);text-transform:uppercase;
   }
 
+  /* ---------- intro sequence ---------- */
+  .intro{
+    position:fixed;inset:0;z-index:100;
+    background:var(--substrate);
+    display:flex;align-items:center;justify-content:center;
+    opacity:1;transition:opacity 1.1s ease;
+  }
+  .intro.gone{opacity:0;pointer-events:none}
+  .intro-stage{
+    position:relative;
+    width:min(1180px,94vw);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .intro-stage > svg{width:100%;height:auto;display:block;overflow:visible}
+  .scene{
+    position:absolute;inset:0;margin:auto;
+    width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;
+    transition:opacity .7s ease;
+  }
+  .scene.on{opacity:1}
+  .scene svg{width:100%;height:auto;display:block}
+
+  .skip{
+    position:fixed;top:22px;right:24px;z-index:101;
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--mycelium-dim);
+    background:transparent;border:1px solid var(--hairline);
+    border-radius:2px;padding:9px 15px;cursor:pointer;
+    transition:color .25s ease,border-color .25s ease,opacity .6s ease;
+  }
+  .skip:hover{color:var(--spore);border-color:var(--spore)}
+  .skip.gone{opacity:0;pointer-events:none}
+
+  .caption{
+    position:fixed;left:0;right:0;bottom:52px;z-index:101;
+    text-align:center;pointer-events:none;
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--mycelium-faint);
+    opacity:0;transition:opacity .6s ease;
+  }
+  .caption.on{opacity:1}
+  .caption b{color:var(--spore);font-weight:400}
+
+  body.intro-running{overflow:hidden}
+  .page{opacity:1;transition:opacity 1s ease}
+  .page.hidden{opacity:0}
+
+  /* scene primitives */
+  .cellwall{fill:none;stroke:var(--mycelium-faint);stroke-width:2.5}
+  .plasma{fill:none;stroke:var(--spore);stroke-width:1.8}
+  .cytoplasm{fill:rgba(232,225,212,.028)}
+  .hypha-a{fill:none;stroke:var(--mycelium);stroke-width:3.4;stroke-linecap:round}
+  .hypha-thin{fill:none;stroke:var(--mycelium);stroke-width:1.9;stroke-linecap:round}
+  .arb{fill:none;stroke:var(--mycelium);stroke-width:1.5;stroke-linecap:round}
+  .peri{fill:none;stroke:var(--spore);stroke-width:.9;opacity:.75}
+  .scene-label{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    fill:var(--mycelium-faint);text-transform:uppercase;
+  }
+  .scene-label.hot{fill:var(--spore)}
+  .lead{stroke:var(--hairline);stroke-width:.8}
+  .root-body{fill:rgba(201,162,39,.05);stroke:var(--spore);stroke-width:1.6}
+  .spore-dot{fill:var(--mycelium)}
+  .sig-out{fill:none;stroke:var(--spore);stroke-width:1;opacity:.5}
+  .sig-in{fill:none;stroke:var(--steel-lit);stroke-width:1;opacity:.5}
+
   @media (max-width:700px){
     .branch{grid-template-columns:1fr;gap:12px}
     .branch-role{padding-top:0}
@@ -283,7 +351,156 @@
 </head>
 <body>
 
-<div class="wrap">
+<div class="intro" id="intro" hidden>
+  <div class="intro-stage" id="stage">
+
+    <!-- SCENE A — the membrane: colonization -->
+    <div class="scene" id="sceneA">
+      <svg viewBox="0 0 900 520" role="img" aria-label="A fungal hypha penetrates a root cell wall. The plant's plasma membrane invaginates around it without breaking, sheathing the branching arbuscule. Nutrients pass across the interface. The two organisms never fuse.">
+        <!-- the root cell -->
+        <path class="cytoplasm" d="M330,60 C520,34 760,44 848,92 C876,190 876,336 848,432 C760,482 520,492 330,464 C316,336 316,190 330,60 Z"/>
+        <path class="cellwall" id="A_wall" d="M330,60 C520,34 760,44 848,92 C876,190 876,336 848,432 C760,482 520,492 330,464 C316,336 316,190 330,60"/>
+
+        <!-- plasma membrane: continuous, with the invagination already in its geometry -->
+        <path class="plasma" id="A_plasma"
+          d="M344,74 C520,50 752,60 836,104
+             C862,196 862,330 836,420
+             C752,468 520,478 344,452
+             C338,400 336,340 335,300
+             C356,296 372,290 386,282
+             C404,272 418,262 436,258
+             C452,254 470,256 486,262
+             C500,268 512,276 522,282
+             C512,258 500,246 486,240
+             C470,234 452,236 436,240
+             C418,244 404,250 386,244
+             C372,238 356,232 335,228
+             C336,188 338,128 344,74"/>
+
+        <!-- hypha arriving from outside, horizontal — matches the exchange cord angle -->
+        <path class="hypha-a" id="A_hypha" d="M20,262 C110,260 210,262 300,262"/>
+        <!-- penetration through the wall -->
+        <path class="hypha-a" id="A_pen" d="M300,262 C316,262 330,262 348,262"/>
+        <!-- the arbuscule: dichotomous branching inside the cell -->
+        <g id="A_arb">
+          <path class="arb" d="M348,262 C400,262 440,258 470,250"/>
+          <path class="arb" d="M470,250 C510,240 546,214 574,190"/>
+          <path class="arb" d="M470,250 C512,262 548,288 574,318"/>
+          <path class="arb" d="M574,190 C600,168 626,152 656,142"/>
+          <path class="arb" d="M574,190 C596,204 612,222 622,244"/>
+          <path class="arb" d="M574,318 C600,342 626,360 658,372"/>
+          <path class="arb" d="M574,318 C594,300 610,284 622,268"/>
+          <path class="arb" d="M656,142 C678,134 700,130 722,130"/>
+          <path class="arb" d="M656,142 C666,158 672,174 674,190"/>
+          <path class="arb" d="M658,372 C680,380 702,384 724,384"/>
+          <path class="arb" d="M658,372 C668,356 674,340 676,324"/>
+          <path class="arb" d="M622,244 C646,248 668,252 690,254"/>
+          <path class="arb" d="M622,268 C646,264 668,262 690,260"/>
+        </g>
+        <!-- periarbuscular membrane: the host's own membrane, wrapping every branch -->
+        <g id="A_peri">
+          <path class="peri" d="M348,254 C400,254 440,250 468,242 C508,232 544,206 572,182"/>
+          <path class="peri" d="M348,270 C400,270 440,266 468,258 C510,270 546,296 572,326"/>
+          <path class="peri" d="M572,182 C598,160 624,144 656,134"/>
+          <path class="peri" d="M572,326 C598,350 624,368 658,380"/>
+        </g>
+
+        <!-- hidden guide for nutrient traffic -->
+        <path id="A_guide" fill="none" stroke="none" d="M20,262 C200,262 330,262 470,250 C560,240 620,246 690,254"/>
+
+        <!-- nutrient traffic -->
+        <circle class="flow-p" id="p1" r="3" fill="#C9A227" opacity="0"/>
+        <circle class="flow-p" id="p2" r="3" fill="#C9A227" opacity="0"/>
+        <circle class="flow-c" id="c1" r="3" fill="#8AA6B8" opacity="0"/>
+        <circle class="flow-c" id="c2" r="3" fill="#8AA6B8" opacity="0"/>
+
+        <!-- callouts -->
+        <g id="A_labels" opacity="0">
+          <line class="lead" x1="300" y1="200" x2="300" y2="150"/>
+          <text class="scene-label" x="300" y="140" text-anchor="middle">cell wall</text>
+
+          <line class="lead" x1="470" y1="250" x2="470" y2="470"/>
+          <text class="scene-label" x="470" y="486" text-anchor="middle">arbuscule</text>
+
+          <line class="lead" x1="700" y1="200" x2="790" y2="200"/>
+          <text class="scene-label hot" x="800" y="196" text-anchor="start">periarbuscular</text>
+          <text class="scene-label hot" x="800" y="212" text-anchor="start">membrane</text>
+
+          <text class="scene-label" x="120" y="228" text-anchor="middle">hypha</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- SCENE B — the reach: pre-symbiotic signaling -->
+    <div class="scene" id="sceneB">
+      <svg viewBox="0 0 900 520" role="img" aria-label="A plant root releases strigolactones. A germinating fungal spore grows toward the signal and branches as it nears. The fungus answers with Myc factors. The two never touch.">
+        <!-- signal gradient from the root -->
+        <defs>
+          <radialGradient id="strig" cx="1" cy="0.5" r="1">
+            <stop offset="0%" stop-color="#C9A227" stop-opacity=".22"/>
+            <stop offset="55%" stop-color="#C9A227" stop-opacity=".05"/>
+            <stop offset="100%" stop-color="#C9A227" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect id="B_field" x="0" y="0" width="900" height="520" fill="url(#strig)" opacity="0"/>
+
+        <!-- the root -->
+        <path class="root-body" id="B_root" d="M760,40 C800,40 830,70 830,120 L830,400 C830,450 800,480 760,480 C742,480 730,470 730,440 L730,80 C730,50 742,40 760,40 Z"/>
+        <text class="scene-label" x="780" y="504" text-anchor="middle">host root</text>
+
+        <!-- strigolactone waves, root -> fungus -->
+        <g id="B_sig_out">
+          <path class="sig-out" d="M700,140 C640,180 640,340 700,380"/>
+          <path class="sig-out" d="M640,120 C560,175 560,345 640,400"/>
+          <path class="sig-out" d="M580,104 C480,170 480,350 580,416"/>
+        </g>
+
+        <!-- spore + hypha turning toward the signal -->
+        <circle class="spore-dot" id="B_spore" cx="70" cy="248" r="6" opacity="0"/>
+        <path class="hypha-a" id="B_main" d="M76,248 C150,250 214,254 268,262 C330,272 384,286 432,300"/>
+        <g id="B_branch">
+          <path class="hypha-thin" d="M432,300 C470,296 500,282 528,264"/>
+          <path class="hypha-thin" d="M432,300 C468,314 496,332 520,352"/>
+          <path class="hypha-thin" d="M528,264 C552,250 572,240 592,234"/>
+          <path class="hypha-thin" d="M528,264 C546,276 558,290 566,304"/>
+          <path class="hypha-thin" d="M520,352 C544,366 566,374 586,378"/>
+          <path class="hypha-thin" d="M520,352 C540,340 554,328 564,316"/>
+          <path class="hypha-thin" d="M592,234 C610,228 626,224 640,222"/>
+          <path class="hypha-thin" d="M586,378 C604,382 620,384 634,386"/>
+          <path class="hypha-thin" d="M566,304 C586,302 602,300 618,300"/>
+          <path class="hypha-thin" d="M564,316 C584,318 600,320 616,322"/>
+        </g>
+
+        <!-- Myc factors, fungus -> root -->
+        <g id="B_sig_in" opacity="0">
+          <path class="sig-in" d="M660,270 C690,266 706,262 716,258"/>
+          <path class="sig-in" d="M660,300 C692,300 708,300 718,300"/>
+          <path class="sig-in" d="M660,330 C690,334 706,338 716,342"/>
+        </g>
+
+        <g id="B_labels" opacity="0">
+          <text class="scene-label hot" x="452" y="86" text-anchor="middle">strigolactones &rarr;</text>
+          <text class="scene-label" x="120" y="220" text-anchor="middle">spore</text>
+          <line class="lead" x1="480" y1="300" x2="480" y2="452"/>
+          <text class="scene-label" x="480" y="470" text-anchor="middle">branching intensifies</text>
+          <text class="scene-label" x="452" y="446" text-anchor="middle"></text>
+        </g>
+        <g id="B_myc_label" opacity="0">
+          <text class="scene-label" x="620" y="430" text-anchor="middle">&larr; myc factors</text>
+        </g>
+        <g id="B_gap" opacity="0">
+          <line class="lead" x1="668" y1="300" x2="668" y2="180" stroke="#8AA6B8"/>
+          <text class="scene-label" x="668" y="168" text-anchor="middle" fill="#8AA6B8">no contact</text>
+        </g>
+      </svg>
+    </div>
+
+  </div>
+</div>
+<button class="skip" id="skip" hidden>Skip</button>
+<div class="caption" id="caption"></div>
+
+<div class="wrap page" id="page">
 
   <header class="masthead">
     <div class="wordmark">Grush</div>
@@ -519,12 +736,22 @@
 <script>
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $  = function(s,r){ return (r||document).querySelector(s); };
+  var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
 
-  /* --- ambient filaments: short hyphal strands drifting off the cords --- */
-  var fil = document.getElementById('filaments');
-  var seedPts = [
-    [410,145],[790,195],[430,380],[570,275],[940,480],[388,520]
-  ];
+  var mapSvg   = $('.weave svg');
+  var weave    = $('.weave');
+  var legendEl = $('.legend');
+  var intro    = $('#intro');
+  var stage    = $('#stage');
+  var skipBtn  = $('#skip');
+  var capEl    = $('#caption');
+  var pageEl   = $('#page');
+  var VB = { w:1100, h:620 };
+
+  /* ---------- ambient filaments ---------- */
+  var fil = $('#filaments');
+  var seedPts = [[410,145],[790,195],[430,380],[570,275],[940,480],[388,520]];
   var rnd = function(a,b){ return a + Math.random()*(b-a); };
   seedPts.forEach(function(p){
     for (var i=0;i<7;i++){
@@ -532,70 +759,354 @@
       var x2 = p[0] + Math.cos(ang)*len, y2 = p[1] + Math.sin(ang)*len;
       var mx = p[0] + Math.cos(ang)*len*0.5 + rnd(-9,9);
       var my = p[1] + Math.sin(ang)*len*0.5 + rnd(-9,9);
-      var d = 'M'+p[0]+','+p[1]+' Q'+mx.toFixed(1)+','+my.toFixed(1)+' '+x2.toFixed(1)+','+y2.toFixed(1);
       var path = document.createElementNS('http://www.w3.org/2000/svg','path');
       path.setAttribute('class','filament');
-      path.setAttribute('d', d);
+      path.setAttribute('d','M'+p[0]+','+p[1]+' Q'+mx.toFixed(1)+','+my.toFixed(1)+' '+x2.toFixed(1)+','+y2.toFixed(1));
       fil.appendChild(path);
     }
   });
 
-  /* --- growth: draw the cords in on load --- */
-  var cords = Array.prototype.slice.call(document.querySelectorAll('#cords .hypha'));
-  var strands = Array.prototype.slice.call(document.querySelectorAll('.filament'));
-  if (!reduce){
-    var DASH = { dormant:'3 7', owns:'1 5', reach:'2 6' };
-    function restingDash(p){
-      for (var k in DASH){ if (p.classList.contains(k)) return DASH[k]; }
-      return null;
+  var cords   = $$('#cords .hypha');
+  var strands = $$('.filament');
+  var DASH    = { dormant:'3 7', owns:'1 5', reach:'2 6' };
+  function restDash(p){ for (var k in DASH){ if (p.classList.contains(k)) return DASH[k]; } return null; }
+  function byPair(n){ return cords.filter(function(c){ return c.getAttribute('data-pair')===n; })[0]; }
+
+  /* ---------- node hover: light the cords ---------- */
+  $$('g.node').forEach(function(n){
+    var list = (n.getAttribute('data-cords')||'').split(' ').filter(Boolean);
+    var mine = cords.filter(function(c){ return list.indexOf(c.getAttribute('data-pair'))!==-1; });
+    function on(){ mine.forEach(function(c){ c.classList.add('hot'); }); }
+    function off(){ mine.forEach(function(c){ c.classList.remove('hot'); }); }
+    n.addEventListener('mouseenter',on); n.addEventListener('mouseleave',off);
+    n.addEventListener('focus',on);      n.addEventListener('blur',off);
+    function go(){
+      var t = n.getAttribute('data-go'); var el = t && $(t);
+      if (el) el.scrollIntoView({behavior: reduce ? 'auto':'smooth', block:'start'});
     }
-    cords.concat(strands).forEach(function(p, i){
-      var L;
-      try { L = p.getTotalLength(); } catch(e){ return; }
-      var rest = restingDash(p);
-      p.style.strokeDasharray = L + ' ' + L;
-      p.style.strokeDashoffset = L;
-      p.style.transition = 'stroke-dashoffset 1.5s cubic-bezier(.22,.61,.36,1) ' + (i*40) + 'ms';
-      requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          p.style.strokeDashoffset = '0';
-        });
-      });
-      if (rest){
-        setTimeout(function(){
-          p.style.strokeDasharray = rest;
-          p.style.strokeDashoffset = '0';
-        }, 1500 + i*40);
-      }
+    n.addEventListener('click',go);
+    n.addEventListener('keydown',function(e){
+      if (e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }
+    });
+  });
+
+  /* ---------- drawing helpers ---------- */
+  function len(p){ try { return p.getTotalLength(); } catch(e){ return 0; } }
+  function hide(p){
+    var L = len(p); if(!L) return;
+    p.style.strokeDasharray = L+' '+L;
+    p.style.strokeDashoffset = L;
+    p.style.transition = 'none';
+  }
+  function draw(p, dur, delay){
+    var L = len(p); if(!L) return;
+    p.style.transition = 'stroke-dashoffset '+dur+'ms cubic-bezier(.22,.61,.36,1) '+(delay||0)+'ms';
+    p.style.strokeDashoffset = '0';
+    var rest = restDash(p);
+    if (rest){ setTimeout(function(){ if(!killed){ p.style.strokeDasharray = rest; p.style.strokeDashoffset='0'; } }, dur+(delay||0)); }
+  }
+  function drawAll(list, dur, stagger){
+    list.forEach(function(p,i){ draw(p, dur, i*(stagger||0)); });
+  }
+  function fade(el, to, dur){
+    if(!el) return;
+    el.style.transition = 'opacity '+(dur||600)+'ms ease';
+    el.style.opacity = to;
+  }
+  function show(el){ if(el){ el.style.transition='opacity 700ms ease'; el.style.opacity=1; } }
+
+  /* ---------- camera ---------- */
+  var cam = { x:0, y:0, w:VB.w, h:VB.h };
+  function applyCam(){ mapSvg.setAttribute('viewBox', cam.x+' '+cam.y+' '+cam.w+' '+cam.h); }
+  function easeInOut(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+  function moveCam(cx, cy, zoom, dur){
+    return new Promise(function(res){
+      var w1 = VB.w/zoom, h1 = VB.h/zoom;
+      var to = { x: cx-w1/2, y: cy-h1/2, w: w1, h: h1 };
+      var fr = { x:cam.x, y:cam.y, w:cam.w, h:cam.h };
+      var t0 = performance.now();
+      (function step(now){
+        if (killed){ res(); return; }
+        var t = Math.min(1,(now-t0)/dur), e = easeInOut(t);
+        cam.x = fr.x+(to.x-fr.x)*e; cam.y = fr.y+(to.y-fr.y)*e;
+        cam.w = fr.w+(to.w-fr.w)*e; cam.h = fr.h+(to.h-fr.h)*e;
+        applyCam();
+        if (t<1) requestAnimationFrame(step); else res();
+      })(t0);
     });
   }
 
-  /* --- node interaction: light the cords that belong to a node --- */
-  function cordsFor(list){
-    return cords.filter(function(c){
-      return list.indexOf(c.getAttribute('data-pair')) !== -1;
+  /* ---------- traffic along a guide path ---------- */
+  function traffic(guide, dot, dur, reverse, loops){
+    return new Promise(function(res){
+      var L = len(guide); if(!L){ res(); return; }
+      var n = 0;
+      dot.setAttribute('opacity','1');
+      var t0 = performance.now();
+      (function step(now){
+        if (killed){ res(); return; }
+        var t = ((now-t0)%dur)/dur;
+        var d = reverse ? (1-t)*L : t*L;
+        var pt = guide.getPointAtLength(d);
+        dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y);
+        var edge = Math.min(t,1-t)*2;
+        dot.setAttribute('opacity', Math.min(1, edge*3).toFixed(2));
+        if ((now-t0) < dur*loops) requestAnimationFrame(step);
+        else { dot.setAttribute('opacity','0'); res(); }
+      })(t0);
     });
   }
-  document.querySelectorAll('g.node').forEach(function(n){
-    var list = (n.getAttribute('data-cords')||'').split(' ').filter(Boolean);
-    var mine = cordsFor(list);
-    function on(){ mine.forEach(function(c){ c.classList.add('hot'); }); }
-    function off(){ mine.forEach(function(c){ c.classList.remove('hot'); }); }
-    n.addEventListener('mouseenter', on);
-    n.addEventListener('mouseleave', off);
-    n.addEventListener('focus', on);
-    n.addEventListener('blur', off);
-    function go(){
-      var t = n.getAttribute('data-go');
-      var el = t && document.querySelector(t);
-      if (el) el.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'start'});
-    }
-    n.addEventListener('click', go);
-    n.addEventListener('keydown', function(e){
-      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); }
+
+  /* ---------- sequencer ---------- */
+  var killed = false;
+  var timers = [];
+  function wait(ms){
+    return new Promise(function(res){
+      if (killed) return res();
+      var id = setTimeout(res, ms); timers.push(id);
     });
+  }
+  function caption(txt){
+    if (!txt){ capEl.classList.remove('on'); return; }
+    capEl.innerHTML = txt; capEl.classList.add('on');
+  }
+
+  /* ---------- initial hidden state ---------- */
+  var mapBits = {
+    boundary : $('.boundary'),
+    spheres  : $$('.sphere-label'),
+    edges    : $$('.edge-label'),
+    nodes    : $$('g.node'),
+    hub      : $$('.hub-ring, .hub-core, .hub-label')
+  };
+  function armIntro(){
+    cords.concat(strands).forEach(hide);
+    mapBits.nodes.forEach(function(n){ n.style.opacity = 0; });
+    mapBits.hub.forEach(function(n){ n.style.opacity = 0; });
+    mapBits.spheres.forEach(function(n){ n.style.opacity = 0; });
+    mapBits.edges.forEach(function(n){ n.style.opacity = 0; });
+    if (mapBits.boundary) mapBits.boundary.style.opacity = 0;
+    if (legendEl) legendEl.style.opacity = 0;
+  }
+  function settleAll(){
+    cords.concat(strands).forEach(function(p){
+      p.style.transition='none';
+      var rest = restDash(p);
+      p.style.strokeDasharray = rest || 'none';
+      p.style.strokeDashoffset = '0';
+    });
+    [].concat(mapBits.nodes, mapBits.hub, mapBits.spheres, mapBits.edges,
+             mapBits.boundary?[mapBits.boundary]:[], legendEl?[legendEl]:[])
+      .forEach(function(n){ if(n){ n.style.transition='opacity 500ms ease'; n.style.opacity=1; } });
+    cam = { x:0, y:0, w:VB.w, h:VB.h }; applyCam();
+  }
+
+  /* ---------- scene A: the membrane ---------- */
+  async function sceneMembrane(){
+    var s = $('#sceneA');
+    ['#A_wall','#A_plasma','#A_hypha','#A_pen'].forEach(function(id){ hide($(id)); });
+    $$('#A_arb path').forEach(hide); $$('#A_peri path').forEach(hide);
+    $('#A_labels').style.opacity = 0;
+
+    s.classList.add('on');
+    await wait(500);
+    draw($('#A_wall'), 900); if(killed) return;
+    caption('the hypha arrives');
+    draw($('#A_hypha'), 1000, 200);
+    await wait(1300); if(killed) return;
+
+    caption('it presses through the wall');
+    draw($('#A_pen'), 700);
+    await wait(700); if(killed) return;
+
+    caption('the host membrane <b>invaginates &mdash; it does not break</b>');
+    draw($('#A_plasma'), 1900);
+    await wait(1000); if(killed) return;
+
+    drawAll($$('#A_arb path'), 700, 90);
+    await wait(1500); if(killed) return;
+
+    caption('the arbuscule branches <b>inside an unbroken wall</b>');
+    drawAll($$('#A_peri path'), 800, 100);
+    show($('#A_labels'));
+    await wait(1100); if(killed) return;
+
+    caption('phosphorus in &middot; carbon out &middot; <b>nothing fuses</b>');
+    var g = $('#A_guide');
+    traffic(g, $('#p1'), 2600, false, 2.6);
+    setTimeout(function(){ if(!killed) traffic(g, $('#p2'), 2600, false, 2.0); }, 900);
+    traffic(g, $('#c1'), 3000, true, 2.6);
+    setTimeout(function(){ if(!killed) traffic(g, $('#c2'), 3000, true, 2.0); }, 1300);
+    await wait(3000); if(killed) return;
+
+    caption('');
+    s.classList.remove('on');
+    await wait(700);
+  }
+
+  /* ---------- scene B: the reach ---------- */
+  async function sceneReach(){
+    var s = $('#sceneB');
+    hide($('#B_root')); hide($('#B_main'));
+    $$('#B_sig_out path').forEach(hide);
+    $$('#B_branch path').forEach(hide);
+    ['#B_labels','#B_myc_label','#B_gap','#B_sig_in'].forEach(function(id){ $(id).style.opacity = 0; });
+    $('#B_field').style.opacity = 0;
+    $('#B_spore').setAttribute('opacity','0');
+
+    s.classList.add('on');
+    await wait(500);
+    draw($('#B_root'), 900); if(killed) return;
+
+    caption('the root releases <b>strigolactones</b>');
+    fade($('#B_field'), 1, 1400);
+    drawAll($$('#B_sig_out path'), 900, 160);
+    await wait(1500); if(killed) return;
+
+    caption('a spore germinates');
+    $('#B_spore').setAttribute('opacity','1');
+    await wait(600); if(killed) return;
+
+    caption('the hypha grows <b>toward the signal</b>');
+    draw($('#B_main'), 1600);
+    await wait(1700); if(killed) return;
+
+    caption('branching intensifies as it nears');
+    drawAll($$('#B_branch path'), 600, 90);
+    show($('#B_labels'));
+    await wait(1400); if(killed) return;
+
+    caption('the fungus answers with <b>Myc factors</b>');
+    show($('#B_sig_in')); show($('#B_myc_label'));
+    await wait(1400); if(killed) return;
+
+    caption('and there it stops. <b>no contact.</b>');
+    show($('#B_gap'));
+    await wait(2000); if(killed) return;
+
+    caption('');
+    s.classList.remove('on');
+    await wait(700);
+  }
+
+  /* ---------- the sequence ---------- */
+  async function run(){
+    document.body.classList.add('intro-running');
+    intro.hidden = false; skipBtn.hidden = false;
+    pageEl.classList.add('hidden');
+    stage.insertBefore(mapSvg, stage.firstChild);
+    armIntro(); applyCam();
+    await wait(400); if(killed) return;
+
+    // 1. the spore
+    caption('one spore');
+    mapBits.hub.forEach(function(n){ n.style.transition='opacity 900ms ease'; n.style.opacity=1; });
+    await wait(1300); if(killed) return;
+
+    // 2. germination -> the three ventures
+    caption('it reaches for what it needs');
+    draw(byPair('hub-fungai'), 1100);
+    draw(byPair('hub-fgf'), 1100, 150);
+    draw(byPair('hub-soft'), 1100, 300);
+    await wait(700); if(killed) return;
+    [ $$('g.node')[2], $$('g.node')[3], $$('g.node')[4] ].forEach(function(n,i){
+      if(!n) return; n.style.transition='opacity 700ms ease '+(i*160)+'ms'; n.style.opacity=1;
+    });
+    await wait(1400); if(killed) return;
+
+    // 3. the loop closes
+    caption('each one feeds the other two');
+    draw(byPair('fungai-fgf'), 1000);
+    draw(byPair('fgf-soft'), 1000, 200);
+    draw(byPair('soft-fungai'), 1000, 400);
+    await wait(1700); if(killed) return;
+
+    // 4. the deployment
+    caption('the software goes to work');
+    draw(byPair('soft-lancer'), 800);
+    await wait(500); if(killed) return;
+    var lancer = $$('g.node').filter(function(n){ return n.classList.contains('is-deploy'); })[0];
+    if (lancer){ lancer.style.transition='opacity 700ms ease'; lancer.style.opacity=1; }
+    await wait(1000); if(killed) return;
+
+    // 5. the other sphere
+    caption('but the garden belongs to someone else');
+    show(mapBits.boundary);
+    mapBits.spheres.forEach(function(n){ n.style.transition='opacity 800ms ease'; n.style.opacity=1; });
+    $$('g.node.is-external').forEach(function(n,i){
+      n.style.transition='opacity 700ms ease '+(i*200)+'ms'; n.style.opacity=1;
+    });
+    draw(byPair('cbu-garden'), 900, 300);
+    await wait(1800); if(killed) return;
+
+    // 6. the crossing
+    caption('one cord crosses the membrane');
+    draw(byPair('garden-deploy'), 1300);
+    await wait(1500); if(killed) return;
+
+    // 7. push in -> SCENE A
+    caption('');
+    await moveCam(270, 508, 7.5, 1500); if(killed) return;
+    await sceneMembrane(); if(killed) return;
+    await moveCam(550, 310, 1, 1500); if(killed) return;
+
+    // 8. the reach
+    caption('elsewhere, it reaches');
+    draw(byPair('fungai-cbu'), 1400);
+    await wait(1600); if(killed) return;
+
+    // 9. push in -> SCENE B
+    caption('');
+    await moveCam(292, 212, 7.5, 1500); if(killed) return;
+    await sceneReach(); if(killed) return;
+    await moveCam(550, 310, 1, 1500); if(killed) return;
+
+    // 10. what waits
+    caption('and something waits downstream');
+    $$('#cords .hypha.dormant').forEach(function(p,i){ draw(p, 1100, i*160); });
+    var dorm = $$('g.node.is-dormant')[0];
+    if (dorm){ dorm.style.transition='opacity 900ms ease'; dorm.style.opacity=1; }
+    await wait(1800); if(killed) return;
+
+    // 11. settle
+    caption('');
+    drawAll(strands, 900, 25);
+    mapBits.edges.forEach(function(n){ n.style.transition='opacity 700ms ease'; n.style.opacity=1; });
+    await wait(900); if(killed) return;
+    finish();
+  }
+
+  function finish(){
+    if (killed) return;
+    killed = true;
+    timers.forEach(clearTimeout);
+    try { localStorage.setItem('grush_intro_seen','1'); } catch(e){}
+    settleAll();
+    $('#sceneA').classList.remove('on'); $('#sceneB').classList.remove('on');
+    caption('');
+    weave.insertBefore(mapSvg, legendEl);
+    intro.classList.add('gone'); skipBtn.classList.add('gone');
+    pageEl.classList.remove('hidden');
+    document.body.classList.remove('intro-running');
+    setTimeout(function(){ intro.hidden = true; skipBtn.hidden = true; }, 1200);
+  }
+
+  skipBtn.addEventListener('click', finish);
+  document.addEventListener('keydown', function(e){
+    if (!intro.hidden && (e.key==='Escape' || e.key===' ')){ e.preventDefault(); finish(); }
   });
+
+  /* ---------- decide ---------- */
+  var seen = false;
+  try { seen = !!localStorage.getItem('grush_intro_seen'); } catch(e){}
+  if (reduce || seen){
+    settleAll();
+    intro.hidden = true; skipBtn.hidden = true;
+  } else {
+    run();
+  }
 })();
 </script>
+
 </body>
 </html>
