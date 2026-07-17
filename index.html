@@ -118,6 +118,15 @@
   }
   .filament{fill:none;stroke:var(--hairline);stroke-width:.6;stroke-linecap:round}
   .node-hit{cursor:pointer;fill:transparent}
+  .node.is-static .node-hit{cursor:default}
+
+  /* gold: this link is live. silver: nothing to go to yet. */
+  .node.is-link .node-label{fill:var(--spore)}
+  .node.is-link .node-ring{stroke:var(--spore)}
+  .node.is-link .node-core{fill:var(--spore)}
+  .node.is-link:hover .node-label{fill:var(--spore)}
+  .node.is-static .node-label{fill:var(--steel-lit)}
+  .node.is-static .node-role{fill:var(--steel)}
   .node-ring{
     fill:var(--substrate);stroke:var(--mycelium-faint);stroke-width:1.2;
     transition:stroke .3s ease,fill .3s ease;
@@ -220,8 +229,23 @@
     font-family:var(--display);font-weight:500;
     font-size:clamp(24px,3.4vw,34px);letter-spacing:-.01em;line-height:1.2;
   }
-  .branch h2 a{text-decoration:none;border-bottom:1px solid var(--oxblood);padding-bottom:2px}
-  .branch h2 a:hover{color:var(--spore);border-color:var(--spore)}
+  .branch h2 a{
+    color:var(--spore);text-decoration:none;
+    border-bottom:1px solid rgba(201,162,39,.4);padding-bottom:3px;
+    transition:border-color .25s ease;
+  }
+  .branch h2 a:hover{border-bottom-color:var(--spore)}
+  a.ext{
+    color:var(--spore);text-decoration:none;
+    border-bottom:1px solid rgba(201,162,39,.4);
+    transition:border-color .25s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  a.ext:hover,a.ext:focus-visible{border-bottom-color:var(--spore)}
+  a.ext .u{
+    font-style:normal;font-family:var(--mono);font-size:11px;
+    letter-spacing:.05em;opacity:.75;margin-left:9px;white-space:nowrap;
+  }
   .branch p{margin-top:14px;max-width:58ch;color:var(--mycelium-dim);font-size:16px}
 
   .attrs{
@@ -241,8 +265,7 @@
     padding:15px 0;border-bottom:1px solid var(--hairline);
   }
   .deploy-name{font-size:15.5px}
-  .deploy-name a{text-decoration:none;border-bottom:1px solid var(--hairline)}
-  .deploy-name a:hover{color:var(--spore);border-color:var(--spore)}
+  .deploy-name a{text-decoration:none}
   .deploy-name span{
     display:block;font-family:var(--mono);font-size:10.5px;
     color:var(--text-faint);letter-spacing:.05em;margin-top:4px;
@@ -279,9 +302,11 @@
   }
   .foot a{
     font-family:var(--display);font-size:20px;font-weight:500;
-    text-decoration:none;border-bottom:1px solid var(--oxblood);
+    color:var(--spore);text-decoration:none;
+    border-bottom:1px solid rgba(201,162,39,.4);
+    transition:border-color .25s ease;
   }
-  .foot a:hover{color:var(--spore);border-color:var(--spore)}
+  .foot a:hover{border-bottom-color:var(--spore)}
   .foot .fine{
     font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
     color:var(--text-faint);text-transform:uppercase;
@@ -621,7 +646,7 @@
       <text class="edge-label" x="14"  y="596" text-anchor="start">potential</text>
 
       <!-- CBU -->
-      <g class="node is-external" tabindex="0" role="link" data-go="#software" data-cords="cbu-garden fungai-cbu">
+      <g class="node is-external is-static" data-cords="cbu-garden fungai-cbu">
         <circle class="node-hit" cx="105" cy="805" r="38"/>
         <rect class="ext-box" x="94" y="794" width="22" height="22" rx="2"/>
         <circle class="node-core" cx="105" cy="805" r="3.5"/>
@@ -630,7 +655,7 @@
       </g>
 
       <!-- Lancer Farms &amp; Gardens -->
-      <g class="node is-external is-site" tabindex="0" role="link" data-go="#software" data-cords="cbu-garden garden-deploy">
+      <g class="node is-external is-site is-static" data-cords="cbu-garden garden-deploy">
         <circle class="node-hit" cx="270" cy="735" r="38"/>
         <rect class="ext-box" x="260" y="725" width="20" height="20" rx="2"/>
         <circle class="node-core" cx="270" cy="735" r="3"/>
@@ -648,7 +673,7 @@
       </g>
 
       <!-- Fun Guy Fungi -->
-      <g class="node is-dual" tabindex="0" role="link" data-go="#fgf" data-cords="hub-fgf fungai-fgf fgf-soft">
+      <g class="node is-dual is-link" tabindex="0" role="link" data-go="https://funguyfungi.org" data-cords="hub-fgf fungai-fgf fgf-soft">
         <circle class="node-hit" cx="300" cy="200" r="40"/>
         <circle class="dual-ring" cx="300" cy="200" r="17"/>
         <circle class="node-ring" cx="300" cy="200" r="12"/>
@@ -667,7 +692,7 @@
       </g>
 
       <!-- Lancer Farms deployment -->
-      <g class="node is-deploy is-live" tabindex="0" role="link" data-go="#software" data-cords="soft-lancer garden-deploy">
+      <g class="node is-deploy is-live is-link" tabindex="0" role="link" data-go="https://lancerfarms.com" data-cords="soft-lancer garden-deploy">
         <circle class="node-hit" cx="270" cy="585" r="36"/>
         <circle class="node-ring" cx="270" cy="585" r="10"/>
         <circle class="node-core" cx="270" cy="585" r="3.5"/>
@@ -697,9 +722,9 @@
     <div class="legend">
       <span><i class="key venture"></i>venture</span>
       <span><i class="key dual"></i>venture + deployment</span>
-      <span><i class="key live"></i>live deployment</span>
+      <span><i class="key live"></i>gold &mdash; opens a site</span>
+      <span><i class="key ext"></i>silver &mdash; outside Grush, no link</span>
       <span><i class="key paused"></i>dormant</span>
-      <span><i class="key ext"></i>outside Grush</span>
     </div>
   </section>
 
@@ -717,7 +742,7 @@
     <section class="branch" id="software">
       <div class="branch-role"><span class="tag">reads</span><br>venture</div>
       <div>
-        <h2><a href="#software">Grush software</a></h2>
+        <h2>Grush software</h2>
         <p>Farm management software for growing sites. Staff log work by tapping, not typing; tasks age themselves; visitors get a read-only window into what the site is doing. Every deployment carries a live status panel.</p>
         <div class="attrs">
           <span class="attr"><b>owner</b> Chad Pattengale</span>
@@ -727,20 +752,20 @@
         <div class="deploys">
           <div class="deploy">
             <div class="deploy-name">
-              <a href="https://lancerfarms.com">Lancer Farms &amp; Gardens</a>
-              <span>owner: California Baptist University &middot; site: CBU campus garden</span>
+              <a class="ext" href="https://lancerfarms.com">Lancer Farms<span class="u">lancerfarms.com &#8599;</span></a>
+              <span>owner: Chad Pattengale &middot; site: Lancer Farms &amp; Gardens, owned by CBU</span>
             </div>
             <div class="status live"><i class="dot"></i>Live</div>
           </div>
           <div class="deploy">
             <div class="deploy-name">
-              <a href="https://funguyfungi.org">Fun Guy Fungi</a>
+              <a class="ext" href="https://funguyfungi.org">Fun Guy Fungi<span class="u">funguyfungi.org &#8599;</span></a>
               <span>owner: Chad Pattengale &middot; site: none yet</span>
             </div>
             <div class="status"><i class="dot"></i>In development</div>
           </div>
         </div>
-        <p class="note">The deployments index grows as sites come online. Each one is listed with its owner, its site, and its honest status.</p>
+        <p class="note">The deployments index grows as sites come online. Each one is listed with its owner, its site, and its honest status. The software is always Chad&rsquo;s; the ground it runs on may not be.</p>
       </div>
     </section>
 
@@ -748,7 +773,7 @@
     <section class="branch" id="fgf">
       <div class="branch-role"><span class="tag">grows</span><br>venture &middot; deployment</div>
       <div>
-        <h2><a href="https://funguyfungi.org">Fun Guy Fungi</a></h2>
+        <h2><a href="https://funguyfungi.org">Fun Guy Fungi<span class="u">funguyfungi.org &#8599;</span></a></h2>
         <p>A mobile container garden business growing specialty mushrooms. It has an owner, a species plan, and a floor plan. It does not have a home yet — the software ran ahead of the farm on purpose. Proof before land, bench before container.</p>
         <div class="attrs">
           <span class="attr"><b>owner</b> Chad Pattengale</span>
@@ -763,7 +788,7 @@
     <section class="branch" id="fungai">
       <div class="branch-role"><span class="tag">knows</span><br>venture</div>
       <div>
-        <h2><a href="#fungai">fungAI</a></h2>
+        <h2>fungAI</h2>
         <p>The research branch. Fungi as instruments: reading the signals they propagate through their environment, and asking whether mycorrhizal networks can be monitored across large geography in response to stimulus.</p>
         <ul class="research">
           <li>Fungi as a sensor</li>
@@ -1064,7 +1089,10 @@
     n.addEventListener('focus',on);      n.addEventListener('blur',off);
     n.addEventListener('touchstart', function(){ on(); setTimeout(off, 1400); }, {passive:true});
     function go(){
-      var t = n.getAttribute('data-go'); var el = t && $(t);
+      var t = n.getAttribute('data-go');
+      if (!t) return;
+      if (/^https?:/.test(t)){ window.location.href = t; return; }
+      var el = $(t);
       if (el) el.scrollIntoView({behavior: reduce ? 'auto':'smooth', block:'start'});
     }
     n.addEventListener('click',go);
