@@ -4,7 +4,7 @@ Canonical structure for the Grush umbrella and every venture nested under it.
 This document is the source of truth. The site mirrors it. If something cannot
 be placed in this structure, it is not ready to be built.
 
-**Status:** structure locked · map live · function deferred
+**Status:** structure locked · map live · intro live · function deferred
 **Last updated:** 2026-07-16
 
 ---
@@ -86,7 +86,7 @@ conflation at the level of the picture:
 **CBU owns Lancer Farms & Gardens and nothing else.** CBU does not own the Grush
 software instance running there.
 
-### The arbuscule
+### The arbuscule — and how it is drawn
 
 The exchange cord — garden ↔ deployment — is the **only** cord that crosses the
 membrane. This is not decoration. It is what an arbuscular mycorrhiza actually is:
@@ -99,9 +99,19 @@ membrane. This is not decoration. It is what an arbuscular mycorrhiza actually i
 Grush software goes inside CBU's daily operation. CBU stays CBU. Grush stays
 Grush. Only value crosses.
 
-**Never draw the two entities merging, fusing, or entwining into one.** That
-contradicts the biology *and* the structure. Interpenetration without fusion is
-the whole point.
+**THE RULE: never draw the two entities merging, fusing, or entwining into one.**
+Interpenetration without fusion is the whole point. The rule survives any change
+of metaphor.
+
+**The site draws this as a handshake** (built 2026-07-16), not as a cell. Grush's
+hand descends in bone-white; CBU's rises in steel — the colours those entities
+already wear on the map. They take hold, and gold filaments weave between the
+fingers.
+
+*Interlaced fingers do not violate the rule — they restate it.* Two hands weave
+together, exchange grip, and remain two hands. You can always let go. It is the
+periarbuscular membrane said in a way a stranger understands in half a second,
+with no cell biology required. **They must never become one mass.**
 
 ---
 
@@ -210,8 +220,9 @@ Three repeating rules, three different scopes. Scope is the whole point — get 
 wrong and nodes inherit blocks they should not have.
 
 ### ◆ About
-Every **first-order branch** carries one.
-Applies to: Grush software · Fun Guy Fungi · fungAI
+Every **first-order branch** carries one. **It is called "About" everywhere** —
+not "What it is", not "About the business". Settled 2026-07-16.
+Applies to: Grush software · Fun Guy Fungi · fungAI · Cottages (on waking)
 
 ### ◆ Owner block
 Every **venture** carries one. Renders from the `owner` attribute — it is a slot,
@@ -226,6 +237,24 @@ The panel *is* the testimonial, running live.
 Applies to: every deployment
 
 Every deployment also carries `owner`, `site`, and `status`.
+
+### ◆ Gold and silver
+Colour carries meaning; it is not decoration.
+
+| Tone | Means |
+|---|---|
+| **gold** (`--spore`) | live. this opens a site. |
+| **silver** (`--steel`) | outside Grush. no link supplied. |
+| **bone** (`--mycelium`) | Grush's own. scrolls within the page. |
+
+**Silver marks where an external owner has not handed over a link.** CBU has
+supplied none, so CBU and the garden are inert — not clickable, not in the tab
+order. The absence is the accurate state of the relationship, not an omission.
+If CBU ever supplies a URL, that node turns gold and the map shows the
+relationship change.
+
+Corollary: **nothing self-links.** A heading that scrolls to itself is noise.
+fungAI, Grush software and Cottages are plain text — none has a site of its own.
 
 ---
 
