@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
+<title>Fun Guy Fungi — Business Model Canvas</title>
+<meta name="description" content="Business Model Canvas for Fun Guy Fungi: a closed-loop container mushroom farm turning warehouse cardboard waste into gourmet mushrooms and wildfire burn-scar inoculant.">
+<style>
+  :root{
+    --bg:#0f1518;
+    --bg2:#0b1013;
+    --panel:#16212a;
+    --panel2:#1b2833;
+    --edge:#294050;
+    --edge2:#37596e;
+    --steel:#7fb2d6;
+    --steel-dim:#5a90b8;
+    --cream:#ece6d6;
+    --muted:#9db0bd;
+    --accent-warm:#d9a05b;
+    --good:#7fc9a0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 600px at 50% -10%, #14232d 0%, var(--bg) 55%, var(--bg2) 100%);
+    color:var(--cream);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+    padding:22px 16px 60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  header.hero{
+    border:1px solid var(--edge);
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border-radius:16px;
+    padding:22px 22px 20px;
+    margin-bottom:16px;
+  }
+  .kicker{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--steel);font-weight:700;margin:0 0 6px;
+  }
+  h1{
+    margin:0 0 6px;font-size:clamp(22px,4.5vw,34px);line-height:1.12;
+    color:var(--cream);letter-spacing:-.01em;
+  }
+  .sub{margin:0;color:var(--muted);font-size:clamp(14px,2.6vw,16px);max-width:70ch;}
+  .meta{
+    margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .chip{
+    font-size:12px;color:var(--muted);border:1px solid var(--edge);
+    background:rgba(127,178,214,.06);border-radius:999px;padding:4px 11px;
+  }
+  .chip b{color:var(--cream);font-weight:600;}
+
+  /* canvas grid */
+  .canvas{
+    display:grid;gap:10px;
+    grid-template-columns:repeat(5,1fr);
+    grid-template-areas:
+      "kp ka vp cr cs"
+      "kp kr vp ch cs"
+      "cost cost cost rev rev";
+  }
+  .cell{
+    border:1px solid var(--edge);
+    background:linear-gradient(180deg,var(--panel),#13202a);
+    border-radius:12px;padding:13px 13px 14px;min-width:0;
+  }
+  .kp{grid-area:kp;} .ka{grid-area:ka;} .kr{grid-area:kr;}
+  .vp{grid-area:vp;} .cr{grid-area:cr;} .ch{grid-area:ch;}
+  .cs{grid-area:cs;} .cost{grid-area:cost;} .rev{grid-area:rev;}
+
+  .vp{border-color:var(--edge2);background:linear-gradient(180deg,#1a2c38,#14222c);}
+  .vp .cell-title{color:var(--steel);}
+
+  .cell-title{
+    font-size:12.5px;font-weight:700;letter-spacing:.03em;
+    color:var(--cream);margin:0 0 9px;display:flex;align-items:center;gap:7px;
+  }
+  .cell-title .dot{
+    width:7px;height:7px;border-radius:50%;background:var(--steel-dim);flex:0 0 auto;
+  }
+  .vp .cell-title .dot{background:var(--steel);}
+  ul{margin:0;padding:0;list-style:none;}
+  li{
+    position:relative;padding-left:15px;margin:0 0 7px;
+    font-size:13px;color:#d9d3c4;
+  }
+  li:last-child{margin-bottom:0;}
+  li::before{
+    content:"";position:absolute;left:0;top:8px;
+    width:6px;height:6px;border-radius:1px;background:var(--steel-dim);
+  }
+  .vp li::before{background:var(--steel);}
+  li .tag{
+    display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
+    color:var(--bg);background:var(--steel);border-radius:4px;
+    padding:1px 6px;margin-right:5px;vertical-align:1px;
+  }
+  li .tag.rest{background:var(--accent-warm);}
+  .muted-note{color:var(--muted);font-style:italic;}
+
+  /* the two bottom cells: two-column list on wide screens */
+  .cost ul, .rev ul{columns:2;column-gap:22px;}
+  @media(max-width:820px){ .cost ul,.rev ul{columns:1;} }
+
+  .loop{
+    margin-top:16px;border:1px solid var(--edge2);border-radius:12px;
+    background:linear-gradient(180deg,rgba(127,178,214,.10),rgba(127,178,214,.03));
+    padding:16px 18px;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;
+  }
+  .loop .big{font-size:15px;color:var(--cream);font-weight:600;margin:0;flex:1 1 320px;}
+  .loop .flow{
+    font-size:13px;color:var(--steel);font-weight:600;letter-spacing:.02em;
+    flex:1 1 260px;
+  }
+  .loop .flow span{color:var(--muted);padding:0 4px;}
+
+  footer{
+    margin-top:22px;color:var(--muted);font-size:12.5px;text-align:center;
+  }
+  footer a{color:var(--steel);text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+
+  @media(max-width:720px){
+    body{padding:16px 11px 48px;}
+    .canvas{grid-template-columns:1fr;grid-template-areas:
+      "vp" "cs" "kp" "ka" "kr" "cr" "ch" "cost" "rev";}
+    .cell{border-radius:11px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Grush Ventures · Business Model Canvas</p>
+    <h1>Fun Guy Fungi</h1>
+    <p class="sub">A closed-loop container mushroom farm: free warehouse cardboard becomes fresh local gourmet mushrooms, and the spent substrate becomes a living fungal inoculant for Southern California wildfire burn-scar recovery.</p>
+    <div class="meta">
+      <span class="chip">Designed by <b>Chad Pattengale</b></span>
+      <span class="chip">Version <b>v001</b></span>
+      <span class="chip"><b>2026-07-20</b></span>
+      <span class="chip">Veteran-owned · Riverside, CA</span>
+    </div>
+  </header>
+
+  <section class="canvas" aria-label="Business Model Canvas">
+
+    <div class="cell kp">
+      <p class="cell-title"><span class="dot"></span>Key Partners</p>
+      <ul>
+        <li>Nearby warehouses &amp; distribution centers — free cardboard feedstock</li>
+        <li>Local restaurants &amp; brewpubs — culinary buyers</li>
+        <li>Fire-recovery, watershed &amp; land-management groups — inoculant buyers</li>
+        <li>USDA-FSA, SBA / VBOC, California FarmLink</li>
+        <li>Cal Baptist University — research + Lancer Farms</li>
+      </ul>
+    </div>
+
+    <div class="cell ka">
+      <p class="cell-title"><span class="dot"></span>Key Activities</p>
+      <ul>
+        <li>Collect &amp; process warehouse cardboard into substrate</li>
+        <li>Grow &amp; fruit culinary mushrooms <span class="muted-note">(Phase 1 blocks → Phase 2 own cultivation)</span></li>
+        <li>Harvest, package &amp; deliver</li>
+        <li>Process spent substrate into burn-scar inoculant</li>
+        <li>Sales &amp; accounts; quality / contamination control</li>
+      </ul>
+    </div>
+
+    <div class="cell kr">
+      <p class="cell-title"><span class="dot"></span>Key Resources</p>
+      <ul>
+        <li>40 ft climate-controlled container — fruiting + future clean lab</li>
+        <li>Free cardboard waste stream from nearby warehouses</li>
+        <li>Sterile technique &amp; cultivation skill — ICU-nursing background</li>
+        <li>USDA / FSA microloan capital; ag land with on-site living</li>
+        <li>Mycology research — wildfire AOIs, pyrophilous fungi</li>
+      </ul>
+    </div>
+
+    <div class="cell vp">
+      <p class="cell-title"><span class="dot"></span>Value Propositions</p>
+      <ul>
+        <li>Turns <b>free warehouse cardboard waste</b> into fresh, local gourmet mushrooms</li>
+        <li>Same-day-fresh &amp; locally grown — vs. days-old shipped</li>
+        <li>Reliable weekly supply of specialty species: oyster, lion's mane, reishi</li>
+        <li>Spent substrate becomes a <b>living fungal inoculant</b> for wildfire burn-scar recovery</li>
+        <li>Closed-loop, zero-waste, veteran-owned story buyers can market</li>
+      </ul>
+    </div>
+
+    <div class="cell cr">
+      <p class="cell-title"><span class="dot"></span>Customer Relationships</p>
+      <ul>
+        <li>Direct, personal relationships with owners &amp; chefs</li>
+        <li>Reliability &amp; consistency = trust</li>
+        <li>Standing weekly orders</li>
+        <li>Pilot / partnership agreements with land managers</li>
+      </ul>
+    </div>
+
+    <div class="cell ch">
+      <p class="cell-title"><span class="dot"></span>Channels</p>
+      <ul>
+        <li>Direct delivery to restaurants</li>
+        <li>Farmers-market stall</li>
+        <li>Restoration &amp; agency partnerships / pilots</li>
+        <li>Word-of-mouth / warm local network</li>
+      </ul>
+    </div>
+
+    <div class="cell cs">
+      <p class="cell-title"><span class="dot"></span>Customer Segments</p>
+      <ul>
+        <li><span class="tag">Culinary</span>Independent chef-driven restaurants — pizzerias, brewpubs, farm-to-table</li>
+        <li>Farmers-market direct-to-consumer shoppers</li>
+        <li><span class="tag rest">Restoration</span>Fire-recovery, watershed &amp; land-management groups restoring SoCal burn scars</li>
+        <li><span class="muted-note">(Roadmap) local grocers &amp; co-ops</span></li>
+      </ul>
+    </div>
+
+    <div class="cell cost">
+      <p class="cell-title"><span class="dot"></span>Cost Structure</p>
+      <ul>
+        <li>Cardboard collection &amp; processing — low feedstock cost</li>
+        <li>Electricity &amp; HVAC (climate control)</li>
+        <li>Container build &amp; equipment (fixed)</li>
+        <li>Loan repayment</li>
+        <li>Packaging, market fees, delivery fuel</li>
+        <li>Spent-substrate processing into inoculant</li>
+        <li>Owner-operator labor</li>
+      </ul>
+    </div>
+
+    <div class="cell rev">
+      <p class="cell-title"><span class="dot"></span>Revenue Streams</p>
+      <ul>
+        <li>Fresh mushroom sales — retail farmers market ($10–16/lb)</li>
+        <li>Wholesale to restaurants ($7–14/lb)</li>
+        <li>Spent-substrate fungal inoculant — wildfire burn-scar remediation</li>
+        <li><span class="muted-note">(Roadmap) value-added: dried, grow kits, MycoSoil restoration products</span></li>
+      </ul>
+    </div>
+
+  </section>
+
+  <div class="loop">
+    <p class="big">The core idea: my biggest variable cost — substrate — is <b>free warehouse waste</b>, and the leftover becomes a second product. One waste stream feeds two revenue streams.</p>
+    <p class="flow">Cardboard waste <span>→</span> Gourmet mushrooms <span>→</span> Burn-scar inoculant</p>
+  </div>
+
+  <footer>
+    Read-only example · Fun Guy Fungi is a Grush Ventures deployment · <a href="https://getgrush.com">getgrush.com</a>
+  </footer>
+
+</div>
+</body>
+</html>
