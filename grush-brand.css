@@ -1,0 +1,103 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   grush-brand.css — the canonical Grush design language. TOKENS ONLY.
+
+   THIS FILE IS THE SOURCE OF TRUTH. Eight pages in this repo currently
+   declare these values inline — index.html alone repeats them 73 times.
+   That is survivable while there is one site; it is not survivable once
+   every Grush deployment carries its own copy. Change a value here, and
+   anything importing this file follows.
+
+   NO COMPONENT RULES LIVE HERE, deliberately. The moment this file starts
+   styling buttons it stops being portable, because every deployment has
+   different markup. Component styling belongs in a per-deployment theme
+   — see grush-theme.css in the lancerfarms-v2 repo, which restyles that
+   site's desk using exactly these values.
+
+   COPY, DO NOT HOTLINK. Each Grush-powered site keeps its own copy of
+   this file. A cross-repo stylesheet reference would mean deleting the
+   Grush layer from a deployment leaves a dangling request to a domain
+   the farm may no longer have any relationship with. Duplication is the
+   correct answer when independence is the requirement.
+
+   USE:
+     <link rel="stylesheet" href="grush-brand.css">
+     background: var(--substrate);
+     color: var(--mycelium);
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+:root{
+
+  /* ── GROUND ────────────────────────────────────────────────────────
+     Warm-neutral near-blacks. Cooler and deeper than a farm palette on
+     purpose: it is what tells someone they have crossed from a website
+     into software. */
+  --substrate:       #14110F;   /* page ground                          */
+  --substrate-lift:  #1E1A17;   /* cards, cells, anything raised        */
+  --hairline:        #2E2822;   /* 1px rules. never thicker             */
+
+  /* ── TEXT ──────────────────────────────────────────────────────── */
+  --mycelium:        #E8E1D4;   /* primary                              */
+  --mycelium-dim:    #948B7E;   /* secondary                            */
+  --mycelium-faint:  #5A5248;   /* captions, disabled                   */
+  --text-faint:      #8F8676;
+
+  /* ── ACCENT ────────────────────────────────────────────────────────
+     Spore is the ONLY saturated colour in the system. If everything is
+     an accent, nothing is. Reserve it for what the person can act on. */
+  --spore:           #C9A227;
+
+  /* ── STRUCTURE AND STATE ───────────────────────────────────────────
+     Steel carries engagement — borders on active elements, the locked
+     pin, selected states. It never competes with spore for attention. */
+  --steel:           #5C7080;
+  --steel-lit:       #8AA6B8;
+  --steel-ground:    #1B2830;   /* the active/engaged surface           */
+
+  /* ── DESTRUCTIVE ───────────────────────────────────────────────────
+     Oxblood is for delete, revoke, and irreversible actions ONLY. Using
+     it decoratively spends the one signal you cannot get back. */
+  --oxblood:         #8C2F39;
+  --oxblood-lit:     #B84450;
+
+  /* ── THE MARK ──────────────────────────────────────────────────────
+     High-visibility orange, used for the wordmark and nothing else. It
+     sits outside the palette on purpose — the signature should not look
+     like part of the interface it is signing.
+     4.13 on white, 4.16 on substrate: the only hue clearing 3:1 on both.
+     Roughly Pantone 173 C. Get a drawdown before any print run. */
+  --grush-orange:    #D94F1E;
+
+  /* ── TYPE ──────────────────────────────────────────────────────────
+     Mono labels at .6rem / .2em tracking are, after colour, the single
+     most recognisable thing in this language. Keep the tracking. */
+  --display: 'Fraunces', Georgia, serif;
+  --body:    'IBM Plex Sans', system-ui, sans-serif;
+  --mono:    'IBM Plex Mono', ui-monospace, monospace;
+
+  --label-size:    .6rem;
+  --label-track:   .2em;
+
+  /* ── GEOMETRY ──────────────────────────────────────────────────────
+     Refinement in this system means thinner lines and softer corners,
+     never smaller targets. Every interactive element stays at or above
+     --touch-min, which is set for gloved hands outdoors, not bare
+     fingertips indoors. */
+  --radius:      14px;
+  --radius-lg:   16px;
+  --border-w:    1px;
+  --touch-min:   68px;
+  --touch-small: 56px;
+
+  /* ── MOTION ────────────────────────────────────────────────────────
+     One easing curve across the whole system. Two durations: fast for
+     state, slow for anything that should read as mechanical. */
+  --ease: cubic-bezier(.2,.7,.2,1);
+  --fast: 140ms;
+  --slow: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root{ --fast:0ms; --slow:0ms; }
+}
