@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Grush — Configurator</title>
+<meta name="description" content="The tool that scaffolds a new Grush deployment from the six-table core. In design.">
+<link rel="stylesheet" href="grush-brand.css">
+<style>
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; background:var(--substrate); color:var(--mycelium);
+  font-family:var(--body); line-height:1.6;
+}
+.wrap{max-width:560px; margin:0 auto; padding:0 20px 60px;}
+
+header{padding:44px 0 8px;}
+.kick{
+  font-family:var(--mono); font-size:var(--label-size); letter-spacing:var(--label-track);
+  text-transform:uppercase; color:var(--mycelium-dim); margin:0 0 12px;
+}
+h1{
+  font-family:var(--display); font-weight:700; font-size:clamp(25px,7vw,33px);
+  line-height:1.16; margin:0 0 16px; letter-spacing:-.01em;
+}
+.lede{color:var(--mycelium-dim); font-size:14.5px; margin:0;}
+
+.status{
+  margin-top:28px; display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--spore); border:1px solid var(--spore); border-radius:999px; padding:7px 14px;
+}
+.status .dot{width:6px; height:6px; border-radius:50%; background:var(--spore);}
+
+.section{margin-top:38px;}
+.section-title{
+  font-family:var(--display); font-weight:600; font-size:16px; margin:0 0 12px;
+}
+
+.progress{display:flex; flex-direction:column; gap:8px;}
+.prow{
+  display:flex; align-items:center; gap:12px; padding:11px 14px;
+  background:var(--substrate-lift); border:1px solid var(--hairline); border-radius:10px;
+}
+.prow .mark{
+  width:18px; height:18px; border-radius:50%; flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; font-size:11px;
+}
+.prow.done .mark{background:var(--spore); color:var(--substrate);}
+.prow.pending .mark{border:1px dashed var(--mycelium-faint); color:var(--mycelium-faint);}
+.prow .label{font-size:13.5px;}
+.prow.pending .label{color:var(--mycelium-dim);}
+.prow .ref{
+  margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--mycelium-faint);
+  text-decoration:none; border-bottom:1px dotted var(--mycelium-faint);
+}
+
+.will{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+.will li{
+  font-size:13.5px; color:var(--mycelium-dim); padding-left:18px; position:relative; line-height:1.55;
+}
+.will li::before{
+  content:'—'; position:absolute; left:0; color:var(--mycelium-faint);
+}
+
+.back{
+  display:inline-block; margin-top:44px; font-family:var(--mono); font-size:11.5px;
+  color:var(--mycelium-dim); text-decoration:none; border-bottom:1px solid var(--hairline);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="kick">Grush · Configurator</p>
+  <h1>Every deployment starts here. This part isn't built yet.</h1>
+  <p class="lede">This will be the tool that turns a filled-in form into a new deployment's config file and starting database — instead of writing both by hand each time.</p>
+  <div class="status"><span class="dot"></span>In design</div>
+</header>
+
+<div class="section">
+  <p class="section-title">Where it actually stands</p>
+  <div class="progress">
+    <div class="prow done">
+      <span class="mark">✓</span>
+      <span class="label">The six-table core is defined</span>
+      <a class="ref" href="GRUSH-CORE-CONTRACT.md">core contract</a>
+    </div>
+    <div class="prow done">
+      <span class="mark">✓</span>
+      <span class="label">What a tool is, is defined</span>
+      <a class="ref" href="GRUSH-TOOL-CONTRACT.md">tool contract</a>
+    </div>
+    <div class="prow pending">
+      <span class="mark">·</span>
+      <span class="label">The form itself</span>
+    </div>
+    <div class="prow pending">
+      <span class="mark">·</span>
+      <span class="label">Catalog-table design per business type</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p class="section-title">What it will do</p>
+  <ul class="will">
+    <li>Collect a new deployment's identity — name, short site code, domain — and its business-specific fields for the six shared tables.</li>
+    <li>Generate a ready-to-drop-in config file, matching the shape every deployment already uses.</li>
+    <li>Generate the SQL that creates that deployment's table set, prefixed with its site code, sitting beside every other deployment in the same database.</li>
+    <li>Leave the one hand-designed piece — the catalog table for whatever that business actually works with — as a deliberate, separate step. Not automated, because it shouldn't be.</li>
+  </ul>
+</div>
+
+<a class="back" href="/">← Grush</a>
+
+</div>
+</body>
+</html>
