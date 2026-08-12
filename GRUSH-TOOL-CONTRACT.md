@@ -158,12 +158,33 @@ It gets defined when a third tool actually needs it, and not before.
 
 ## 7. Copy, do not hotlink
 
-Each Grush-powered site keeps its **own copy** of `grush-tool.js`,
-`grush-brand.css` and the mark. A cross-repo reference means removing the
-overlay from a deployment leaves a dangling request to a domain that
-deployment may no longer have any relationship with.
+Each Grush-powered site keeps its **own copy** of `grush-tool.js` and the
+mark. A cross-repo reference means removing the overlay from a deployment
+leaves a dangling request to a domain that deployment may no longer have
+any relationship with.
 
 Duplication is the correct answer when independence is the requirement.
+
+### Styling is not yet duplication — it is two files that agree by coincidence
+
+`grush-brand.css` is the portable token layer. It says so in its own
+header, and means it literally: no component rules belong there, only
+values. `grush-tokens.css`, in `lancerfarms-v2`, is not a copy of it. It
+is the farm's own theme — a second surface for visitor-facing pages,
+component rules for `.card` and `body` and focus states, and a set of
+token names that happen to hold the same hex values as nine of
+`grush-brand.css`'s tokens, because both were tuned toward the same
+palette by hand rather than one importing the other.
+
+That agreement is not guaranteed to hold. It held today because someone
+checked. The honest state is: two files, values close by discipline, not
+by mechanism.
+
+**Deliberately undefined:** whether a third deployment should copy
+`grush-brand.css` directly, or write its own theme file the way
+`lancerfarms-v2` did. Both single-tool sites have only ever needed the
+second pattern. It gets decided when a deployment actually needs the
+first, and not before.
 
 ---
 
